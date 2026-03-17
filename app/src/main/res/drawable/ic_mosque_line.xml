@@ -1,0 +1,56 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- Main Dome -->
+    <path
+        android:pathData="M25,65 C 25,35 75,35 75,65"
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M50,35 L50,25"
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- Crescent Moon Top (Using a circle approximated) -->
+    <path
+        android:pathData="M50,20m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="1.5" />
+    <!-- Minarets -->
+    <path
+        android:pathData="M20,75 L20,45 L15,45 L20,35 L25,45 L20,45"
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M80,75 L80,45 L75,45 L80,35 L85,45 L80,45"
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- Base -->
+    <path
+        android:pathData="M15,75 L85,75"
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M30,75 L30,65"
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M70,75 L70,65"
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>
