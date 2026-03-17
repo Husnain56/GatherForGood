@@ -31,7 +31,7 @@ public class SplashScreen extends AppCompatActivity {
         init();
         ApplyAnimation();
 
-        Intent intent = new Intent(SplashScreen.this, HomeScreen.class);
+        Intent intent = new Intent(SplashScreen.this, RegisterAccount.class);
 
         new Handler().postDelayed(new Runnable() {
             @Override

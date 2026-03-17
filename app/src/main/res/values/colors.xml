@@ -6,4 +6,6 @@
     <color name="background_dark">#042c1d</color>
     <color name="soft_gold">#E5C76B</color>
     <color name="gold_accent">#D4AF37</color>
+    <color name="primary">#0fbd66</color>
+    <color name="ivory">#fdfbf7</color>
 </resources>
