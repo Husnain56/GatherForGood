@@ -10,9 +10,10 @@
 
     <!-- Background Star Pattern -->
     <ImageView
+        android:id="@+id/starPattern"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="0.05"
+        android:alpha="0.19"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_star_pattern"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -101,16 +102,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
                 app:layout_constraintVertical_bias="1.0">
-
-                <!-- Decorative Star Piece -->
-                <View
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/register_bg_star_decoration"
-                    app:layout_constraintBottom_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
 
                 <!-- Full Name -->
                 <TextView
@@ -271,7 +262,7 @@
                 </LinearLayout>
 
                 <!-- Create Account Button -->
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnCreateAccount"
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
@@ -326,6 +317,26 @@
                     app:tint="@color/gold_accent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Decorative Star Piece (Moved outside to prevent clipping) -->
+            <FrameLayout
+                android:id="@+id/starDecorationContainer"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/register_bg_star_decoration"
+                android:elevation="4dp"
+                app:layout_constraintBottom_toTopOf="@+id/formContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/formContainer">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/register_ic_star_half"
+                    app:tint="@color/soft_gold" />
+            </FrameLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
