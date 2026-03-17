@@ -86,9 +86,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:letterSpacing="0.25"
-            android:text="PRAY TOGETHER. SERVE TOGETHER."
+            android:text="PRAY TOGETHER. SERVE \n          TOGETHER."
             android:textColor="#99FFFFFF"
-            android:textSize="10sp"
+            android:textSize="13sp"
             android:textAllCaps="true" />
 
     </LinearLayout>

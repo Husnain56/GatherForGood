@@ -31,6 +31,14 @@ public class SplashScreen extends AppCompatActivity {
         init();
         ApplyAnimation();
 
+        Intent intent = new Intent(SplashScreen.this, HomeScreen.class);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startActivity(intent);
+            }
+        },5000);
     }
 
     public void init(){
