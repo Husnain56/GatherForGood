@@ -5,4 +5,19 @@
     <string name="splash_desc">COMMUNITY SYNERGY</string>
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
+    <string name="create_account_title">Create Account</string>"
+    <string name="register_msg">Join our community to coordinate prayers and meaningful volunteer events.</string>
+    <string name="full_name">FULL NAME</string>
+    <string name="name_input_hint">Enter your full name</string>
+    <string name="email_address">EMAIL ADDRESS</string>
+    <string name="email_hint">name@gmail.com</string>
+    <string name="password">PASSWORD</string>
+    <string name="pass_hint">********</string>
+    <string name="community_identity">COMMUNITY IDENTITY</string>
+    <string name="brother">BROTHER</string>
+    <string name="sister">SISTER</string>
+    <string name="create_account">Create Account</string>
+    <string name="already_part">Already part of the community? </string>
+    <string name="sign_in">Sign In</string>"
+
 </resources>
