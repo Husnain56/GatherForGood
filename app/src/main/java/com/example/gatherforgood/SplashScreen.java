@@ -3,6 +3,9 @@ package com.example.gatherforgood;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +14,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class SplashScreen extends AppCompatActivity {
+
+    Animation blink;
+    View statusDot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +28,18 @@ public class SplashScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        init();
+        ApplyAnimation();
 
+    }
 
+    public void init(){
+        statusDot = findViewById(R.id.statusDot);
+    }
+
+    public void ApplyAnimation(){
+        blink = AnimationUtils.loadAnimation(this,R.anim.anim_blink);
+        statusDot.setAnimation(blink);
     }
 
 }
