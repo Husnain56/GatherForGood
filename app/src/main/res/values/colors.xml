@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="deep_emerald">#064e3b</color>
+    <color name="background_dark">#042c1d</color>
+    <color name="soft_gold">#E5C76B</color>
+    <color name="gold_accent">#D4AF37</color>
 </resources>

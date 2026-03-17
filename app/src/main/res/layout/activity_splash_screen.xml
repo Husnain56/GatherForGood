@@ -12,7 +12,7 @@
         android:id="@+id/starPattern"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:alpha="0.1"
+        android:alpha="0.04"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_star_pattern"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:fontFamily="@font/playfair_display_italic"
-            android:text="GatherForGood"
+            android:text="@string/app_name"
             android:textColor="#E5C76B"
             android:textSize="48sp"
             android:textStyle="italic" />
@@ -86,10 +86,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:letterSpacing="0.25"
-            android:text="PRAY TOGETHER. SERVE \n          TOGETHER."
+            android:text="@string/app_tagline"
+            android:textAllCaps="true"
             android:textColor="#99FFFFFF"
-            android:textSize="13sp"
-            android:textAllCaps="true" />
+            android:textSize="13sp" />
 
     </LinearLayout>
 
@@ -124,7 +124,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:letterSpacing="0.3"
-                android:text="COMMUNITY SYNERGY"
+                android:text="@string/splash_desc"
                 android:textColor="#99D4AF37"
                 android:textSize="10sp"
                 android:textStyle="bold"
