@@ -138,8 +138,8 @@ public class RegisterAccount extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        String uid = mAuth.getCurrentUser().getUid();
-                        saveUserToFirestore(uid, name, email, gender);
+                        navigateToVerifyEmailScreen(name, email, gender);
+                        finish();
                     } else {
                         setInProgress(false);
                         String errorMsg = task.getException().getMessage();
@@ -158,6 +158,14 @@ public class RegisterAccount extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void navigateToVerifyEmailScreen(String name, String email, String gender) {
+        Intent intent = new Intent(this, VerifyEmailScreen.class);
+        intent.putExtra("name", name);
+        intent.putExtra("email", email);
+        intent.putExtra("gender", gender);
+        startActivity(intent);
     }
 
     public void saveUserToFirestore(String uid, String name, String email, String gender) {
