@@ -6,6 +6,7 @@ import android.text.InputType;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class RegisterAccount extends AppCompatActivity {
     TextView tvSignIn;
     FirebaseAuth mAuth;
 
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +74,7 @@ public class RegisterAccount extends AppCompatActivity {
         btnCreateAccount = findViewById(R.id.btnCreateAccount);
         tvSignIn = findViewById(R.id.tvSignIn);
         mAuth = FirebaseAuth.getInstance();
+        progressBar = findViewById(R.id.progressBar);
     }
 
     public void setEventListeners() {
@@ -106,6 +109,17 @@ public class RegisterAccount extends AppCompatActivity {
         tvSignIn.setOnClickListener(v -> navigateToSignInScreen());
     }
 
+    private void setInProgress(boolean isProcessing) {
+        if (isProcessing) {
+            progressBar.setVisibility(android.view.View.VISIBLE);
+            btnCreateAccount.setVisibility(android.view.View.INVISIBLE); // Hide button so they can't click twice
+            btnCreateAccount.setEnabled(false);
+        } else {
+            progressBar.setVisibility(android.view.View.GONE);
+            btnCreateAccount.setVisibility(android.view.View.VISIBLE);
+            btnCreateAccount.setEnabled(true);
+        }
+    }
     public void navigateToSignInScreen() {
         Intent intent = new Intent(this, LoginScreen.class);
         startActivity(intent);
@@ -117,19 +131,22 @@ public class RegisterAccount extends AppCompatActivity {
         String name = etFullName.getText().toString().trim();
         String gender = isBrother ? "Male" : "Female";
 
+        setInProgress(true);
+
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         String uid = mAuth.getCurrentUser().getUid();
                         saveUserToFirestore(uid, name, email, gender);
                     } else {
+                        setInProgress(false);
                         Toast.makeText(this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
     public void saveUserToFirestore(String uid, String name, String email, String gender) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         Map<String, Object> user = new HashMap<>();
         user.put("name", name);
         user.put("email", email);
@@ -137,18 +154,15 @@ public class RegisterAccount extends AppCompatActivity {
 
         db.collection("users").document(uid).set(user)
                 .addOnSuccessListener(unused -> {
-                    Toast.makeText(this,
-                            "Account created successfully!",
-                            Toast.LENGTH_SHORT).show();
                     navigateToSignInScreen();
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this,
-                            "Failed to save user data: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                    setInProgress(false); // <--- STOP LOADING ON ERROR
+                    Toast.makeText(this, "Firestore save failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
     public boolean verifyFields() {
         String name = etFullName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
@@ -159,8 +173,8 @@ public class RegisterAccount extends AppCompatActivity {
             etFullName.setError("Name is required");
             return false;
         }
-        if (email.isEmpty()) {
-            etEmail.setError("Email is required");
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Please enter a valid email");
             return false;
         }
         if (password.isEmpty()) {
