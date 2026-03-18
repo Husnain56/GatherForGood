@@ -19,7 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Email Icon -->
     <ImageView
         android:id="@+id/ivEmailIcon"
         android:layout_width="80dp"
@@ -31,7 +30,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Title -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -46,7 +44,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Subtitle -->
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="0dp"
@@ -61,7 +58,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="8dp"/>
 
-    <!-- Email Address -->
     <TextView
         android:id="@+id/tvEmail"
         android:layout_width="wrap_content"
@@ -74,7 +70,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- I've Verified Button -->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnVerified"
         android:layout_width="0dp"
@@ -92,7 +87,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Resend -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:indeterminateTint="#D4AF37"
+        app:layout_constraintTop_toTopOf="@+id/btnVerified"
+        app:layout_constraintBottom_toBottomOf="@+id/btnVerified"
+        app:layout_constraintStart_toStartOf="@+id/btnVerified"
+        app:layout_constraintEnd_toEndOf="@+id/btnVerified" />
+
     <TextView
         android:id="@+id/tvResend"
         android:layout_width="wrap_content"
