@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterAccount extends AppCompatActivity {
 
@@ -94,7 +99,7 @@ public class RegisterAccount extends AppCompatActivity {
 
         btnCreateAccount.setOnClickListener(v -> {
             if (verifyFields()) {
-                // registration logic will be added later
+                registerUser();
             }
         });
 
@@ -106,6 +111,44 @@ public class RegisterAccount extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void registerUser() {
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+        String name = etFullName.getText().toString().trim();
+        String gender = isBrother ? "Male" : "Female";
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String uid = mAuth.getCurrentUser().getUid();
+                        saveUserToFirestore(uid, name, email, gender);
+                    } else {
+                        Toast.makeText(this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+    public void saveUserToFirestore(String uid, String name, String email, String gender) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> user = new HashMap<>();
+        user.put("name", name);
+        user.put("email", email);
+        user.put("gender", gender);
+
+        db.collection("users").document(uid).set(user)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this,
+                            "Account created successfully!",
+                            Toast.LENGTH_SHORT).show();
+                    navigateToSignInScreen();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this,
+                            "Failed to save user data: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
     public boolean verifyFields() {
         String name = etFullName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
