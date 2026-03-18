@@ -210,6 +210,56 @@
                         app:tint="@color/gold_accent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <!-- Confirm Password -->
+                <TextView
+                    android:id="@+id/lblConfirmPassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="24dp"
+                    android:letterSpacing="0.2"
+                    android:text="@string/confirm_password"
+                    android:textColor="#CCD4AF37"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/passwordContainer" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/passwordConfirmContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/register_bg_input_field"
+                    app:layout_constraintTop_toBottomOf="@id/lblConfirmPassword">
+
+                    <EditText
+                        android:id="@+id/etConfirmPassword"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/pass_hint"
+                        android:inputType="textPassword"
+                        android:paddingHorizontal="20dp"
+                        android:textColor="@color/white"
+                        android:textColorHint="#4DFFFFFF"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/ivConfirmPasswordVisibility"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/ivConfirmPasswordVisibility"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="20dp"
+                        android:alpha="0.4"
+                        android:src="@drawable/register_ic_visibility"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/gold_accent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <!-- Gender Identity -->
                 <TextView
                     android:id="@+id/lblGender"
@@ -223,7 +273,7 @@
                     android:textSize="11sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/passwordContainer" />
+                    app:layout_constraintTop_toBottomOf="@id/passwordConfirmContainer" />
 
                 <LinearLayout
                     android:id="@+id/genderToggle"
@@ -318,7 +368,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Decorative Star Piece (Moved outside to prevent clipping) -->
+            <!-- Decorative Star Piece -->
             <FrameLayout
                 android:id="@+id/starDecorationContainer"
                 android:layout_width="48dp"

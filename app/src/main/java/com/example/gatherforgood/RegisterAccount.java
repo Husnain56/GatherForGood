@@ -15,20 +15,25 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class RegisterAccount extends AppCompatActivity {
+import com.google.firebase.auth.FirebaseAuth;
 
+public class RegisterAccount extends AppCompatActivity {
 
     ImageButton btnBack;
     boolean isBrother;
     TextView btnSister;
     TextView btnBrother;
     ImageView ivPasswordVisibility;
+    ImageView ivConfirmPasswordVisibility;
     EditText etPassword;
-    boolean isVisible;
+    EditText etConfirmPassword;
+    EditText etFullName;
+    EditText etEmail;
+    boolean isPasswordVisible;
+    boolean isConfirmPasswordVisible;
     AppCompatButton btnCreateAccount;
     TextView tvSignIn;
-
-
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,75 +46,113 @@ public class RegisterAccount extends AppCompatActivity {
             return insets;
         });
         init();
-        toggleVisButton();
+        toggleVisButton(ivPasswordVisibility, etPassword, isPasswordVisible);
+        toggleVisButton(ivConfirmPasswordVisibility, etConfirmPassword, isConfirmPasswordVisible);
         setEventListeners();
     }
 
-    public void init(){
-        isVisible = false;
+    public void init() {
+        isPasswordVisible = false;
+        isConfirmPasswordVisible = false;
         isBrother = true;
         btnBack = findViewById(R.id.btnBack);
         btnBrother = findViewById(R.id.btnBrother);
         btnSister = findViewById(R.id.btnSister);
         ivPasswordVisibility = findViewById(R.id.ivPasswordVisibility);
+        ivConfirmPasswordVisibility = findViewById(R.id.ivConfirmPasswordVisibility);
         etPassword = findViewById(R.id.etPassword);
+        etConfirmPassword = findViewById(R.id.etConfirmPassword);
+        etFullName = findViewById(R.id.etFullName);
+        etEmail = findViewById(R.id.etEmail);
         btnCreateAccount = findViewById(R.id.btnCreateAccount);
         tvSignIn = findViewById(R.id.tvSignIn);
+        mAuth = FirebaseAuth.getInstance();
     }
-    public void setEventListeners(){
-        btnBack.setOnClickListener(v->{
-            finish();
 
-        });
-        btnBrother.setOnClickListener(v-> {
+    public void setEventListeners() {
+        btnBack.setOnClickListener(v -> finish());
+
+        btnBrother.setOnClickListener(v -> {
             isBrother = true;
             toggleIdButton();
         });
-        btnSister.setOnClickListener(v-> {
+
+        btnSister.setOnClickListener(v -> {
             isBrother = false;
             toggleIdButton();
         });
-        ivPasswordVisibility.setOnClickListener(v->{
-            isVisible = !isVisible;
-            toggleVisButton();
-        });
-        btnCreateAccount.setOnClickListener(v->{
-                verifyEmail();
-                navigateToSignInScreen();
-                finish();
-        });
-        tvSignIn.setOnClickListener(v->{
-                navigateToSignInScreen();
+
+        ivPasswordVisibility.setOnClickListener(v -> {
+            isPasswordVisible = !isPasswordVisible;
+            toggleVisButton(ivPasswordVisibility, etPassword, isPasswordVisible);
         });
 
+        ivConfirmPasswordVisibility.setOnClickListener(v -> {
+            isConfirmPasswordVisible = !isConfirmPasswordVisible;
+            toggleVisButton(ivConfirmPasswordVisibility, etConfirmPassword, isConfirmPasswordVisible);
+        });
+
+        btnCreateAccount.setOnClickListener(v -> {
+            if (verifyFields()) {
+                // registration logic will be added later
+            }
+        });
+
+        tvSignIn.setOnClickListener(v -> navigateToSignInScreen());
     }
-    public void navigateToSignInScreen(){
+
+    public void navigateToSignInScreen() {
         Intent intent = new Intent(this, LoginScreen.class);
         startActivity(intent);
     }
-    public void verifyEmail(){
 
+    public boolean verifyFields() {
+        String name = etFullName.getText().toString().trim();
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+        String confirmPassword = etConfirmPassword.getText().toString().trim();
+
+        if (name.isEmpty()) {
+            etFullName.setError("Name is required");
+            return false;
+        }
+        if (email.isEmpty()) {
+            etEmail.setError("Email is required");
+            return false;
+        }
+        if (password.isEmpty()) {
+            etPassword.setError("Password is required");
+            return false;
+        }
+        if (password.length() < 6) {
+            etPassword.setError("Password must be at least 6 characters");
+            return false;
+        }
+        if (!password.equals(confirmPassword)) {
+            etConfirmPassword.setError("Passwords do not match");
+            return false;
+        }
+        return true;
     }
-    public void toggleIdButton(){
-        if(isBrother){
+
+    public void toggleIdButton() {
+        if (isBrother) {
             btnBrother.setBackgroundResource(R.drawable.register_bg_gender_active);
             btnSister.setBackgroundResource(R.drawable.register_bg_gender_toggle);
-        }
-        else{
+        } else {
             btnBrother.setBackgroundResource(R.drawable.register_bg_gender_toggle);
             btnSister.setBackgroundResource(R.drawable.register_bg_gender_active);
         }
     }
-    public void toggleVisButton(){
-        if(!isVisible){
-            ivPasswordVisibility.setImageResource(R.drawable.register_ic_visibility);
-            etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
+    public void toggleVisButton(ImageView ivVisibility, EditText etPass, boolean isVisible) {
+        if (!isVisible) {
+            ivVisibility.setImageResource(R.drawable.register_ic_visibility);
+            etPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        } else {
+            ivVisibility.setImageResource(R.drawable.register_ic_visibility_off);
+            etPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         }
-        else{
-            ivPasswordVisibility.setImageResource(R.drawable.register_ic_visibility_off);
-            etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        }
-        etPassword.setSelection(etPassword.getText().length());
+        etPass.setSelection(etPass.getText().length());
     }
 }

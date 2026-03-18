@@ -12,6 +12,7 @@
     <string name="email_address">EMAIL ADDRESS</string>
     <string name="email_hint">name@gmail.com</string>
     <string name="password">PASSWORD</string>
+    <string name="confirm_password">CONFIRM PASSWORD</string>
     <string name="pass_hint">********</string>
     <string name="community_identity">COMMUNITY IDENTITY</string>
     <string name="brother">BROTHER</string>
