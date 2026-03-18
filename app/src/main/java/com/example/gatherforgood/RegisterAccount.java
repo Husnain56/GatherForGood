@@ -112,7 +112,7 @@ public class RegisterAccount extends AppCompatActivity {
     private void setInProgress(boolean isProcessing) {
         if (isProcessing) {
             progressBar.setVisibility(android.view.View.VISIBLE);
-            btnCreateAccount.setVisibility(android.view.View.INVISIBLE); // Hide button so they can't click twice
+            btnCreateAccount.setVisibility(android.view.View.INVISIBLE);
             btnCreateAccount.setEnabled(false);
         } else {
             progressBar.setVisibility(android.view.View.GONE);
@@ -126,6 +126,8 @@ public class RegisterAccount extends AppCompatActivity {
     }
 
     public void registerUser() {
+
+
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String name = etFullName.getText().toString().trim();
@@ -140,7 +142,20 @@ public class RegisterAccount extends AppCompatActivity {
                         saveUserToFirestore(uid, name, email, gender);
                     } else {
                         setInProgress(false);
-                        Toast.makeText(this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        String errorMsg = task.getException().getMessage();
+                        if (errorMsg != null && errorMsg.contains("email address is already in use")) {
+                            etEmail.setError("This email is already registered");
+                            etEmail.requestFocus();
+                        } else if (errorMsg != null && errorMsg.contains("badly formatted")) {
+                            etEmail.setError("Invalid email format");
+                            etEmail.requestFocus();
+                        } else if (errorMsg != null && errorMsg.contains("password")) {
+                            etPassword.setError("Password is too weak");
+                            etPassword.requestFocus();
+                        } else {
+                            etEmail.setError("Registration failed: " + errorMsg);
+                            etEmail.requestFocus();
+                        }
                     }
                 });
     }
@@ -158,7 +173,7 @@ public class RegisterAccount extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    setInProgress(false); // <--- STOP LOADING ON ERROR
+                    setInProgress(false);
                     Toast.makeText(this, "Firestore save failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }

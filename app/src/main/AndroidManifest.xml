@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GatherForGood">
         <activity
+            android:name=".VerifyEmailScreen"
+            android:exported="false" />
+        <activity
             android:name=".LoginScreen"
             android:exported="false" />
         <activity
