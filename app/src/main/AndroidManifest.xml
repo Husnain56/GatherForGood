@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GatherForGood">
         <activity
+            android:name=".LoginScreen"
+            android:exported="false" />
+        <activity
             android:name=".RegisterAccount"
             android:exported="false" />
         <activity
