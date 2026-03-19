@@ -222,8 +222,9 @@
 
                     <EditText
                         android:id="@+id/etPassword"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_weight="1"
                         android:layout_marginStart="12dp"
                         android:background="@android:color/transparent"
                         android:hint="@string/pass_hint"
@@ -231,6 +232,15 @@
                         android:textColor="@color/white"
                         android:textColorHint="#4DFFFFFF"
                         android:textSize="14sp" />
+
+                    <ImageView
+                        android:id="@+id/ivPasswordVisibility"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:alpha="0.4"
+                        android:src="@drawable/register_ic_visibility"
+                        app:tint="@color/gold_accent" />
+
                 </LinearLayout>
 
                 <!-- Sign In Button -->

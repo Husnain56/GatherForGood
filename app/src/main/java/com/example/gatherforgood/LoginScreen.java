@@ -2,8 +2,10 @@ package com.example.gatherforgood;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,11 +27,12 @@ public class LoginScreen extends AppCompatActivity {
     EditText etPassword;
     TextView tvForgot;
     AppCompatButton btnSignIn;
-
+    ImageView ivPasswordVisibility;
     TextView tvJoinCommunity;
 
     FirebaseAuth mAuth;
     ProgressBar progressBar;
+    boolean isPasswordVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,8 @@ public class LoginScreen extends AppCompatActivity {
         tvJoinCommunity = findViewById(R.id.tvJoinCommunity);
         mAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progressBar);
+        ivPasswordVisibility = findViewById(R.id.ivPasswordVisibility);
+        isPasswordVisible = false;
     }
     public void setEventListeners(){
         tvJoinCommunity.setOnClickListener(v->{;
@@ -69,6 +74,21 @@ public class LoginScreen extends AppCompatActivity {
         tvForgot.setOnClickListener(v-> {
             resetPassword();
         });
+        ivPasswordVisibility.setOnClickListener(v -> {
+            isPasswordVisible = !isPasswordVisible;
+            toggleVisButton(ivPasswordVisibility, etPassword, isPasswordVisible);
+        });
+    }
+
+    public void toggleVisButton(ImageView ivVisibility, EditText etPass, boolean isVisible) {
+        if (!isVisible) {
+            ivVisibility.setImageResource(R.drawable.register_ic_visibility);
+            etPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        } else {
+            ivVisibility.setImageResource(R.drawable.register_ic_visibility_off);
+            etPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        }
+        etPass.setSelection(etPass.getText().length());
     }
 
     private void resetPassword() {
@@ -138,7 +158,6 @@ public class LoginScreen extends AppCompatActivity {
                         Toast.makeText(LoginScreen.this, "Invalid email or password. Please try again.", Toast.LENGTH_SHORT).show();
                     }
                 });
-
     }
     private void checkUserVerification() {
         FirebaseUser user = mAuth.getCurrentUser();
