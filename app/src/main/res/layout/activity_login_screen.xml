@@ -66,7 +66,7 @@
                 android:id="@+id/mosqueIconContainer"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="70dp"
                 android:background="@drawable/register_bg_arch_container"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -85,13 +85,13 @@
                 android:id="@+id/formContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="-20dp"
                 android:background="@drawable/register_bg_arch_container"
                 android:paddingHorizontal="32dp"
-                android:paddingTop="48dp"
+                android:paddingTop="40dp"
                 android:paddingBottom="48dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/mosqueIconContainer"
+                app:layout_constraintTop_toBottomOf="@+id/mosqueIconContainer"
                 app:layout_constraintVertical_bias="1.0">
 
                 <TextView
@@ -99,7 +99,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/playfair_display_italic"
-                    android:text="Welcome Back"
+                    android:text="@string/user_welcome"
                     android:textColor="@color/soft_gold"
                     android:textSize="32sp"
                     android:textStyle="bold|italic"
@@ -113,7 +113,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:letterSpacing="0.1"
-                    android:text="JOIN YOUR COMMUNITY IN PRAYER"
+                    android:text="@string/login_msg"
                     android:textColor="#99FFFFFF"
                     android:textSize="10sp"
                     android:textStyle="bold"
@@ -208,6 +208,7 @@
                         android:layout_height="20dp"
                         android:src="@drawable/ic_lock"
                         app:tint="#4DFFFFFF" />
+
                     <EditText
                         android:id="@+id/etPassword"
                         android:layout_width="match_parent"
@@ -227,11 +228,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
                     android:layout_marginTop="40dp"
-                    android:background="@drawable/register_bg_primary_button"
+                    android:background="@drawable/register_bg_gender_active"
                     android:fontFamily="@font/playfair_display_italic"
-                    android:text="SIGN IN  →"
+                    android:text="@string/sign_in_btn"
                     android:textAllCaps="true"
-                    android:textColor="@color/white"
+                    android:textColor="@color/deep_emerald"
                     android:textSize="18sp"
                     android:textStyle="bold|italic"
                     app:layout_constraintTop_toBottomOf="@id/passwordInputContainer" />
@@ -249,7 +250,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Don't have an account? "
+                        android:text="@string/no_account_msg"
                         android:textColor="#80FFFFFF"
                         android:textSize="14sp" />
 
@@ -257,11 +258,25 @@
                         android:id="@+id/tvJoinCommunity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Join Community"
+                        android:text="@string/join_community"
                         android:textColor="@color/soft_gold"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_marginTop="48dp"
+                    android:alpha="0.2"
+                    android:src="@drawable/register_ic_lattice"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/btnSignIn"
+                    app:layout_constraintVertical_bias="1.0"
+                    app:tint="@color/gold_accent" />
+
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -323,6 +338,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/bottomNavPlaceholder" />
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

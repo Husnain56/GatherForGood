@@ -20,5 +20,10 @@
     <string name="create_account">Create Account</string>
     <string name="already_part">Already part of the community? </string>
     <string name="sign_in">Sign In</string>"
+    <string name="user_welcome">Welcome Back</string>
+    <string name="login_msg">RECONNECT WITH YOUR COMMUNITY</string>
+    <string name="sign_in_btn">Sign In -></string>"
+    <string name="no_account_msg">Don\'t have an account? </string>
+    <string name="join_community">Join Community</string>
 
 </resources>
