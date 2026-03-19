@@ -19,7 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-
+import android.graphics.Paint;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,7 +106,10 @@ public class RegisterAccount extends AppCompatActivity {
             }
         });
 
-        tvSignIn.setOnClickListener(v -> navigateToSignInScreen());
+        tvSignIn.setOnClickListener(v -> {
+            navigateToSignInScreen();
+            tvSignIn.setPaintFlags(tvSignIn.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        });
     }
 
     private void setInProgress(boolean isProcessing) {

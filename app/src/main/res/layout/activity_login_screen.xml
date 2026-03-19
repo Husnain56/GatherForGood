@@ -8,7 +8,7 @@
     android:background="@drawable/register_bg_gradient"
     tools:context=".LoginScreen">
 
-    <!-- Background Star Pattern (Reused from Register) -->
+    <!-- Background Star Pattern -->
     <ImageView
         android:id="@+id/starPattern"
         android:layout_width="match_parent"
@@ -25,59 +25,45 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <!-- Top Bar -->
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:background="@drawable/register_bg_input_field"
-                android:padding="8dp"
-                android:src="@drawable/register_ic_back_arrow"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/soft_gold" />
-
-            <TextView
-                android:id="@+id/tvAppTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/playfair_display_italic"
-                android:letterSpacing="0.3"
-                android:text="@string/app_name"
-                android:textColor="@color/gold_accent"
-                android:textSize="14sp"
-                android:textStyle="bold|italic"
-                app:layout_constraintBottom_toBottomOf="@id/btnBack"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/btnBack" />
-
-
-            <!-- Header Section (Mosque Icon in Arch) -->
             <FrameLayout
-                android:id="@+id/mosqueIconContainer"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginTop="70dp"
-                android:background="@drawable/register_bg_arch_container"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvAppTitle">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:paddingHorizontal="24dp">
 
-                <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_mosque"
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="start"
+                    android:background="@drawable/register_bg_input_field"
+                    android:padding="8dp"
+                    android:src="@drawable/register_ic_back_arrow"
                     app:tint="@color/soft_gold" />
+
+                <TextView
+                    android:id="@+id/tvAppTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/playfair_display_italic"
+                    android:gravity="center"
+                    android:letterSpacing="0.3"
+                    android:text="@string/app_name"
+                    android:textColor="@color/gold_accent"
+                    android:textSize="14sp"
+                    android:textStyle="bold|italic" />
+
             </FrameLayout>
 
             <!-- Form Container -->
@@ -85,15 +71,35 @@
                 android:id="@+id/formContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-20dp"
+                android:layout_marginTop="48dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:background="@drawable/register_bg_arch_container"
                 android:paddingHorizontal="32dp"
-                android:paddingTop="40dp"
-                android:paddingBottom="48dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mosqueIconContainer"
-                app:layout_constraintVertical_bias="1.0">
+                android:paddingTop="72dp"
+                android:paddingBottom="48dp">
 
+                <!-- Mosque Icon floats above form -->
+                <FrameLayout
+                    android:id="@+id/mosqueIconContainer"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="-20dp"
+                    android:background="@drawable/register_bg_arch_container"
+                    android:elevation="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_mosque"
+                        app:tint="@color/soft_gold" />
+                </FrameLayout>
+
+                <!-- Welcome Back -->
                 <TextView
                     android:id="@+id/tvWelcomeBack"
                     android:layout_width="wrap_content"
@@ -102,10 +108,11 @@
                     android:text="@string/user_welcome"
                     android:textColor="@color/soft_gold"
                     android:textSize="32sp"
+                    android:layout_marginTop="50dp"
                     android:textStyle="bold|italic"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/mosqueIconContainer" />
 
                 <TextView
                     android:id="@+id/tvJoinMsg"
@@ -121,7 +128,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvWelcomeBack" />
 
-                <!-- Email Address -->
+                <!-- Email Label -->
                 <TextView
                     android:id="@+id/lblEmail"
                     android:layout_width="wrap_content"
@@ -136,6 +143,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvJoinMsg" />
 
+                <!-- Email Input -->
                 <LinearLayout
                     android:id="@+id/emailInputContainer"
                     android:layout_width="match_parent"
@@ -166,7 +174,7 @@
                         android:textSize="14sp" />
                 </LinearLayout>
 
-                <!-- Password -->
+                <!-- Password Label Row -->
                 <TextView
                     android:id="@+id/lblPassword"
                     android:layout_width="wrap_content"
@@ -185,13 +193,16 @@
                     android:id="@+id/tvForgot"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Forgot?"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/forgot_pass"
                     android:textColor="@color/gold_accent"
                     android:textSize="10sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/lblPassword"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/lblPassword" />
 
+                <!-- Password Input -->
                 <LinearLayout
                     android:id="@+id/passwordInputContainer"
                     android:layout_width="match_parent"
@@ -237,20 +248,21 @@
                     android:textStyle="bold|italic"
                     app:layout_constraintTop_toBottomOf="@id/passwordInputContainer" />
 
+                <!-- Progress Bar -->
                 <ProgressBar
                     android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:visibility="gone"
                     android:indeterminateTint="#D4AF37"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/btnSignIn"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="@id/btnSignIn" />
 
                 <!-- Register Link -->
                 <LinearLayout
+                    android:id="@+id/registerLink"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
@@ -276,33 +288,29 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
+                <!-- Bottom Decorative Lattice -->
                 <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:layout_marginTop="48dp"
+                    android:layout_marginTop="32dp"
                     android:alpha="0.2"
                     android:src="@drawable/register_ic_lattice"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/btnSignIn"
-                    app:layout_constraintVertical_bias="1.0"
+                    app:layout_constraintTop_toBottomOf="@id/registerLink"
                     app:tint="@color/gold_accent" />
-
-
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Bottom Icons -->
+            <!-- Bottom Nav Placeholder -->
             <LinearLayout
                 android:id="@+id/bottomNavPlaceholder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="48dp"
                 android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/formContainer">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -335,7 +343,7 @@
 
             <!-- Footer Text -->
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="48dp"
                 android:layout_marginTop="32dp"
@@ -345,15 +353,9 @@
                 android:text="BY CONTINUING, YOU AGREE TO GATHERFORGOOD'S TERMS OF SERVICE AND PRIVACY POLICY."
                 android:textColor="#4DFFFFFF"
                 android:textSize="9sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/bottomNavPlaceholder" />
+                android:textStyle="bold" />
 
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

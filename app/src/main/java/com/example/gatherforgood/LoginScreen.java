@@ -57,6 +57,7 @@ public class LoginScreen extends AppCompatActivity {
     }
     public void setEventListeners(){
         tvJoinCommunity.setOnClickListener(v->{;
+            setInProgress(true);
             finish();
         });
         btnBack.setOnClickListener(v->{
@@ -65,6 +66,35 @@ public class LoginScreen extends AppCompatActivity {
         btnSignIn.setOnClickListener(v->{
             VerifyCredentials();
         });
+        tvForgot.setOnClickListener(v-> {
+            resetPassword();
+        });
+    }
+
+    private void resetPassword() {
+        String email = etEmail.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            etEmail.setError("Enter your registered email first");
+            etEmail.requestFocus();
+            return;
+        }
+
+        setInProgress(true);
+
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    setInProgress(false);
+                    if (task.isSuccessful()) {
+                        Toast.makeText(LoginScreen.this,
+                                "Reset link sent! Please check your inbox.",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(LoginScreen.this,
+                                "Error: " + task.getException().getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     public boolean verifyFields() {
@@ -89,6 +119,7 @@ public class LoginScreen extends AppCompatActivity {
 
     public void navigateToHome(){
         Intent intent = new Intent(this, HomeScreen.class);
+        setInProgress(false);
         startActivity(intent);
         finish();
     }
@@ -118,9 +149,16 @@ public class LoginScreen extends AppCompatActivity {
                 finish();
             } else {
                 setInProgress(false);
-                Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_SHORT).show();
+                navigateToVerifyScreen();
             }
         }
+    }
+
+    private void navigateToVerifyScreen(){
+        Intent intent = new Intent(this, VerifyEmailScreen.class);
+        intent.putExtra("email", etEmail.getText().toString());
+        startActivity(intent);
     }
 
     public void setInProgress(boolean isProcessing) {

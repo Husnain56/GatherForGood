@@ -88,7 +88,7 @@ public class VerifyEmailScreen extends AppCompatActivity {
                 .update("isVerified", true)
                 .addOnSuccessListener(unused -> {
                     setInProgress(false);
-                    Toast.makeText(this, "Email verified and profile updated!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Email successfully verified!", Toast.LENGTH_SHORT).show();
                     navigateToLoginScreen();
                     finish();
                 })
