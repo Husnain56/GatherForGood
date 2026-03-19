@@ -43,6 +43,7 @@ public class VerifyEmailScreen extends AppCompatActivity {
 
         init();
         setEventListeners();
+        resendEmail();
     }
 
     public void init() {
