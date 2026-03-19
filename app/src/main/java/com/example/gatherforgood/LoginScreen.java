@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ public class LoginScreen extends AppCompatActivity {
     TextView tvJoinCommunity;
 
     FirebaseAuth mAuth;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,7 @@ public class LoginScreen extends AppCompatActivity {
         btnSignIn = findViewById(R.id.btnSignIn);
         tvJoinCommunity = findViewById(R.id.tvJoinCommunity);
         mAuth = FirebaseAuth.getInstance();
+        progressBar = findViewById(R.id.progressBar);
     }
     public void setEventListeners(){
         tvJoinCommunity.setOnClickListener(v->{;
@@ -92,6 +95,7 @@ public class LoginScreen extends AppCompatActivity {
     public void login(){
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
+        setInProgress(true);
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task->{
@@ -99,6 +103,7 @@ public class LoginScreen extends AppCompatActivity {
                         checkUserVerification();
                     }
                     else{
+                        setInProgress(false);
                         Toast.makeText(LoginScreen.this, "Invalid email or password. Please try again.", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -112,8 +117,21 @@ public class LoginScreen extends AppCompatActivity {
                 navigateToHome();
                 finish();
             } else {
+                setInProgress(false);
                 Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    public void setInProgress(boolean isProcessing) {
+        if (isProcessing) {
+            progressBar.setVisibility(android.view.View.VISIBLE);
+            btnSignIn.setVisibility(android.view.View.INVISIBLE);
+            btnSignIn.setEnabled(false);
+        } else {
+            progressBar.setVisibility(android.view.View.GONE);
+            btnSignIn.setVisibility(android.view.View.VISIBLE);
+            btnSignIn.setEnabled(true);
         }
     }
 
