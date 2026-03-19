@@ -138,7 +138,8 @@ public class RegisterAccount extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        navigateToVerifyEmailScreen(name, email, gender);
+                        saveUserToFirestore(name,email,gender);
+                        navigateToVerifyEmailScreen(email);
                         finish();
                     } else {
                         setInProgress(false);
@@ -160,11 +161,32 @@ public class RegisterAccount extends AppCompatActivity {
                 });
     }
 
-    public void navigateToVerifyEmailScreen(String name, String email, String gender) {
+    public void saveUserToFirestore(String name, String email, String gender) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("name", name);
+        userData.put("email", email);
+        userData.put("gender", gender);
+        userData.put("isVerified",false);
+
+        String uid = mAuth.getCurrentUser().getUid();
+
+        db.collection("users").document(uid).set(userData)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Account created successfully!", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    setInProgress(false);
+                    Toast.makeText(this, "Failed to save data: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    public void navigateToVerifyEmailScreen(String email) {
         Intent intent = new Intent(this, VerifyEmailScreen.class);
-        intent.putExtra("name", name);
         intent.putExtra("email", email);
-        intent.putExtra("gender", gender);
         startActivity(intent);
     }
     public boolean verifyFields() {

@@ -28,7 +28,7 @@ public class VerifyEmailScreen extends AppCompatActivity {
     TextView tvResend;
     TextView tvEmail;
     ProgressBar progressBar;
-    String name, email, gender;
+    String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +54,7 @@ public class VerifyEmailScreen extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
 
         // Retrieve data passed from Registration Screen
-        name = getIntent().getStringExtra("name");
         email = getIntent().getStringExtra("email");
-        gender = getIntent().getStringExtra("gender");
 
         tvEmail.setText(email);
     }
@@ -78,6 +76,30 @@ public class VerifyEmailScreen extends AppCompatActivity {
         }
     }
 
+    public void updateVerificationStatus() {
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser == null) return;
+
+        String uid = firebaseUser.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Use .update() to only change the "isVerified" field
+        db.collection("users").document(uid)
+                .update("isVerified", true)
+                .addOnSuccessListener(unused -> {
+                    setInProgress(false);
+                    Toast.makeText(this, "Email verified and profile updated!", Toast.LENGTH_SHORT).show();
+                    navigateToLoginScreen();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    setInProgress(false);
+                    // If the document doesn't exist yet, we might need to create it
+                    android.util.Log.e("FirestoreError", e.getMessage());
+                    Toast.makeText(this, "Error updating profile: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
     public void checkVerification() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -85,7 +107,7 @@ public class VerifyEmailScreen extends AppCompatActivity {
 
             user.reload().addOnCompleteListener(task -> {
                 if (user.isEmailVerified()) {
-                    saveUserToFirestore();
+                    updateVerificationStatus();
                 } else {
                     setInProgress(false);
                     Toast.makeText(this,
@@ -94,29 +116,6 @@ public class VerifyEmailScreen extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    public void saveUserToFirestore() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("name", name);
-        userData.put("email", email);
-        userData.put("gender", gender);
-
-        String uid = mAuth.getCurrentUser().getUid();
-
-        db.collection("users").document(uid).set(userData)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Account created successfully!", Toast.LENGTH_SHORT).show();
-                    navigateToLoginScreen();
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    setInProgress(false);
-                    Toast.makeText(this, "Failed to save data: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
-                });
     }
 
     private void setInProgress(boolean isProcessing) {
