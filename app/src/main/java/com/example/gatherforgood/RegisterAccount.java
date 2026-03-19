@@ -139,8 +139,6 @@ public class RegisterAccount extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         saveUserToFirestore(name,email,gender);
-                        navigateToVerifyEmailScreen(email);
-                        finish();
                     } else {
                         setInProgress(false);
                         String errorMsg = task.getException().getMessage();
@@ -174,6 +172,8 @@ public class RegisterAccount extends AppCompatActivity {
 
         db.collection("users").document(uid).set(userData)
                 .addOnSuccessListener(unused -> {
+                    navigateToVerifyEmailScreen(email);
+                    finish();
                     Toast.makeText(this, "Account created successfully!", Toast.LENGTH_SHORT).show();
                     finish();
                 })
