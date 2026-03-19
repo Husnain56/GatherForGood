@@ -167,25 +167,6 @@ public class RegisterAccount extends AppCompatActivity {
         intent.putExtra("gender", gender);
         startActivity(intent);
     }
-
-    public void saveUserToFirestore(String uid, String name, String email, String gender) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Map<String, Object> user = new HashMap<>();
-        user.put("name", name);
-        user.put("email", email);
-        user.put("gender", gender);
-
-        db.collection("users").document(uid).set(user)
-                .addOnSuccessListener(unused -> {
-                    navigateToSignInScreen();
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    setInProgress(false);
-                    Toast.makeText(this, "Firestore save failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
-
     public boolean verifyFields() {
         String name = etFullName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();

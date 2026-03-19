@@ -33,7 +33,7 @@
 
             <!-- Top Bar -->
             <ImageButton
-                android:id="@+id/btnMenu"
+                android:id="@+id/btnBack"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="24dp"
@@ -55,10 +55,10 @@
                 android:textColor="@color/gold_accent"
                 android:textSize="14sp"
                 android:textStyle="bold|italic"
-                app:layout_constraintBottom_toBottomOf="@id/btnMenu"
+                app:layout_constraintBottom_toBottomOf="@id/btnBack"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/btnMenu" />
+                app:layout_constraintTop_toTopOf="@id/btnBack" />
 
 
             <!-- Header Section (Mosque Icon in Arch) -->

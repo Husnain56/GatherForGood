@@ -1,14 +1,33 @@
 package com.example.gatherforgood;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class LoginScreen extends AppCompatActivity {
+
+    ImageButton btnBack;
+    EditText etEmail;
+    EditText etPassword;
+    TextView tvForgot;
+    AppCompatButton btnSignIn;
+
+    TextView tvJoinCommunity;
+
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +39,82 @@ public class LoginScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        init();
+        setEventListeners();
     }
+
+    public void init(){
+        btnBack = findViewById(R.id.btnBack);
+        etEmail = findViewById(R.id.etEmail);
+        etPassword = findViewById(R.id.etPassword);
+        tvForgot = findViewById(R.id.tvForgot);
+        btnSignIn = findViewById(R.id.btnSignIn);
+        tvJoinCommunity = findViewById(R.id.tvJoinCommunity);
+        mAuth = FirebaseAuth.getInstance();
+    }
+    public void setEventListeners(){
+        tvJoinCommunity.setOnClickListener(v->{;
+            finish();
+        });
+        btnBack.setOnClickListener(v->{
+            finish();
+        });
+        btnSignIn.setOnClickListener(v->{
+            VerifyCredentials();
+        });
+    }
+
+    public boolean verifyFields() {
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Please enter a valid email");
+            return false;
+        }
+        if (password.isEmpty()) {
+            etPassword.setError("Password is required");
+            return false;
+        }
+        return true;
+    }
+    public void VerifyCredentials(){
+        if(verifyFields()){
+            login();
+        }
+    }
+
+    public void navigateToHome(){
+        Intent intent = new Intent(this, HomeScreen.class);
+        startActivity(intent);
+        finish();
+    }
+    public void login(){
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task->{
+                    if(task.isSuccessful()){
+                        checkUserVerification();
+                    }
+                    else{
+                        Toast.makeText(LoginScreen.this, "Invalid email or password. Please try again.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+    private void checkUserVerification() {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user != null) {
+            if (user.isEmailVerified()) {
+                navigateToHome();
+                finish();
+            } else {
+                Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
 }
