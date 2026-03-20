@@ -12,6 +12,7 @@ import androidx.viewpager2.widget.ViewPager2;
 public class OnboardingScreen extends AppCompatActivity {
 
     ViewPager2 vpOnboarding;
+    OnboardingViewPagerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,5 +28,7 @@ public class OnboardingScreen extends AppCompatActivity {
 
     public void init(){
         vpOnboarding = findViewById(R.id.vpOnboarding);
+        adapter = new OnboardingViewPagerAdapter(this);
+        vpOnboarding.setAdapter(adapter);
     }
 }
