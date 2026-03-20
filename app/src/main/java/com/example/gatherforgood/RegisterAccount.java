@@ -109,6 +109,8 @@ public class RegisterAccount extends AppCompatActivity {
         tvSignIn.setOnClickListener(v -> {
             navigateToSignInScreen();
             tvSignIn.setPaintFlags(tvSignIn.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            setInProgress(true);
+            finish();
         });
     }
 

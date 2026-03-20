@@ -68,6 +68,7 @@ public class LoginScreen extends AppCompatActivity {
     public void setEventListeners(){
         tvJoinCommunity.setOnClickListener(v->{;
             setInProgress(true);
+            navigateToJoinCommunity();
             finish();
         });
         btnBack.setOnClickListener(v->{
@@ -94,6 +95,11 @@ public class LoginScreen extends AppCompatActivity {
             etPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         }
         etPass.setSelection(etPass.getText().length());
+    }
+
+    public void navigateToJoinCommunity(){
+        Intent intent = new Intent(this, RegisterAccount.class);
+        startActivity(intent);
     }
 
     private void resetPassword() {
