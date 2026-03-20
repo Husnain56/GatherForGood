@@ -1,6 +1,7 @@
 package com.example.gatherforgood;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -17,6 +18,8 @@ public class SplashScreen extends AppCompatActivity {
 
     Animation blink;
     View statusDot;
+    SharedPreferences sPref;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +34,12 @@ public class SplashScreen extends AppCompatActivity {
         init();
         ApplyAnimation();
 
-        Intent intent = new Intent(SplashScreen.this, RegisterAccount.class);
+        Intent intent;
+        if(checkAlreadyLoggedIn()) {
+            intent = new Intent(SplashScreen.this, HomeScreen.class);
+        }else {
+            intent = new Intent(SplashScreen.this, LoginScreen.class);
+        }
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -44,6 +52,15 @@ public class SplashScreen extends AppCompatActivity {
 
     public void init(){
         statusDot = findViewById(R.id.statusDot);
+        sPref = getSharedPreferences("user", MODE_PRIVATE);
+    }
+    
+    public boolean checkAlreadyLoggedIn(){
+
+        if(!sPref.getBoolean("isLoggedIn",false)){
+            return false;
+        }
+        return true;
     }
 
     public void ApplyAnimation(){

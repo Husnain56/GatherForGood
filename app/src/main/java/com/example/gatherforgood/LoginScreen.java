@@ -1,6 +1,7 @@
 package com.example.gatherforgood;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.EditText;
@@ -33,6 +34,8 @@ public class LoginScreen extends AppCompatActivity {
     FirebaseAuth mAuth;
     ProgressBar progressBar;
     boolean isPasswordVisible;
+    SharedPreferences sPref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,8 @@ public class LoginScreen extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         ivPasswordVisibility = findViewById(R.id.ivPasswordVisibility);
         isPasswordVisible = false;
+        sPref = getSharedPreferences("user",MODE_PRIVATE);
+        editor = sPref.edit();
     }
     public void setEventListeners(){
         tvJoinCommunity.setOnClickListener(v->{;
@@ -138,10 +143,16 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     public void navigateToHome(){
+
+        storePreferences();
         Intent intent = new Intent(this, HomeScreen.class);
         setInProgress(false);
         startActivity(intent);
         finish();
+    }
+    public void storePreferences(){
+        editor.putBoolean("isLoggedIn",true);
+        editor.commit();
     }
     public void login(){
         String email = etEmail.getText().toString().trim();
