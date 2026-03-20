@@ -35,9 +35,11 @@ public class SplashScreen extends AppCompatActivity {
         ApplyAnimation();
 
         Intent intent;
-        if(checkAlreadyLoggedIn()) {
+        if (checkAlreadyLoggedIn()) {
             intent = new Intent(SplashScreen.this, HomeScreen.class);
-        }else {
+        } else if (!hasSeenOnboarding()) {
+            intent = new Intent(SplashScreen.this, OnboardingScreen.class);
+        } else {
             intent = new Intent(SplashScreen.this, LoginScreen.class);
         }
 
@@ -53,6 +55,10 @@ public class SplashScreen extends AppCompatActivity {
     public void init(){
         statusDot = findViewById(R.id.statusDot);
         sPref = getSharedPreferences("user", MODE_PRIVATE);
+    }
+
+    public boolean hasSeenOnboarding() {
+        return sPref.getBoolean("hasSeenOnboarding", false);
     }
     
     public boolean checkAlreadyLoggedIn(){

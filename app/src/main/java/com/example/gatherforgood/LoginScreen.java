@@ -152,7 +152,7 @@ public class LoginScreen extends AppCompatActivity {
     }
     public void storePreferences(){
         editor.putBoolean("isLoggedIn",true);
-        editor.commit();
+        editor.apply();
     }
     public void login(){
         String email = etEmail.getText().toString().trim();

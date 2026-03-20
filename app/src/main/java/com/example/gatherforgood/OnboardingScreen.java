@@ -1,5 +1,7 @@
 package com.example.gatherforgood;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -13,6 +15,8 @@ public class OnboardingScreen extends AppCompatActivity {
 
     ViewPager2 vpOnboarding;
     OnboardingViewPagerAdapter adapter;
+    SharedPreferences sPref;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,11 +28,23 @@ public class OnboardingScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        init();
     }
 
     public void init(){
         vpOnboarding = findViewById(R.id.vpOnboarding);
         adapter = new OnboardingViewPagerAdapter(this);
         vpOnboarding.setAdapter(adapter);
+        sPref = getSharedPreferences("user",MODE_PRIVATE);
+    }
+    public void navigateToNextPage(int currentPage) {
+        if (currentPage < 2) {
+            vpOnboarding.setCurrentItem(currentPage + 1);
+        } else {
+            sPref.edit().putBoolean("hasSeenOnboarding", true).apply();
+            startActivity(new Intent(this, LoginScreen.class));
+            finish();
+        }
     }
 }
