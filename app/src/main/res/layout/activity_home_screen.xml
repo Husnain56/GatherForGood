@@ -25,7 +25,7 @@
             android:id="@+id/homeTL"
             android:layout_width="match_parent"
             android:layout_height="90dp"
-            android:background="#042c1d"
+            android:background="#064e3b"
             app:tabIndicatorColor="@color/gold_accent"
             app:tabSelectedTextColor="@color/gold_accent"
             app:tabTextColor="#80FFFFFF"
