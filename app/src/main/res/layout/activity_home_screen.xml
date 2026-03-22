@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -14,10 +15,35 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <TableLayout
-        android:id="@+id/homeTL"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/homeTL"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/deep_emerald"
+            app:tabIndicatorColor="@color/gold_accent"
+            app:tabSelectedTextColor="@color/gold_accent"
+            app:tabTextColor="#80FFFFFF"
+            app:tabIndicatorHeight="2dp"
+            app:tabMode="fixed"
+            app:tabGravity="fill" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="-24dp"
+            android:src="@drawable/ic_add"
+            app:backgroundTint="#0fbd66"
+            app:borderWidth="0dp"
+            app:tint="@color/white" />
+
+    </FrameLayout>
 
 </LinearLayout>

@@ -13,11 +13,18 @@ public class HomeViewPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return null;
+
+        switch(position){
+            case 0:
+                return new HomeFragment();
+            case 1:
+                return new PrayerFragment();
+        }
+        return new HomeFragment();
     }
 
     @Override
     public int getItemCount() {
-        return 4;
+        return 2;
     }
 }
