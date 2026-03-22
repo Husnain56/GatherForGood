@@ -4,10 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -24,6 +22,9 @@ public class HomeScreen extends AppCompatActivity {
     TabLayout homeTL;
     TabLayoutMediator mediator;
 
+    int[] fill_icons;
+    int[] no_fill_icons;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,43 +39,57 @@ public class HomeScreen extends AppCompatActivity {
     }
     public void init(){
         String[] titles = {"Home", "Prayers", "", "Events", "Profile"};
+        fill_icons = new int[]{R.drawable.ic_home_nofill, R.drawable.ic_mosque_nofill, 0, R.drawable.ic_event_nofill, R.drawable.ic_person_nofill};
+        no_fill_icons = new int[]{R.drawable.ic_home_fill, R.drawable.ic_mosque_fill, 0, R.drawable.ic_event_fill, R.drawable.ic_person_fill};
 
         homeTL = findViewById(R.id.homeTL);
         homeViewPager = findViewById(R.id.homeViewPager);
         adapter = new HomeViewPagerAdapter(this);
         homeViewPager.setAdapter(adapter);
-        mediator = new TabLayoutMediator(homeTL, homeViewPager, new TabLayoutMediator.TabConfigurationStrategy() {
-            @Override
-            public void onConfigureTab(@NonNull TabLayout.Tab tab, int i) {
-                switch(i){
-                    case 0:
-                        tab.setText(titles[0]);
-                        break;
-                    case 1:
-                        tab.setText(titles[1]);
-                        break;
-                    case 2:
-                        tab.setText(titles[2]);
-                        break;
-                    case 3:
-                        tab.setText(titles[3]);
-                        break;
-                    default:
-                        tab.setText(titles[0]);
-                }
+        mediator = new TabLayoutMediator(homeTL, homeViewPager, (tab, i) -> {
+            switch(i){
+                case 0:
+                    tab.setText(titles[0]);
+                    break;
+                case 1:
+                    tab.setText(titles[1]);
+                    break;
+                case 2:
+                    tab.setText(titles[2]);
+                    break;
+                case 3:
+                    tab.setText(titles[3]);
+                    break;
+                default:
+                    tab.setText(titles[0]);
             }
         });
         mediator.attach();
 
-        int[] icons = {R.drawable.ic_home, R.drawable.ic_mosque, 0, R.drawable.ic_calendar, R.drawable.ic_profile};
-
         for (int i = 0; i < homeTL.getTabCount(); i++) {
             View tabView = LayoutInflater.from(this).inflate(R.layout.home_custom_tab, null);
             ImageView icon = tabView.findViewById(R.id.tabIcon);
-            TextView text = tabView.findViewById(R.id.tabText);
-            icon.setImageResource(icons[i]);
-            text.setText(titles[i]);
+            icon.setImageResource(fill_icons[i]);
             homeTL.getTabAt(i).setCustomView(tabView);
         }
+
+        homeViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                for (int i = 0; i < homeTL.getTabCount(); i++) {
+                    View tabView = homeTL.getTabAt(i).getCustomView();
+                    if (tabView == null) continue;
+                    ImageView icon = tabView.findViewById(R.id.tabIcon);
+                    if (i == position) {
+                        icon.setImageResource(no_fill_icons[i]);
+                        icon.setColorFilter(android.graphics.Color.parseColor("#0fbd66"));
+                    } else {
+                        icon.setImageResource(fill_icons[i]);
+                        icon.clearColorFilter();
+                    }
+                }
+            }
+        });
     }
 }

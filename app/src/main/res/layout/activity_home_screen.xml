@@ -24,8 +24,8 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/homeTL"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@color/deep_emerald"
+            android:layout_height="90dp"
+            android:background="#042c1d"
             app:tabIndicatorColor="@color/gold_accent"
             app:tabSelectedTextColor="@color/gold_accent"
             app:tabTextColor="#80FFFFFF"

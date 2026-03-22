@@ -95,7 +95,7 @@
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_mosque"
+                        android:src="@drawable/ic_mosque_fill"
                         app:tint="@color/soft_gold" />
                 </FrameLayout>
 
@@ -326,14 +326,14 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginHorizontal="16dp"
-                    android:src="@drawable/ic_home"
+                    android:src="@drawable/ic_home_nofill"
                     app:tint="#4DFFFFFF" />
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginHorizontal="16dp"
-                    android:src="@drawable/ic_mosque"
+                    android:src="@drawable/ic_mosque_fill"
                     app:tint="@color/gold_accent" />
 
                 <ImageView
@@ -347,7 +347,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginHorizontal="16dp"
-                    android:src="@drawable/ic_profile"
+                    android:src="@drawable/ic_person_nofill"
                     app:tint="#4DFFFFFF" />
             </LinearLayout>
 
