@@ -16,13 +16,13 @@ public class OnboardingViewPagerAdapter extends FragmentStateAdapter
     public Fragment createFragment(int position) {
         switch(position){
             case 0:
-                return new onboarding1();
+                return new OnboardingFragment1();
             case 1:
-                return new onboarding2();
+                return new OnBoardingFragment2();
             case 2:
-                return new onboarding3();
+                return new OnboardingFragment3();
             default:
-                return new onboarding1();
+                return new OnboardingFragment1();
         }
     }
 

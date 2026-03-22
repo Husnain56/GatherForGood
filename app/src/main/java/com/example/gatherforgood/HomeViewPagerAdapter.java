@@ -19,12 +19,17 @@ public class HomeViewPagerAdapter extends FragmentStateAdapter {
                 return new HomeFragment();
             case 1:
                 return new PrayerFragment();
+            case 3:
+                return new EventsFragment();
+            case 4:
+                return new UserProfileFragment();
+
         }
-        return new HomeFragment();
+        return new EmptyFragment();
     }
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 5;
     }
 }

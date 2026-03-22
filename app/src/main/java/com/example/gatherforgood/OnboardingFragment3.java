@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-public class onboarding3 extends Fragment {
+public class OnboardingFragment3 extends Fragment {
 
     ProgressBar progressBar;
     Button btnNext;
