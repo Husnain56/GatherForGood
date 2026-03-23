@@ -37,12 +37,15 @@
             android:id="@+id/fabAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="-24dp"
             android:src="@drawable/ic_add"
+            android:layout_gravity="center_horizontal|top"
             app:backgroundTint="#0fbd66"
             app:borderWidth="0dp"
-            app:tint="@color/white" />
+            app:tint="@color/white"
+            android:layout_marginBottom="-28dp"
+            app:layout_constraintBottom_toTopOf="@id/homeTL"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
 
     </FrameLayout>
 
