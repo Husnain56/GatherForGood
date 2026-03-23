@@ -113,7 +113,6 @@
                     android:id="@+id/cardPrayerGatherings"
                     android:layout_width="0dp"
                     android:layout_height="300dp"
-                    android:clipToOutline="true"
                     android:layout_weight="1"
                     android:layout_marginHorizontal="8dp"
                     android:background="@drawable/home_bg_arch_card">
@@ -168,7 +167,6 @@
                     android:layout_height="300dp"
                     android:layout_weight="1"
                     android:layout_marginHorizontal="8dp"
-                    android:clipToOutline="true"
                     android:background="@drawable/home_bg_arch_card">
                     <!-- Background Image -->
 
