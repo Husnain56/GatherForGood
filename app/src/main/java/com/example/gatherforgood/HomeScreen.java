@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -77,8 +78,10 @@ public class HomeScreen extends AppCompatActivity {
         for (int i = 0; i < homeTL.getTabCount(); i++) {
             if (i == 2) continue;
             View tabView = LayoutInflater.from(this).inflate(R.layout.home_custom_tab, null);
+            TextView text = tabView.findViewById(R.id.tabText);
             ImageView icon = tabView.findViewById(R.id.tabIcon);
             icon.setImageResource(fill_icons[i]);
+            text.setText(titles[i]);
             Objects.requireNonNull(homeTL.getTabAt(i)).setCustomView(tabView);
         }
 
