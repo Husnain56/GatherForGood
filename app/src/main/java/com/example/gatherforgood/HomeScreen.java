@@ -27,6 +27,7 @@ public class HomeScreen extends AppCompatActivity {
 
     int[] fill_icons;
     int[] no_fill_icons;
+    String[] titles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,41 +41,45 @@ public class HomeScreen extends AppCompatActivity {
         });
         init();
     }
-    public void init(){
-        String[] titles = {"Home", "Prayers", "", "Profile", "Events"};
-        fill_icons = new int[]{R.drawable.ic_home_nofill, R.drawable.ic_mosque_nofill, 0,   R.drawable.ic_event_nofill,R.drawable.ic_person_nofill};
-        no_fill_icons = new int[]{R.drawable.ic_home_fill, R.drawable.ic_mosque_fill, 0,  R.drawable.ic_event_fill, R.drawable.ic_person_fill};
 
+    public void init() {
+        initData();
+        initViews();
+        setupViewPager();
+        setupTabLayout();
+        setupTabCustomViews();
+        setupListeners();
+    }
 
+    public void initData() {
+        titles = new String[]{"Home", "Prayers", "", "Events", "Profile"};
+        fill_icons = new int[]{R.drawable.ic_home_nofill, R.drawable.ic_mosque_nofill, 0, R.drawable.ic_event_nofill, R.drawable.ic_person_nofill};
+        no_fill_icons = new int[]{R.drawable.ic_home_fill, R.drawable.ic_mosque_fill, 0, R.drawable.ic_event_fill, R.drawable.ic_person_fill};
+    }
+
+    public void initViews() {
         homeTL = findViewById(R.id.homeTL);
         homeViewPager = findViewById(R.id.homeViewPager);
+    }
+
+    public void setupViewPager() {
         adapter = new HomeViewPagerAdapter(this);
         homeViewPager.setAdapter(adapter);
-
         homeViewPager.setOffscreenPageLimit(1);
         homeViewPager.setUserInputEnabled(false);
+    }
 
+    public void setupTabLayout() {
         mediator = new TabLayoutMediator(homeTL, homeViewPager, (tab, i) -> {
-            switch(i){
-                case 0:
-                    tab.setText(titles[0]);
-                    break;
-                case 1:
-                    tab.setText(titles[1]);
-                    break;
-                case 2:
-                    tab.setText(titles[2]);
-                    break;
-                case 3:
-                    tab.setText(titles[3]);
-                    break;
-            }
+            if (i < titles.length) tab.setText(titles[i]);
         });
         mediator.attach();
 
         Objects.requireNonNull(homeTL.getTabAt(2)).view.setClickable(false);
         Objects.requireNonNull(homeTL.getTabAt(2)).view.setEnabled(false);
+    }
 
+    public void setupTabCustomViews() {
         for (int i = 0; i < homeTL.getTabCount(); i++) {
             if (i == 2) continue;
             View tabView = LayoutInflater.from(this).inflate(R.layout.home_custom_tab, null);
@@ -84,7 +89,9 @@ public class HomeScreen extends AppCompatActivity {
             text.setText(titles[i]);
             Objects.requireNonNull(homeTL.getTabAt(i)).setCustomView(tabView);
         }
+    }
 
+    public void setupListeners() {
         homeTL.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -103,19 +110,23 @@ public class HomeScreen extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                for (int i = 0; i < homeTL.getTabCount(); i++) {
-                    View tabView = Objects.requireNonNull(homeTL.getTabAt(i)).getCustomView();
-                    if (tabView == null) continue;
-                    ImageView icon = tabView.findViewById(R.id.tabIcon);
-                    if (i == position) {
-                        icon.setImageResource(no_fill_icons[i]);
-                        icon.setColorFilter(android.graphics.Color.parseColor("#0fbd66"));
-                    } else {
-                        icon.setImageResource(fill_icons[i]);
-                        icon.clearColorFilter();
-                    }
-                }
+                updateTabIcons(position);
             }
         });
+    }
+
+    public void updateTabIcons(int selectedPosition) {
+        for (int i = 0; i < homeTL.getTabCount(); i++) {
+            View tabView = Objects.requireNonNull(homeTL.getTabAt(i)).getCustomView();
+            if (tabView == null) continue;
+            ImageView icon = tabView.findViewById(R.id.tabIcon);
+            if (i == selectedPosition) {
+                icon.setImageResource(no_fill_icons[i]);
+                icon.setColorFilter(android.graphics.Color.parseColor("#0fbd66"));
+            } else {
+                icon.setImageResource(fill_icons[i]);
+                icon.clearColorFilter();
+            }
+        }
     }
 }
