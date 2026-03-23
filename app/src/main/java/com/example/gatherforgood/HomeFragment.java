@@ -3,12 +3,14 @@ package com.example.gatherforgood;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,9 +26,8 @@ public class HomeFragment extends Fragment {
     FrameLayout cardPrayerGatherings;
     FrameLayout cardVolunteerEvents;
     TextView tvUserName;
-    FirebaseAuth mAuth;
-    FirebaseFirestore db;
     SharedPreferences sPref;
+    ImageView ivProfilePic;
 
 
     @Override
@@ -37,7 +38,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState){
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
         init(view);
         setEventListeners();
 
@@ -47,8 +48,7 @@ public class HomeFragment extends Fragment {
         cardPrayerGatherings = view.findViewById(R.id.cardPrayerGatherings);
         cardVolunteerEvents = view.findViewById(R.id.cardVolunteerEvents);
         tvUserName = view.findViewById(R.id.tvUserName);
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        ivProfilePic = view.findViewById(R.id.ivProfilePic);
 
         sPref = requireContext().getSharedPreferences("user", android.content.Context.MODE_PRIVATE);
         String name = sPref.getString("user_name", "");
@@ -57,5 +57,6 @@ public class HomeFragment extends Fragment {
     }
     public void setEventListeners(){
         cardPrayerGatherings.setOnClickListener(view -> ((HomeScreen) requireActivity()).navigateToTab(1));
+        ivProfilePic.setOnClickListener(view -> ((HomeScreen) requireActivity()).navigateToTab(4));
     }
 }

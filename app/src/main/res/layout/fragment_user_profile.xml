@@ -126,7 +126,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Omar Hassan"
                     android:textColor="@color/white"
                     android:textSize="24sp"
                     android:fontFamily="@font/playfair_display_italic"
