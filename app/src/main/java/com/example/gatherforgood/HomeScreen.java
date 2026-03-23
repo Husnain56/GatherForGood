@@ -129,4 +129,8 @@ public class HomeScreen extends AppCompatActivity {
             }
         }
     }
+
+    public void navigateToTab(int position){
+        homeViewPager.setCurrentItem(position, false);
+    }
 }

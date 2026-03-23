@@ -18,8 +18,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginScreen extends AppCompatActivity {
 
@@ -36,6 +38,7 @@ public class LoginScreen extends AppCompatActivity {
     boolean isPasswordVisible;
     SharedPreferences sPref;
     SharedPreferences.Editor editor;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,7 @@ public class LoginScreen extends AppCompatActivity {
         isPasswordVisible = false;
         sPref = getSharedPreferences("user",MODE_PRIVATE);
         editor = sPref.edit();
+        db = FirebaseFirestore.getInstance();
     }
     public void setEventListeners(){
         tvJoinCommunity.setOnClickListener(v->{;
@@ -147,17 +151,9 @@ public class LoginScreen extends AppCompatActivity {
             login();
         }
     }
-
-    public void navigateToHome(){
-
-        storePreferences();
-        Intent intent = new Intent(this, HomeScreen.class);
-        setInProgress(false);
-        startActivity(intent);
-        finish();
-    }
-    public void storePreferences(){
+    public void storePreferences(String name){
         editor.putBoolean("isLoggedIn",true);
+        editor.putString("user_name", name);
         editor.apply();
     }
     public void login(){
@@ -176,16 +172,36 @@ public class LoginScreen extends AppCompatActivity {
                     }
                 });
     }
+    public void startHomeNavigationFlow() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            db.collection("users").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String name = documentSnapshot.getString("name");
+                            storePreferences(name);
+                            Intent intent = new Intent(LoginScreen.this, HomeScreen.class);
+                            startActivity(intent);
+                            setInProgress(false);
+                            finish();
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        setInProgress(false);
+                        Toast.makeText(this, "Failed to sync profile: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
     private void checkUserVerification() {
         FirebaseUser user = mAuth.getCurrentUser();
-
         if (user != null) {
             if (user.isEmailVerified()) {
-                navigateToHome();
-                finish();
+                // Start the name-fetch and navigation flow
+                startHomeNavigationFlow();
             } else {
                 setInProgress(false);
-                Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please verify your email first.", Toast.LENGTH_SHORT).show();
                 navigateToVerifyScreen();
             }
         }

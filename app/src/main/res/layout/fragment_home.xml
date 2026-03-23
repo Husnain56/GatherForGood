@@ -53,7 +53,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="ASSALAMU ALAIKUM"
+                        android:text="ASSALAM U ALAIKUM"
                         android:textColor="#66D4AF37"
                         android:textSize="10sp"
                         android:letterSpacing="0.2"
@@ -63,7 +63,6 @@
                         android:id="@+id/tvUserName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Omar Hassan"
                         android:textColor="@color/soft_gold"
                         android:textSize="24sp"
                         android:fontFamily="@font/playfair_display_italic"
