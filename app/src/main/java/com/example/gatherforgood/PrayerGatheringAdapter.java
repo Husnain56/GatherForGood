@@ -1,6 +1,8 @@
 package com.example.gatherforgood;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,13 +35,29 @@ public class PrayerGatheringAdapter extends RecyclerView.Adapter<PrayerGathering
     @Override
     public void onBindViewHolder(@NonNull PrayerViewHolder holder, int position) {
         PrayerGathering gathering = list.get(position);
+
         holder.tvStatus.setText(gathering.getStatus());
         holder.tvPrayerName.setText(gathering.getPrayerType());
         holder.tvTime.setText(gathering.getTime());
         holder.tvHostName.setText("Hosted by " + gathering.getHostName());
         holder.tvLocation.setText(gathering.getLocation());
         holder.tvParticipantCount.setText(gathering.getParticipantCount() + " joined");
-        holder.btnJoin.setText("JOIN");
+
+
+        holder.btnJoin.setOnClickListener(v -> {
+            navigateToDetails(v.getContext(), gathering);
+        });
+
+        // Logic for clicking the WHOLE card
+        holder.itemView.setOnClickListener(v -> {
+            navigateToDetails(v.getContext(), gathering);
+        });
+    }
+
+    private void navigateToDetails(Context context, PrayerGathering gathering) {
+        Intent intent = new Intent(context, GatheringDetails.class);
+        intent.putExtra("prayer_gathering",gathering);
+        context.startActivity(intent);
     }
 
 
@@ -52,6 +70,8 @@ public class PrayerGatheringAdapter extends RecyclerView.Adapter<PrayerGathering
         TextView tvStatus, tvPrayerName, tvTime, tvHostName, tvLocation, tvDistance, tvParticipantCount;
         Button btnJoin;
 
+        View mainCard;
+
         public PrayerViewHolder(@NonNull View itemView) {
             super(itemView);
             tvStatus = itemView.findViewById(R.id.tvStatus);
@@ -62,6 +82,7 @@ public class PrayerGatheringAdapter extends RecyclerView.Adapter<PrayerGathering
             tvDistance = itemView.findViewById(R.id.tvDistance);
             tvParticipantCount = itemView.findViewById(R.id.tvParticipantCount);
             btnJoin = itemView.findViewById(R.id.btnJoin);
+            mainCard = itemView.findViewById(R.id.main);
         }
     }
 }

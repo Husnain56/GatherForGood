@@ -1,9 +1,11 @@
 package com.example.gatherforgood;
 
-public class PrayerGathering {
+public class PrayerGathering  implements java.io.Serializable{
 
     private String id;
     private String hostUid;
+    private String description;
+
     private String hostName;
     private String prayerType;
     private String date;
@@ -16,14 +18,17 @@ public class PrayerGathering {
     private int participantCount;
     private long createdAt;
 
-    public PrayerGathering() {}
+    public PrayerGathering() {
 
-    public PrayerGathering(String id, String hostUid, String hostName, String prayerType,
+    }
+
+    public PrayerGathering(String id, String hostUid, String description, String hostName, String prayerType,
                            String date, String time, String location,
                            double latitude, double longitude,
                            String genderSetting, String status, int participantCount) {
         this.id = id;
         this.hostUid = hostUid;
+        this.description = description;
         this.hostName = hostName;
         this.prayerType = prayerType;
         this.date = date;
@@ -75,4 +80,11 @@ public class PrayerGathering {
 
     public long getCreatedAt() { return createdAt; }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
