@@ -25,7 +25,8 @@
     <string name="sign_in_btn">Sign In -></string>"
     <string name="no_account_msg">Don\'t have an account? </string>
     <string name="join_community"><u>Join Community</u></string>
-    <string name="forgot_pass"><u>forgot?</u></string>>
+    <string name="forgot_pass"><u>forgot?</u></string>
+    >
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
