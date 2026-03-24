@@ -77,6 +77,8 @@ public class HomeScreen extends AppCompatActivity {
 
         Objects.requireNonNull(homeTL.getTabAt(2)).view.setClickable(false);
         Objects.requireNonNull(homeTL.getTabAt(2)).view.setEnabled(false);
+        Objects.requireNonNull(homeTL.getTabAt(3)).view.setClickable(false);
+        Objects.requireNonNull(homeTL.getTabAt(3)).view.setEnabled(false);
     }
 
     public void setupTabCustomViews() {

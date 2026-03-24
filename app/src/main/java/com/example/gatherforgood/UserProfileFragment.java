@@ -50,7 +50,7 @@ public class UserProfileFragment extends Fragment {
     public void setEventListeners(){
         btnLogout.setOnClickListener(v->{
             FirebaseAuth.getInstance().signOut();
-            sPref.edit().clear().apply();
+            sPref.edit().putBoolean("isLoggedIn", false).remove("user_name").apply();
             navigateTOLoginScreen();
 
         });
