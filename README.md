@@ -24,9 +24,9 @@ Both modules include event lifecycle management, GPS and Google Maps integration
 
 ## Team Members
 
-| Name | Role |
+| Name | Roll Number | Role | 
 |---|---|
-| Husnain | Project Lead, Architect, Android Developer, Tester |
+| Husnain | 23L-0860 | Project Lead, Architect, Android Developer, Tester |
 
 ## Setup Instructions
 Follow these steps to set up the development environment:
@@ -43,7 +43,7 @@ Ensure the google-services.json file is present in the app/ directory.
 
 Sync Project with Gradle Files to download dependencies.
 
-SDK Requirements: Ensure you have Android SDK 34 (API 34) or higher installed via the SDK Manager.
+SDK Requirements: Android 7.0 (API 24)
 
 ---
 
