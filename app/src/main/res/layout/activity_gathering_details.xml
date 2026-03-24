@@ -93,10 +93,10 @@
                         app:tint="#D4AF37" />
 
                     <TextView
+                        android:id="@+id/tvLocationDescription"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Regent's Park, NW1"
                         android:textColor="#F9F1D7"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -111,7 +111,8 @@
                 android:text="COMMUNITY PRAYER"
                 android:textColor="#D4AF37"
                 android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:id="@+id/tvStatus"/>
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -142,7 +143,7 @@
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PRAYER TIME" android:textSize="9sp" android:textColor="#80FFFFFF" android:textStyle="bold" android:letterSpacing="0.1"/>
                     <TextView android:id="@+id/tvPrayerTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="7:15 PM (Iqamah)" android:textColor="#F9F1D7" android:textStyle="bold" android:textSize="15sp"/>
                 </LinearLayout>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:layout_centerVertical="true" android:background="@drawable/prayer_bg_time_badge" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:text="Maghrib" android:textColor="#0FBD66" android:textSize="12sp" android:textStyle="bold"/>
+                <TextView android:id="@+id/tvPrayerName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:layout_centerVertical="true" android:background="@drawable/prayer_bg_time_badge" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:text="Maghrib" android:textColor="#0FBD66" android:textSize="12sp" android:textStyle="bold"/>
             </RelativeLayout>
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF"/>
