@@ -1,6 +1,8 @@
 # GatherForGood
 ### Pray Together. Serve Together.
 
+## Description
+
 GatherForGood is an Android mobile application designed for Muslim communities — particularly those in non-Muslim majority countries, small towns, or university campuses — to coordinate congregational prayers and organize Islamic volunteer events.
 
 ---
@@ -24,9 +26,9 @@ Both modules include event lifecycle management, GPS and Google Maps integration
 
 ## Team Members
 
-| Name | Roll Number | Role | 
-|---|---|
-| Husnain | 23L-0860 | Project Lead, Architect, Android Developer, Tester |
+| Name    | Roll Number | Role                                               |
+| ------- | ----------- | -------------------------------------------------- |
+| Husnain | 23L-0860    | Project Lead, Architect, Android Developer, Tester |
 
 ## Setup Instructions
 Follow these steps to set up the development environment:
