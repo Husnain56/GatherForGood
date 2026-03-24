@@ -22,6 +22,51 @@ Both modules include event lifecycle management, GPS and Google Maps integration
 
 ---
 
+## Team Members
+
+| Name | Role |
+|---|---|
+| Husnain | Project Lead, Architect, Android Developer, Tester |
+
+## Setup Instructions
+Follow these steps to set up the development environment:
+
+Clone/Download Project: Extract the project source code into your local directory.
+
+Open in Android Studio: * Launch Android Studio.
+
+Select File > Open and navigate to the project folder.
+
+Firebase Configuration:
+
+Ensure the google-services.json file is present in the app/ directory.
+
+Sync Project with Gradle Files to download dependencies.
+
+SDK Requirements: Ensure you have Android SDK 34 (API 34) or higher installed via the SDK Manager.
+
+---
+
+## How To Run
+
+Hardware/Emulator: Connect a physical Android device via USB (with USB Debugging enabled) or start a Virtual Device (AVD) via the Device Manager.
+
+Build: Click the Build menu and select Make Project.
+
+Run: Click the green Run (Play) button in the top toolbar.
+
+Initial Workflow (Iteration 1):
+
+Register: Create a new account.
+
+Verify: Check the dummy/real email for the verification link (required for access).
+
+Login: Sign in to reach the Home Dashboard.
+
+Browse: Scroll through the list of prayer gatherings and click a card to view details and open Google Maps.
+
+---
+
 ## Features
 
 - User registration, login, and profile setup
@@ -61,8 +106,3 @@ The app is built in 3 iterations of 2 weeks each:
 
 ---
 
-## Developer
-
-| Name | Role |
-|---|---|
-| Husnain | Project Lead, Architect, Android Developer, Tester |
