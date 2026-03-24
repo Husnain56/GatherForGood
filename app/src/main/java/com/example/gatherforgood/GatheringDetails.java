@@ -2,6 +2,7 @@ package com.example.gatherforgood;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -73,5 +74,23 @@ public class GatheringDetails extends AppCompatActivity {
         btnBack.setOnClickListener(v -> {
             finish();
         });
+        btnOpenMaps.setOnClickListener(v -> {
+            openGoogleMaps();
+        });
+    }
+    public void openGoogleMaps() {
+        String uri = "geo:" + gathering.getLatitude() + "," + gathering.getLongitude() +
+                "?q=" + gathering.getLatitude() + "," + gathering.getLongitude() +
+                "(" + Uri.encode(gathering.getLocation()) + ")";
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        intent.setPackage("com.google.android.apps.maps");
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+            startActivity(browserIntent);
+        }
     }
 }
