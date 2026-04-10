@@ -216,20 +216,18 @@
                         android:orientation="horizontal">
 
                         <!-- Hour : Minute input -->
-                        <EditText
-                            android:id="@+id/etTime"
+                        <TextView
+                            android:id="@+id/tvTime"
                             android:layout_width="0dp"
                             android:layout_height="52dp"
                             android:layout_weight="1"
                             android:background="@drawable/register_bg_input_field"
                             android:gravity="center"
-                            android:hint="07 : 15"
+                            android:hint="Select Time"
                             android:textColorHint="#80F9F1D7"
-                            android:inputType="number"
-                            android:maxLength="4"
+                            android:maxLength="5"
                             android:textColor="#F9F1D7"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textSize="14sp"
                             android:paddingHorizontal="16dp" />
 
                         <!-- AM / PM Spinner -->

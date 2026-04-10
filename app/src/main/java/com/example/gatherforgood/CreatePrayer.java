@@ -30,7 +30,7 @@ public class CreatePrayer extends AppCompatActivity {
     RelativeLayout rlDate;
 
     Long selectedDateMillis;
-    EditText etTime;
+    TextView tvTime;
     Spinner spinnerAmPm;
 
 
@@ -51,7 +51,8 @@ public class CreatePrayer extends AppCompatActivity {
         tvSelectedDate = findViewById(R.id.tvSelectedDate);
         ivPickDate = findViewById(R.id.ivPickDate);
         rlDate = findViewById(R.id.rldate);
-        etTime = findViewById(R.id.etTime);
+        tvTime = findViewById(R.id.tvTime);
+        spinnerAmPm = findViewById(R.id.spinnerAmPm);
 
     }
     private void setListeners() {
@@ -78,7 +79,27 @@ public class CreatePrayer extends AppCompatActivity {
 
         });
 
-        
+        tvTime.setOnClickListener(v -> {
+            MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_12H)
+                    .setHour(7)
+                    .setMinute(0)
+                    .setTitleText("Select Time")
+                    .build();
+
+            timePicker.show(getSupportFragmentManager(), "TIME_PICKER");
+
+            timePicker.addOnPositiveButtonClickListener(v2 -> {
+                int hour = timePicker.getHour();
+                int minute = timePicker.getMinute();
+                String amPm = hour < 12 ? "AM" : "PM";
+                int displayHour = hour % 12 == 0 ? 12 : hour % 12;
+
+                tvTime.setText(String.format("%02d:%02d", displayHour, minute));
+
+                spinnerAmPm.setSelection(amPm.equals("AM") ? 0 : 1);
+            });
+        });
     }
 
 }
