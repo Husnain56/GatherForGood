@@ -288,6 +288,20 @@
 
             </HorizontalScrollView>
 
+            <TextView
+                android:id="@+id/tvSectionLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="10dp"
+                android:text="NEARBY PRAYERS"
+                android:textColor="#80E5C76B"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2" />
+
             <!-- Loading State -->
             <ProgressBar
                 android:id="@+id/progressBar"

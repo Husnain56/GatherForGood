@@ -29,6 +29,13 @@ public class PrayerFragment extends Fragment {
     Button btnCreateGathering;
     ProgressBar progressBar;
     LinearLayout tvEmpty;
+    TextView tvSectionLabel;
+
+    // Filter chips
+    TextView chipAll, chipFajr, chipZuhr, chipAsr, chipMaghrib, chipIsha, chipJumuah;
+
+    // Currently active filter — null means "All"
+    String activeFilter = null;
 
     ArrayList<PrayerGathering> gatheringsList = new ArrayList<>();
 
@@ -48,7 +55,6 @@ public class PrayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Refresh list when coming back from CreatePrayer
         fetchGatherings();
     }
 
@@ -57,6 +63,15 @@ public class PrayerFragment extends Fragment {
         btnCreateGathering = view.findViewById(R.id.btnCreateGathering);
         progressBar        = view.findViewById(R.id.progressBar);
         tvEmpty            = view.findViewById(R.id.tvEmpty);
+        tvSectionLabel     = view.findViewById(R.id.tvSectionLabel);
+
+        chipAll     = view.findViewById(R.id.chipAll);
+        chipFajr    = view.findViewById(R.id.chipFajr);
+        chipZuhr    = view.findViewById(R.id.chipZuhr);
+        chipAsr     = view.findViewById(R.id.chipAsr);
+        chipMaghrib = view.findViewById(R.id.chipMaghrib);
+        chipIsha    = view.findViewById(R.id.chipIsha);
+        chipJumuah  = view.findViewById(R.id.chipJumuah);
 
         rvPrayerGatherings.setHasFixedSize(true);
         rvPrayerGatherings.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -66,6 +81,50 @@ public class PrayerFragment extends Fragment {
 
     public void setListeners() {
         btnCreateGathering.setOnClickListener(v -> navigateToCreatePrayerScreen());
+
+        chipAll.setOnClickListener(v     -> selectFilter(null,       chipAll));
+        chipFajr.setOnClickListener(v    -> selectFilter("Fajr",     chipFajr));
+        chipZuhr.setOnClickListener(v    -> selectFilter("Zuhr",     chipZuhr));
+        chipAsr.setOnClickListener(v     -> selectFilter("Asr",      chipAsr));
+        chipMaghrib.setOnClickListener(v -> selectFilter("Maghrib",  chipMaghrib));
+        chipIsha.setOnClickListener(v    -> selectFilter("Isha",     chipIsha));
+        chipJumuah.setOnClickListener(v  -> selectFilter("Jumuah",   chipJumuah));
+    }
+
+    private void selectFilter(String prayerType, TextView selectedChip) {
+        if (activeFilter == null && prayerType == null) return;
+        if (prayerType != null && prayerType.equals(activeFilter)) return;
+
+        activeFilter = prayerType;
+        updateChipStyles(selectedChip);
+        updateSectionLabel();
+        fetchGatherings();
+    }
+
+    private void updateChipStyles(TextView activeChip) {
+        TextView[] allChips = {
+                chipAll, chipFajr, chipZuhr, chipAsr,
+                chipMaghrib, chipIsha, chipJumuah
+        };
+
+        for (TextView chip : allChips) {
+            if (chip == activeChip) {
+                chip.setBackgroundResource(R.drawable.prayer_chip_active);
+                chip.setTextColor(requireContext().getColor(android.R.color.white));
+            } else {
+                chip.setBackgroundResource(R.drawable.prayer_chip_inactive);
+                chip.setTextColor(android.graphics.Color.parseColor("#80E5C76B"));
+            }
+        }
+    }
+
+    private void updateSectionLabel() {
+        if (tvSectionLabel == null) return;
+        if (activeFilter == null) {
+            tvSectionLabel.setText("NEARBY PRAYERS");
+        } else {
+            tvSectionLabel.setText(activeFilter.toUpperCase() + " PRAYERS");
+        }
     }
 
     private void fetchGatherings() {
@@ -73,15 +132,22 @@ public class PrayerFragment extends Fragment {
         tvEmpty.setVisibility(View.GONE);
         rvPrayerGatherings.setVisibility(View.GONE);
 
-        FirebaseFirestore.getInstance()
+        Query query = FirebaseFirestore.getInstance()
                 .collection("prayerGatherings")
-                .orderBy("createdAt", Query.Direction.DESCENDING)
-                .get()
+                .orderBy("createdAt", Query.Direction.DESCENDING);
+
+        // Apply prayer type filter if one is selected
+        if (activeFilter != null) {
+            query = query.whereEqualTo("prayerType", activeFilter);
+        }
+
+        query.get()
                 .addOnSuccessListener(querySnapshot -> {
                     gatheringsList.clear();
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         PrayerGathering gathering = doc.toObject(PrayerGathering.class);
+                        gathering.setId(doc.getId());
                         gatheringsList.add(gathering);
                     }
 

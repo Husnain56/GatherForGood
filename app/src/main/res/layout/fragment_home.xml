@@ -2,22 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/register_bg_gradient">
 
     <!-- Background Star Pattern -->
-    <ImageView
-        android:id="@+id/starPattern"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0.19"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_star_pattern"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Scrollable Content -->
     <ScrollView
@@ -161,6 +151,14 @@
                 </FrameLayout>
 
                 <!-- Volunteer Events Card -->
+                <ImageView
+                    android:id="@+id/starPattern"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:alpha="0.19"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_star_pattern" />
+
                 <FrameLayout
                     android:id="@+id/cardVolunteerEvents"
                     android:layout_width="0dp"
