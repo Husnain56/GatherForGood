@@ -13,3 +13,4 @@ app/google-services.json
 /captures
 .externalNativeBuild
 .cxx
+app/src/main/java/com/example/gatherforgood/ApiKeys.java
