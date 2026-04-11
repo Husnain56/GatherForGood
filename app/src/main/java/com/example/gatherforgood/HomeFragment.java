@@ -1,11 +1,13 @@
 package com.example.gatherforgood;
 
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -49,12 +52,18 @@ public class HomeFragment extends Fragment {
     RecyclerView rvPrayerGatherings;
     PrayerGatheringAdapter adapter;
     ProgressBar progressBar;
+    LinearLayout emptyNearby;
 
     TextView tvNextPrayerName;
     TextView tvNextPrayerTime;
     TextView tvTimeLeft;
 
     FusedLocationProviderClient fusedClient;
+
+    double userLat = 0;
+    double userLng = 0;
+
+    private static final float NEARBY_RADIUS_KM = 10f;
 
     ArrayList<PrayerGathering> gatheringsList = new ArrayList<>();
 
@@ -64,8 +73,10 @@ public class HomeFragment extends Fragment {
                     isGranted -> {
                         if (isGranted) {
                             fetchPrayerTimes();
+                            fetchUserLocationThenGatherings();
                         } else {
                             fetchPrayerTimesFallback();
+                            fetchGatherings(0, 0);
                         }
                     });
 
@@ -79,15 +90,13 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         init(view);
         setEventListeners();
-        fetchGatherings();
-        fetchPrayerTimes();
+        checkPermissionAndLoad();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        fetchGatherings();
-        fetchPrayerTimes();
+        checkPermissionAndLoad();
     }
 
     public void init(View view) {
@@ -98,6 +107,7 @@ public class HomeFragment extends Fragment {
         ivProfilePic         = view.findViewById(R.id.ivProfilePic);
         tvSeeAll             = view.findViewById(R.id.tvSeeAll);
         progressBar          = view.findViewById(R.id.progressBar);
+        emptyNearby          = view.findViewById(R.id.emptyNearby);
         tvNextPrayerName     = view.findViewById(R.id.tvNextPrayerName);
         tvNextPrayerTime     = view.findViewById(R.id.tvNextPrayerTime);
         tvTimeLeft           = view.findViewById(R.id.tvTimeLeft);
@@ -114,28 +124,127 @@ public class HomeFragment extends Fragment {
         rvPrayerGatherings.setAdapter(adapter);
     }
 
-
-    private void fetchPrayerTimes() {
-        if (requireContext().checkSelfPermission(
+    private boolean hasLocationPermission() {
+        return ContextCompat.checkSelfPermission(
+                requireContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                == android.content.pm.PackageManager.PERMISSION_GRANTED;
+    }
 
+    private void checkPermissionAndLoad() {
+        if (!hasLocationPermission()) {
             locationPermissionLauncher.launch(
                     android.Manifest.permission.ACCESS_FINE_LOCATION);
+        } else {
+            fetchPrayerTimes();
+            fetchUserLocationThenGatherings();
+        }
+    }
+
+    private void fetchUserLocationThenGatherings() {
+        if (!hasLocationPermission()) {
+            fetchGatherings(0, 0);
             return;
         }
 
-        fusedClient.getLastLocation()
-                .addOnSuccessListener(location -> {
-                    if (location != null) {
-                        fetchPrayerTimesForLocation(
-                                location.getLatitude(),
-                                location.getLongitude());
+        try {
+            fusedClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            userLat = location.getLatitude();
+                            userLng = location.getLongitude();
+                            fetchGatherings(userLat, userLng);
+                        } else {
+                            fetchGatherings(0, 0);
+                        }
+                    })
+                    .addOnFailureListener(e -> fetchGatherings(0, 0));
+        } catch (SecurityException e) {
+            fetchGatherings(0, 0);
+        }
+    }
+
+    private void fetchGatherings(double lat, double lng) {
+        if (getContext() == null) return;
+
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+        if (emptyNearby != null) emptyNearby.setVisibility(View.GONE);
+        if (rvPrayerGatherings != null) rvPrayerGatherings.setVisibility(View.GONE);
+
+        FirebaseFirestore.getInstance()
+                .collection("prayerGatherings")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(20)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (getContext() == null) return;
+
+                    gatheringsList.clear();
+
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        PrayerGathering gathering = doc.toObject(PrayerGathering.class);
+
+                        if (lat != 0 && lng != 0) {
+                            float distanceKm = distanceBetween(
+                                    lat, lng,
+                                    gathering.getLatitude(),
+                                    gathering.getLongitude());
+
+                            if (distanceKm <= NEARBY_RADIUS_KM) {
+                                gatheringsList.add(gathering);
+                            }
+                        } else {
+                            gatheringsList.add(gathering);
+                        }
+                    }
+
+                    adapter.notifyDataSetChanged();
+
+                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+
+                    if (gatheringsList.isEmpty()) {
+                        if (emptyNearby != null) emptyNearby.setVisibility(View.VISIBLE);
+                        if (rvPrayerGatherings != null) rvPrayerGatherings.setVisibility(View.GONE);
                     } else {
-                        fetchPrayerTimesFallback();
+                        if (emptyNearby != null) emptyNearby.setVisibility(View.GONE);
+                        if (rvPrayerGatherings != null) rvPrayerGatherings.setVisibility(View.VISIBLE);
                     }
                 })
-                .addOnFailureListener(e -> fetchPrayerTimesFallback());
+                .addOnFailureListener(e -> {
+                    if (getContext() == null) return;
+                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+                    if (rvPrayerGatherings != null) rvPrayerGatherings.setVisibility(View.VISIBLE);
+                });
+    }
+
+    private float distanceBetween(double lat1, double lng1,
+                                  double lat2, double lng2) {
+        float[] results = new float[1];
+        Location.distanceBetween(lat1, lng1, lat2, lng2, results);
+        return results[0] / 1000f;
+    }
+
+    private void fetchPrayerTimes() {
+        if (!hasLocationPermission()) {
+            fetchPrayerTimesFallback();
+            return;
+        }
+
+        try {
+            fusedClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            fetchPrayerTimesForLocation(
+                                    location.getLatitude(),
+                                    location.getLongitude());
+                        } else {
+                            fetchPrayerTimesFallback();
+                        }
+                    })
+                    .addOnFailureListener(e -> fetchPrayerTimesFallback());
+        } catch (SecurityException e) {
+            fetchPrayerTimesFallback();
+        }
     }
 
     private void fetchPrayerTimesForLocation(double lat, double lng) {
@@ -216,11 +325,9 @@ public class HomeFragment extends Fragment {
                 }
             }
 
-            // Convert to 12h format for display
             Date prayerDate    = sdf24.parse(nextTime24);
             String displayTime = sdf12.format(prayerDate);
 
-            // Calculate time remaining
             String[] parts   = nextTime24.split(":");
             int prayerHour   = Integer.parseInt(parts[0]);
             int prayerMinute = Integer.parseInt(parts[1]);
@@ -231,7 +338,6 @@ public class HomeFragment extends Fragment {
             prayerCal.set(Calendar.SECOND, 0);
             prayerCal.set(Calendar.MILLISECOND, 0);
 
-            // Push to tomorrow if already passed
             if (prayerCal.before(now)) {
                 prayerCal.add(Calendar.DAY_OF_MONTH, 1);
             }
@@ -260,30 +366,6 @@ public class HomeFragment extends Fragment {
         tvNextPrayerName.setText("--");
         tvNextPrayerTime.setText("--:--");
         tvTimeLeft.setText("Could not load");
-    }
-
-
-    private void fetchGatherings() {
-        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
-
-        FirebaseFirestore.getInstance()
-                .collection("prayerGatherings")
-                .orderBy("createdAt", Query.Direction.DESCENDING)
-                .limit(5)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    gatheringsList.clear();
-                    for (QueryDocumentSnapshot doc : querySnapshot) {
-                        PrayerGathering gathering = doc.toObject(PrayerGathering.class);
-                        gathering.setId(doc.getId());
-                        gatheringsList.add(gathering);
-                    }
-                    adapter.notifyDataSetChanged();
-                    if (progressBar != null) progressBar.setVisibility(View.GONE);
-                })
-                .addOnFailureListener(e -> {
-                    if (progressBar != null) progressBar.setVisibility(View.GONE);
-                });
     }
 
     public void setEventListeners() {

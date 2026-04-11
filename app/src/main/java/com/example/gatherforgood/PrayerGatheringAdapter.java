@@ -79,7 +79,6 @@ public class PrayerGatheringAdapter extends RecyclerView.Adapter<PrayerGathering
             tvTime = itemView.findViewById(R.id.tvTime);
             tvHostName = itemView.findViewById(R.id.tvHostName);
             tvLocation = itemView.findViewById(R.id.tvLocation);
-            tvDistance = itemView.findViewById(R.id.tvDistance);
             tvParticipantCount = itemView.findViewById(R.id.tvParticipantCount);
             btnJoin = itemView.findViewById(R.id.btnJoin);
             mainCard = itemView.findViewById(R.id.main);
