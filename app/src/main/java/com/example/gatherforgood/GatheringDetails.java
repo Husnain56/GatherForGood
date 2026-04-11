@@ -22,19 +22,16 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class GatheringDetails extends AppCompatActivity {
 
-    TextView tvStatus;
-    TextView tvTitle;
-    TextView tvDescription;
-    TextView tvPrayerTime;
-    TextView tvPrayerName;
-    TextView tvHostName;
-    TextView tvAttendingCount;
-    TextView tvLocationDescription;
+    TextView tvStatus, tvTitle, tvDescription, tvPrayerTime,
+            tvPrayerName, tvHostName, tvAttendingCount, tvLocationDescription;
 
     Button btnJoin;
     MaterialButton btnOpenMaps;
@@ -63,11 +60,10 @@ public class GatheringDetails extends AppCompatActivity {
 
         init();
         bindData();
-        checkIfJoined();
         setEventListeners();
     }
 
-    public void init() {
+    private void init() {
         tvStatus              = findViewById(R.id.tvStatus);
         tvTitle               = findViewById(R.id.tvTitle);
         tvDescription         = findViewById(R.id.tvDescription);
@@ -80,10 +76,11 @@ public class GatheringDetails extends AppCompatActivity {
         btnOpenMaps           = findViewById(R.id.btnOpenMaps);
         btnBack               = findViewById(R.id.btnBack);
         progressBar           = findViewById(R.id.progressBar);
-        gathering = (PrayerGathering) getIntent().getSerializableExtra("prayer_gathering");
+
+        gathering  = (PrayerGathering) getIntent().getSerializableExtra("prayer_gathering");
     }
 
-    public void bindData() {
+    private void bindData() {
         tvStatus.setText(gathering.getStatus().toUpperCase());
         tvTitle.setText(gathering.getPrayerType());
         tvDescription.setText(gathering.getDescription());
@@ -93,16 +90,153 @@ public class GatheringDetails extends AppCompatActivity {
         tvAttendingCount.setText(gathering.getParticipantCount() + " Attending");
         tvLocationDescription.setText(gathering.getLocation());
 
-        // Hide join button if user is the host
         isHost = gathering.getHostUid().equals(currentUid);
+
         if (isHost) {
-            btnJoin.setVisibility(View.GONE);
+            setupHostControls();
+        } else {
+            checkIfJoined();
         }
     }
 
-    private void checkIfJoined() {
-        if (isHost) return;
+    private void setEventListeners() {
+        btnBack.setOnClickListener(v -> finish());
+        btnOpenMaps.setOnClickListener(v -> openGoogleMaps());
+    }
 
+
+    private void setupHostControls() {
+        btnJoin.setVisibility(View.VISIBLE);
+        btnJoin.setEnabled(true);
+        updateHostButton();
+    }
+
+    private void updateHostButton() {
+        String status = gathering.getStatus().toLowerCase();
+
+        switch (status) {
+            case "upcoming":
+                btnJoin.setText("Mark as Ongoing");
+                break;
+
+            case "ongoing":
+                btnJoin.setText("Mark as Finished");
+                break;
+
+            case "finished":
+                btnJoin.setText("Delete Gathering");
+                break;
+        }
+
+        btnJoin.setOnClickListener(v -> {
+            switch (gathering.getStatus().toLowerCase()) {
+                case "upcoming":
+                    if(isPrayerTimeReached()) {
+                        updateStatus("ongoing");
+                    }
+                    else{
+                        Toast.makeText(this, "Prayer time not reached yet", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case "ongoing":
+                    updateStatus("finished");
+                    break;
+                case "finished":
+                    deleteGathering();
+                    break;
+            }
+        });
+    }
+
+    private boolean isPrayerTimeReached() {
+        try {
+            String dateTimeStr = gathering.getDate() + " " + gathering.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat(
+                    "EEEE, dd MMM yyyy hh:mm a", Locale.getDefault());
+            Date prayerDateTime = sdf.parse(dateTimeStr);
+            return prayerDateTime != null &&
+                    System.currentTimeMillis() >= prayerDateTime.getTime();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void updateStatus(String newStatus) {
+        btnJoin.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+
+        db.collection("prayerGatherings")
+                .document(gathering.getId())
+                .update("status", newStatus)
+                .addOnSuccessListener(unused -> {
+                    progressBar.setVisibility(View.GONE);
+                    gathering.setStatus(newStatus);
+                    tvStatus.setText(newStatus.toUpperCase());
+                    updateHostButton();
+                    Toast.makeText(this,
+                            "Status updated to " + newStatus,
+                            Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    btnJoin.setEnabled(true);
+                    Toast.makeText(this,
+                            "Failed to update status: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void deleteGathering() {
+        btnJoin.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+
+        DocumentReference gatheringRef = db.collection("prayerGatherings")
+                .document(gathering.getId());
+
+        gatheringRef.collection("participants")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    com.google.firebase.firestore.WriteBatch batch = db.batch();
+                    for (com.google.firebase.firestore.DocumentSnapshot doc
+                            : snapshot.getDocuments()) {
+                        batch.delete(doc.getReference());
+                    }
+                    batch.commit()
+                            .addOnSuccessListener(unused -> {
+                                gatheringRef.delete()
+                                        .addOnSuccessListener(unused2 -> {
+                                            progressBar.setVisibility(View.GONE);
+                                            Toast.makeText(this,
+                                                    "Gathering deleted.",
+                                                    Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            progressBar.setVisibility(View.GONE);
+                                            btnJoin.setEnabled(true);
+                                            Toast.makeText(this,
+                                                    "Failed to delete gathering: " + e.getMessage(),
+                                                    Toast.LENGTH_SHORT).show();
+                                        });
+                            })
+                            .addOnFailureListener(e -> {
+                                progressBar.setVisibility(View.GONE);
+                                btnJoin.setEnabled(true);
+                                Toast.makeText(this,
+                                        "Failed to delete participants: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    btnJoin.setEnabled(true);
+                    Toast.makeText(this,
+                            "Failed to fetch participants: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void checkIfJoined() {
         progressBar.setVisibility(View.VISIBLE);
         btnJoin.setEnabled(false);
 
@@ -122,23 +256,22 @@ public class GatheringDetails extends AppCompatActivity {
                         isAlreadyJoined = false;
                         btnJoin.setText("Join Gathering");
                     }
+
+                    btnJoin.setOnClickListener(v -> {
+                        if (isAlreadyJoined) {
+                            leaveGathering();
+                        } else {
+                            joinGathering();
+                        }
+                    });
                 })
                 .addOnFailureListener(e -> {
                     progressBar.setVisibility(View.GONE);
                     btnJoin.setEnabled(true);
+                    Toast.makeText(this,
+                            "Failed to check join status.",
+                            Toast.LENGTH_SHORT).show();
                 });
-    }
-
-    public void setEventListeners() {
-        btnBack.setOnClickListener(v -> finish());
-        btnOpenMaps.setOnClickListener(v -> openGoogleMaps());
-        btnJoin.setOnClickListener(v -> {
-            if (isAlreadyJoined) {
-                leaveGathering();
-            } else {
-                joinGathering();
-            }
-        });
     }
 
     private void joinGathering() {
@@ -217,8 +350,7 @@ public class GatheringDetails extends AppCompatActivity {
                                 isAlreadyJoined = false;
                                 btnJoin.setText("Join Gathering");
 
-                                int newCount = Math.max(0,
-                                        gathering.getParticipantCount() - 1);
+                                int newCount = Math.max(0, gathering.getParticipantCount() - 1);
                                 gathering.setParticipantCount(newCount);
                                 tvAttendingCount.setText(newCount + " Attending");
 
@@ -236,7 +368,7 @@ public class GatheringDetails extends AppCompatActivity {
                 });
     }
 
-    public void openGoogleMaps() {
+    private void openGoogleMaps() {
         String uri = "geo:" + gathering.getLatitude() + "," + gathering.getLongitude() +
                 "?q=" + gathering.getLatitude() + "," + gathering.getLongitude() +
                 "(" + Uri.encode(gathering.getLocation()) + ")";
