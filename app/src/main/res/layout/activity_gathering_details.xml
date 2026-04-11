@@ -104,15 +104,14 @@
             </FrameLayout>
 
             <TextView
+                android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:letterSpacing="0.2"
-                android:text="COMMUNITY PRAYER"
                 android:textColor="#D4AF37"
                 android:textSize="10sp"
-                android:textStyle="bold"
-                android:id="@+id/tvStatus"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -120,7 +119,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/playfair_display_bold"
-                android:text="Maghrib Prayer &amp; Spiritual Reflection"
                 android:textColor="#F9F1D7"
                 android:textSize="28sp" />
 
@@ -131,35 +129,152 @@
                 android:layout_marginTop="12dp"
                 android:alpha="0.7"
                 android:lineSpacingExtra="4dp"
-                android:text="Join the local community for Maghrib prayer followed by a short circle of reflection on gratitude and service."
                 android:textColor="@color/white"
                 android:textSize="14sp" />
 
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="24dp" android:background="#1AFFFFFF"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:background="#1AFFFFFF" />
 
-            <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="16dp">
-                <ImageView android:id="@+id/iconTime" android:layout_width="44dp" android:layout_height="44dp" android:src="@drawable/ic_schedule" android:background="@drawable/bg_circle_emerald" android:padding="10dp" app:tint="#D4AF37"/>
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_toEndOf="@id/iconTime" android:layout_marginStart="12dp" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PRAYER TIME" android:textSize="9sp" android:textColor="#80FFFFFF" android:textStyle="bold" android:letterSpacing="0.1"/>
-                    <TextView android:id="@+id/tvPrayerTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="7:15 PM (Iqamah)" android:textColor="#F9F1D7" android:textStyle="bold" android:textSize="15sp"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="16dp">
+
+                <ImageView
+                    android:id="@+id/iconTime"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_schedule"
+                    android:background="@drawable/bg_circle_emerald"
+                    android:padding="10dp"
+                    app:tint="#D4AF37" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/iconTime"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PRAYER TIME"
+                        android:textSize="9sp"
+                        android:textColor="#80FFFFFF"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
+
+                    <TextView
+                        android:id="@+id/tvPrayerTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#F9F1D7"
+                        android:textStyle="bold"
+                        android:textSize="15sp" />
+
                 </LinearLayout>
-                <TextView android:id="@+id/tvPrayerName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:layout_centerVertical="true" android:background="@drawable/prayer_bg_time_badge" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:text="Maghrib" android:textColor="#0FBD66" android:textSize="12sp" android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvPrayerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/prayer_bg_time_badge"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    android:textColor="#0FBD66"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
             </RelativeLayout>
 
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1AFFFFFF"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#1AFFFFFF" />
 
-            <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="16dp">
-                <ImageView android:id="@+id/iconHost" android:layout_width="44dp" android:layout_height="44dp" android:src="@drawable/ic_person_fill" android:background="@drawable/bg_circle_emerald" android:padding="10dp" app:tint="#D4AF37"/>
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_toEndOf="@id/iconHost" android:layout_marginStart="12dp" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HOST" android:textSize="9sp" android:textColor="#80FFFFFF" android:textStyle="bold" android:letterSpacing="0.1"/>
-                    <TextView android:id="@+id/tvHostName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Imam Ahmed Z." android:textColor="#F9F1D7" android:textStyle="bold" android:textSize="15sp"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="16dp">
+
+                <ImageView
+                    android:id="@+id/iconHost"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_person_fill"
+                    android:background="@drawable/bg_circle_emerald"
+                    android:padding="10dp"
+                    app:tint="#D4AF37" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/iconHost"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="HOST"
+                        android:textSize="9sp"
+                        android:textColor="#80FFFFFF"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
+
+                    <TextView
+                        android:id="@+id/tvHostName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#F9F1D7"
+                        android:textStyle="bold"
+                        android:textSize="15sp" />
+
                 </LinearLayout>
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:orientation="vertical" android:gravity="end">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PARTICIPANTS" android:textSize="9sp" android:textColor="#80FFFFFF" android:textStyle="bold"/>
-                    <TextView android:id="@+id/tvAttendingCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="24 Attending" android:textColor="#F9F1D7" android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:orientation="vertical"
+                    android:gravity="end">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PARTICIPANTS"
+                        android:textSize="9sp"
+                        android:textColor="#80FFFFFF"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvAttendingCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#F9F1D7"
+                        android:textStyle="bold" />
+
                 </LinearLayout>
+
             </RelativeLayout>
 
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:indeterminateTint="@color/gold_accent"
+                android:visibility="gone" />
+
+            <!-- Join Button -->
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnJoin"
                 android:layout_width="match_parent"
@@ -172,6 +287,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+            <!-- Open Maps Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnOpenMaps"
                 android:layout_width="match_parent"
@@ -190,8 +306,9 @@
                 app:iconTint="#B89548"
                 app:iconGravity="textStart"
                 app:iconPadding="12dp"
-                app:rippleColor="#22B89548"/>
+                app:rippleColor="#22B89548" />
 
+            <!-- Community Chat Placeholder -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -222,6 +339,7 @@
                         android:textColor="#80FFFFFF"
                         android:textSize="10sp"
                         android:textStyle="bold" />
+
                 </RelativeLayout>
 
                 <View
@@ -234,6 +352,5 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
