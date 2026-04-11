@@ -1,6 +1,7 @@
 package com.example.gatherforgood;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +12,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -31,17 +37,28 @@ public class PrayerFragment extends Fragment {
     LinearLayout tvEmpty;
     TextView tvSectionLabel;
 
-    // Filter chips
     TextView chipAll, chipFajr, chipZuhr, chipAsr, chipMaghrib, chipIsha, chipJumuah;
 
-    // Currently active filter — null means "All"
     String activeFilter = null;
+    double userLat = 0, userLng = 0;
+    private static final float NEARBY_RADIUS_KM = 10f;
 
+    FusedLocationProviderClient fusedClient;
     ArrayList<PrayerGathering> gatheringsList = new ArrayList<>();
 
+    private final ActivityResultLauncher<String> locationPermissionLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(),
+                    isGranted -> {
+                        if (isGranted) {
+                            fetchUserLocationThenGatherings();
+                        } else {
+                            fetchGatherings(0, 0);
+                        }
+                    });
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_prayer, container, false);
     }
 
@@ -49,13 +66,13 @@ public class PrayerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         init(view);
         setListeners();
-        fetchGatherings();
+        checkPermissionAndLoad(); // fixed
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        fetchGatherings();
+        checkPermissionAndLoad(); // fixed
     }
 
     public void init(View view) {
@@ -73,6 +90,8 @@ public class PrayerFragment extends Fragment {
         chipIsha    = view.findViewById(R.id.chipIsha);
         chipJumuah  = view.findViewById(R.id.chipJumuah);
 
+        fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
         rvPrayerGatherings.setHasFixedSize(true);
         rvPrayerGatherings.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new PrayerGatheringAdapter(getContext(), gatheringsList);
@@ -82,52 +101,52 @@ public class PrayerFragment extends Fragment {
     public void setListeners() {
         btnCreateGathering.setOnClickListener(v -> navigateToCreatePrayerScreen());
 
-        chipAll.setOnClickListener(v     -> selectFilter(null,       chipAll));
-        chipFajr.setOnClickListener(v    -> selectFilter("Fajr",     chipFajr));
-        chipZuhr.setOnClickListener(v    -> selectFilter("Zuhr",     chipZuhr));
-        chipAsr.setOnClickListener(v     -> selectFilter("Asr",      chipAsr));
-        chipMaghrib.setOnClickListener(v -> selectFilter("Maghrib",  chipMaghrib));
-        chipIsha.setOnClickListener(v    -> selectFilter("Isha",     chipIsha));
-        chipJumuah.setOnClickListener(v  -> selectFilter("Jumuah",   chipJumuah));
+        chipAll.setOnClickListener(v     -> selectFilter(null,      chipAll));
+        chipFajr.setOnClickListener(v    -> selectFilter("Fajr",    chipFajr));
+        chipZuhr.setOnClickListener(v    -> selectFilter("Zuhr",    chipZuhr));
+        chipAsr.setOnClickListener(v     -> selectFilter("Asr",     chipAsr));
+        chipMaghrib.setOnClickListener(v -> selectFilter("Maghrib", chipMaghrib));
+        chipIsha.setOnClickListener(v    -> selectFilter("Isha",    chipIsha));
+        chipJumuah.setOnClickListener(v  -> selectFilter("Jumuah",  chipJumuah));
     }
 
-    private void selectFilter(String prayerType, TextView selectedChip) {
-        if (activeFilter == null && prayerType == null) return;
-        if (prayerType != null && prayerType.equals(activeFilter)) return;
-
-        activeFilter = prayerType;
-        updateChipStyles(selectedChip);
-        updateSectionLabel();
-        fetchGatherings();
+    private boolean hasLocationPermission() {
+        return ContextCompat.checkSelfPermission(requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == android.content.pm.PackageManager.PERMISSION_GRANTED;
     }
 
-    private void updateChipStyles(TextView activeChip) {
-        TextView[] allChips = {
-                chipAll, chipFajr, chipZuhr, chipAsr,
-                chipMaghrib, chipIsha, chipJumuah
-        };
-
-        for (TextView chip : allChips) {
-            if (chip == activeChip) {
-                chip.setBackgroundResource(R.drawable.prayer_chip_active);
-                chip.setTextColor(requireContext().getColor(android.R.color.white));
-            } else {
-                chip.setBackgroundResource(R.drawable.prayer_chip_inactive);
-                chip.setTextColor(android.graphics.Color.parseColor("#80E5C76B"));
-            }
-        }
-    }
-
-    private void updateSectionLabel() {
-        if (tvSectionLabel == null) return;
-        if (activeFilter == null) {
-            tvSectionLabel.setText("NEARBY PRAYERS");
+    private void checkPermissionAndLoad() {
+        if (!hasLocationPermission()) {
+            locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
-            tvSectionLabel.setText(activeFilter.toUpperCase() + " PRAYERS");
+            fetchUserLocationThenGatherings();
         }
     }
 
-    private void fetchGatherings() {
+    private void fetchUserLocationThenGatherings() {
+        if (!hasLocationPermission()) {
+            fetchGatherings(0, 0);
+            return;
+        }
+        try {
+            fusedClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            userLat = location.getLatitude();
+                            userLng = location.getLongitude();
+                            fetchGatherings(userLat, userLng);
+                        } else {
+                            fetchGatherings(0, 0);
+                        }
+                    })
+                    .addOnFailureListener(e -> fetchGatherings(0, 0));
+        } catch (SecurityException e) {
+            fetchGatherings(0, 0);
+        }
+    }
+
+    private void fetchGatherings(double lat, double lng) { // fixed — now takes lat/lng
         progressBar.setVisibility(View.VISIBLE);
         tvEmpty.setVisibility(View.GONE);
         rvPrayerGatherings.setVisibility(View.GONE);
@@ -136,7 +155,6 @@ public class PrayerFragment extends Fragment {
                 .collection("prayerGatherings")
                 .orderBy("createdAt", Query.Direction.DESCENDING);
 
-        // Apply prayer type filter if one is selected
         if (activeFilter != null) {
             query = query.whereEqualTo("prayerType", activeFilter);
         }
@@ -148,7 +166,19 @@ public class PrayerFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         PrayerGathering gathering = doc.toObject(PrayerGathering.class);
                         gathering.setId(doc.getId());
-                        gatheringsList.add(gathering);
+
+                        // fixed — apply distance filter
+                        if (lat != 0 && lng != 0) {
+                            float distance = distanceBetween(
+                                    lat, lng,
+                                    gathering.getLatitude(),
+                                    gathering.getLongitude());
+                            if (distance <= NEARBY_RADIUS_KM) {
+                                gatheringsList.add(gathering);
+                            }
+                        } else {
+                            gatheringsList.add(gathering); // no location — show all
+                        }
                     }
 
                     progressBar.setVisibility(View.GONE);
@@ -172,8 +202,40 @@ public class PrayerFragment extends Fragment {
                 });
     }
 
+    private void selectFilter(String prayerType, TextView selectedChip) {
+        if (activeFilter == null && prayerType == null) return;
+        if (prayerType != null && prayerType.equals(activeFilter)) return;
+        activeFilter = prayerType;
+        updateChipStyles(selectedChip);
+        updateSectionLabel();
+        fetchGatherings(userLat, userLng); // use already fetched coords
+    }
+
+    private void updateChipStyles(TextView activeChip) {
+        TextView[] allChips = {chipAll, chipFajr, chipZuhr, chipAsr, chipMaghrib, chipIsha, chipJumuah};
+        for (TextView chip : allChips) {
+            if (chip == activeChip) {
+                chip.setBackgroundResource(R.drawable.prayer_chip_active);
+                chip.setTextColor(requireContext().getColor(android.R.color.white));
+            } else {
+                chip.setBackgroundResource(R.drawable.prayer_chip_inactive);
+                chip.setTextColor(android.graphics.Color.parseColor("#80E5C76B"));
+            }
+        }
+    }
+
+    private void updateSectionLabel() {
+        if (tvSectionLabel == null) return;
+        tvSectionLabel.setText(activeFilter == null ? "NEARBY PRAYERS" : activeFilter.toUpperCase() + " PRAYERS");
+    }
+
+    private float distanceBetween(double lat1, double lng1, double lat2, double lng2) {
+        float[] results = new float[1];
+        Location.distanceBetween(lat1, lng1, lat2, lng2, results);
+        return results[0] / 1000f;
+    }
+
     public void navigateToCreatePrayerScreen() {
-        Intent intent = new Intent(getContext(), CreatePrayer.class);
-        startActivity(intent);
+        startActivity(new Intent(getContext(), CreatePrayer.class));
     }
 }

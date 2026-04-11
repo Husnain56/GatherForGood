@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/register_bg_gradient">
 
-    <!-- Background Star Pattern -->
     <ImageView
         android:id="@+id/starPattern"
         android:layout_width="match_parent"
@@ -19,14 +18,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Scrollable Content -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
         android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -41,7 +41,6 @@
                 android:paddingTop="24dp"
                 android:paddingBottom="45dp">
 
-                <!-- Greeting -->
                 <LinearLayout
                     android:id="@+id/greetingContainer"
                     android:layout_width="wrap_content"
@@ -53,7 +52,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="ASSALAMU ALAIKUM"
+                        android:text="ASSALAM U ALAIKUM"
                         android:textColor="#66D4AF37"
                         android:textSize="10sp"
                         android:letterSpacing="0.2"
@@ -63,7 +62,6 @@
                         android:id="@+id/tvUserName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Omar Hassan"
                         android:textColor="@color/soft_gold"
                         android:textSize="24sp"
                         android:fontFamily="@font/playfair_display_italic"
@@ -71,7 +69,6 @@
 
                 </LinearLayout>
 
-                <!-- Profile Picture -->
                 <FrameLayout
                     android:id="@+id/profileContainer"
                     android:layout_width="52dp"
@@ -89,7 +86,6 @@
                         android:padding="8dp"
                         app:tint="@color/soft_gold" />
 
-                    <!-- Online dot -->
                     <View
                         android:layout_width="12dp"
                         android:layout_height="12dp"
@@ -109,30 +105,26 @@
                 android:paddingBottom="27dp"
                 android:weightSum="2">
 
-                <!-- Prayer Gatherings Card -->
                 <FrameLayout
                     android:id="@+id/cardPrayerGatherings"
                     android:layout_width="0dp"
                     android:layout_height="300dp"
-                    android:clipToOutline="true"
                     android:layout_weight="1"
                     android:layout_marginHorizontal="8dp"
-                    android:background="@drawable/home_bg_arch_card">
+                    android:background="@drawable/home_bg_arch_card"
+                    android:clipToOutline="true">
 
-                    <!-- Background Image -->
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:src="@drawable/img_prayer_gathering"
                         android:scaleType="centerCrop" />
 
-                    <!-- Dark overlay -->
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/home_bg_card_overlay" />
 
-                    <!-- Content at bottom -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -162,16 +154,14 @@
 
                 </FrameLayout>
 
-                <!-- Volunteer Events Card -->
                 <FrameLayout
                     android:id="@+id/cardVolunteerEvents"
                     android:layout_width="0dp"
                     android:layout_height="300dp"
                     android:layout_weight="1"
                     android:layout_marginHorizontal="8dp"
-                    android:clipToOutline="true"
-                    android:background="@drawable/home_bg_arch_card">
-                    <!-- Background Image -->
+                    android:background="@drawable/home_bg_arch_card"
+                    android:clipToOutline="true">
 
                     <ImageView
                         android:layout_width="match_parent"
@@ -226,7 +216,6 @@
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="20dp">
 
-                <!-- Next Prayer Label -->
                 <TextView
                     android:id="@+id/tvNextPrayerLabel"
                     android:layout_width="wrap_content"
@@ -239,7 +228,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- Prayer Name + Time -->
                 <LinearLayout
                     android:id="@+id/prayerTimeContainer"
                     android:layout_width="wrap_content"
@@ -270,7 +258,6 @@
 
                 </LinearLayout>
 
-                <!-- In X minutes -->
                 <TextView
                     android:id="@+id/tvTimeLeft"
                     android:layout_width="wrap_content"
@@ -291,7 +278,6 @@
                 android:paddingBottom="16dp">
 
                 <TextView
-                    android:id="@+id/tvNearbyPrayers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nearby Prayers"
@@ -315,18 +301,73 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvPrayerGatherings"
+            <!-- Loading / Empty / List — same pattern as prayer fragment -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginEnd="16dp"
-                android:paddingBottom="80dp"
-                android:clipToPadding="false"
-                android:nestedScrollingEnabled="false"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                android:minHeight="200dp">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:indeterminateTint="@color/gold_accent"
+                    android:visibility="visible" />
+
+                <LinearLayout
+                    android:id="@+id/emptyNearby"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:paddingTop="32dp"
+                    android:paddingBottom="32dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🕌"
+                        android:textSize="40sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No nearby gatherings yet"
+                        android:textColor="@color/soft_gold"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/playfair_display_italic"
+                        android:layout_marginTop="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Be the first to create one!"
+                        android:textColor="#80E5C76B"
+                        android:textSize="12sp"
+                        android:layout_marginTop="4dp" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPrayerGatherings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginEnd="16dp"
+                    android:paddingBottom="80dp"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:visibility="gone"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            </FrameLayout>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
