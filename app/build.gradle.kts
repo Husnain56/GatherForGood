@@ -49,8 +49,10 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    implementation("com.android.volley:volley:1.2.1")
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.android.libraries.places:places:5.2.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 }
