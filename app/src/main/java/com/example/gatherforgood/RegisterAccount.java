@@ -23,7 +23,7 @@ import android.graphics.Paint;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegisterAccount extends AppCompatActivity {
+public class  RegisterAccount extends AppCompatActivity {
 
     ImageButton btnBack;
     boolean isBrother;

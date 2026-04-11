@@ -31,6 +31,8 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -52,6 +54,9 @@ public class CreatePrayer extends AppCompatActivity {
     EditText etDescription, etLocationDescription;
     Button btnCreateGathering;
     ImageButton btnBack;
+    FirebaseFirestore db;
+    FirebaseAuth mAuth;
+    Spinner spinnerPrayerType;
 
     private PlacesClient placesClient;
     private ActivityResultLauncher<Intent> placesLauncher;
@@ -99,6 +104,9 @@ public class CreatePrayer extends AppCompatActivity {
         tvMapHint             = findViewById(R.id.tvMapHint);
         btnCreateGathering    = findViewById(R.id.btnCreateGathering);
         btnBack               = findViewById(R.id.btnBack);
+        spinnerPrayerType = findViewById(R.id.spinnerPrayerType);
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
     private void setListeners() {
         ivPickDate.setOnClickListener(v -> showDatePicker());
@@ -292,8 +300,96 @@ public class CreatePrayer extends AppCompatActivity {
     }
 
     private void saveGathering() {
-        Toast.makeText(this,
-                "Gathering saved at: " + selectedLat + ", " + selectedLng,
-                Toast.LENGTH_LONG).show();
+        btnCreateGathering.setEnabled(false);
+        btnCreateGathering.setText("Saving...");
+
+        assert mAuth.getCurrentUser() != null;
+        String currentUid = mAuth.getCurrentUser().getUid();
+
+        db.collection("users")
+                .document(currentUid)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String hostName     = documentSnapshot.getString("name");
+                        String hostGender   = documentSnapshot.getString("gender");
+                        saveToFirestore(currentUid, hostName, hostGender);
+                    } else {
+                        btnCreateGathering.setEnabled(true);
+                        btnCreateGathering.setText("Create Gathering");
+                        Toast.makeText(this, "User profile not found.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    btnCreateGathering.setEnabled(true);
+                    btnCreateGathering.setText("Create Gathering");
+                    Toast.makeText(this, "Failed to fetch user info.", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void saveToFirestore(String uid, String hostName, String hostGender) {
+
+        String docId = db.collection("prayerGatherings").document().getId();
+
+        String fullTime = tvTime.getText().toString().trim() + " " +
+                spinnerAmPm.getSelectedItem().toString();
+
+        String genderSetting = "Male".equals(hostGender) ? "brothersOnly" : "sistersOnly";
+
+        PrayerGathering gathering = new PrayerGathering(
+                docId,
+                uid,
+                etDescription.getText().toString().trim(),
+                hostName,spinnerPrayerType.getSelectedItem().toString().trim(),                                // prayerType — update if you have a spinner for this
+                tvSelectedDate.getText().toString().trim(),
+                fullTime,
+                etLocationDescription.getText().toString().trim(),
+                selectedLat,
+                selectedLng,
+                genderSetting,
+                "upcoming",
+                1,
+                System.currentTimeMillis()
+        );
+
+        db.collection("prayerGatherings")
+                .document(docId)
+                .set(gathering)
+                .addOnSuccessListener(unused -> {
+
+                    java.util.Map<String, Object> participantEntry = new java.util.HashMap<>();
+                    participantEntry.put("uid", uid);
+                    participantEntry.put("name", hostName);
+                    participantEntry.put("role", "host");
+                    participantEntry.put("joinedAt", System.currentTimeMillis());
+
+                    db.collection("prayerGatherings")
+                            .document(docId)
+                            .collection("participants")
+                            .document(uid)
+                            .set(participantEntry)
+                            .addOnSuccessListener(unused2 -> {
+                                btnCreateGathering.setEnabled(true);
+                                btnCreateGathering.setText("Create Gathering");
+                                Toast.makeText(this,
+                                        "Gathering created successfully!",
+                                        Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                btnCreateGathering.setEnabled(true);
+                                btnCreateGathering.setText("Create Gathering");
+                                Toast.makeText(this,
+                                        "Gathering saved but participant entry failed.",
+                                        Toast.LENGTH_SHORT).show();
+                                finish();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    btnCreateGathering.setEnabled(true);
+                    btnCreateGathering.setText("Create Gathering");
+                    Toast.makeText(this, "Failed to save gathering: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
     }
 }

@@ -9,22 +9,22 @@ public class MockDataHelper {
         list.add(new PrayerGathering("1", "uid1",
                 "Join us for a peaceful Fajr congregation followed by a short dhikr session to start the day with barakah.",
                 "Ahmed Khan", "Fajr", "2025-01-20", "5:15 AM", "Community Center Hall A",
-                31.5204, 74.3587, "All", "Upcoming", 12));
+                31.5204, 74.3587, "All", "Upcoming", 12,00));
 
         list.add(new PrayerGathering("2", "uid2",
                 "A special Dhuhr gathering for sisters including a 15-minute circle on Islamic history and female scholarship.",
                 "Fatima Zahra", "Dhuhr", "2025-01-20", "1:30 PM", "South Mosque Library",
-                31.5100, 74.3400, "Sisters Only", "Upcoming", 6));
+                31.5100, 74.3400, "Sisters Only", "Upcoming", 6,00));
 
         list.add(new PrayerGathering("3", "uid3",
                 "University brothers' gathering. We will meet at the prayer room for Asr and discuss upcoming campus charity events.",
                 "Omar Hassan", "Asr", "2025-01-20", "4:00 PM", "University Prayer Room",
-                31.5300, 74.3700, "Brothers Only", "Upcoming", 20));
+                31.5300, 74.3700, "Brothers Only", "Upcoming", 20,00));
 
         list.add(new PrayerGathering("4", "uid4",
                 "Community Maghrib prayer. Please bring your own prayer mats if possible as we expect a high turnout.",
                 "Yusuf Ali", "Maghrib", "2025-01-20", "6:45 PM", "Green Valley Mosque",
-                31.5150, 74.3500, "All", "Ongoing", 8));
+                31.5150, 74.3500, "All", "Ongoing", 8,00));
 
         return list;
     }

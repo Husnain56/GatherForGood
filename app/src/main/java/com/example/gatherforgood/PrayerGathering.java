@@ -25,7 +25,7 @@ public class PrayerGathering  implements java.io.Serializable{
     public PrayerGathering(String id, String hostUid, String description, String hostName, String prayerType,
                            String date, String time, String location,
                            double latitude, double longitude,
-                           String genderSetting, String status, int participantCount) {
+                           String genderSetting, String status, int participantCount,long createdAt) {
         this.id = id;
         this.hostUid = hostUid;
         this.description = description;
@@ -39,7 +39,7 @@ public class PrayerGathering  implements java.io.Serializable{
         this.genderSetting = genderSetting;
         this.status = status;
         this.participantCount = participantCount;
-        this.createdAt = System.currentTimeMillis();
+        this.createdAt = createdAt;
     }
 
     public String getId() { return id; }
