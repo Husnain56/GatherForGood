@@ -181,8 +181,17 @@ public class HomeFragment extends Fragment {
 
                     gatheringsList.clear();
 
+                    long currentTime = System.currentTimeMillis();
+                    long twentyMinutes = 20 * 60 * 1000;
+
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         PrayerGathering gathering = doc.toObject(PrayerGathering.class);
+
+                        long prayerTime = gathering.getCreatedAt();
+
+                        if (currentTime > (prayerTime + twentyMinutes)) {
+                            continue;
+                        }
 
                         if (lat != 0 && lng != 0) {
                             float distanceKm = distanceBetween(

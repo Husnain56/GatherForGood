@@ -146,7 +146,7 @@ public class PrayerFragment extends Fragment {
         }
     }
 
-    private void fetchGatherings(double lat, double lng) { // fixed — now takes lat/lng
+    private void fetchGatherings(double lat, double lng) {
         progressBar.setVisibility(View.VISIBLE);
         tvEmpty.setVisibility(View.GONE);
         rvPrayerGatherings.setVisibility(View.GONE);
@@ -163,9 +163,19 @@ public class PrayerFragment extends Fragment {
                 .addOnSuccessListener(querySnapshot -> {
                     gatheringsList.clear();
 
+                    long currentTime = System.currentTimeMillis();
+                    long twentyMinutes = 20 * 60 * 1000;
+
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         PrayerGathering gathering = doc.toObject(PrayerGathering.class);
                         gathering.setId(doc.getId());
+
+                        long prayerTime = gathering.getCreatedAt();
+
+                        if (currentTime > (prayerTime + twentyMinutes)) {
+                            continue;
+                        }
+
 
                         // fixed — apply distance filter
                         if (lat != 0 && lng != 0) {
@@ -208,7 +218,7 @@ public class PrayerFragment extends Fragment {
         activeFilter = prayerType;
         updateChipStyles(selectedChip);
         updateSectionLabel();
-        fetchGatherings(userLat, userLng); // use already fetched coords
+        fetchGatherings(userLat, userLng);
     }
 
     private void updateChipStyles(TextView activeChip) {
