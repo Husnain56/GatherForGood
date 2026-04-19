@@ -200,34 +200,34 @@ public class PrayerFragment extends Fragment {
             query = query.whereEqualTo("prayerType", activeFilter);
         }
 
-        query.addSnapshotListener((querySnapshot, error) -> {
-            if (error != null) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Failed: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                return;
-            }
-            gatheringsList.clear();
-            long currentTime = System.currentTimeMillis();
-            long twentyMinutes = 20 * 60 * 1000;
+        query.get()
+                .addOnSuccessListener(querySnapshot -> {
+                    gatheringsList.clear();
+                    long currentTime = System.currentTimeMillis();
+                    long twentyMinutes = 20 * 60 * 1000;
 
-            for (QueryDocumentSnapshot doc : querySnapshot) {
-                PrayerGathering gathering = doc.toObject(PrayerGathering.class);
-                gathering.setId(doc.getId());
-                long prayerTime = gathering.getCreatedAt();
-                if (currentTime > (prayerTime + twentyMinutes)) continue;
-                gatheringsList.add(gathering);
-            }
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        PrayerGathering gathering = doc.toObject(PrayerGathering.class);
+                        gathering.setId(doc.getId());
+                        long prayerTime = gathering.getCreatedAt();
+                        if (currentTime > (prayerTime + twentyMinutes)) continue;
+                        gatheringsList.add(gathering);
+                    }
 
-            progressBar.setVisibility(View.GONE);
-            if (gatheringsList.isEmpty()) {
-                tvEmpty.setVisibility(View.VISIBLE);
-                rvPrayerGatherings.setVisibility(View.GONE);
-            } else {
-                tvEmpty.setVisibility(View.GONE);
-                rvPrayerGatherings.setVisibility(View.VISIBLE);
-            }
-            adapter.notifyDataSetChanged();
-        });
+                    progressBar.setVisibility(View.GONE);
+                    if (gatheringsList.isEmpty()) {
+                        tvEmpty.setVisibility(View.VISIBLE);
+                        rvPrayerGatherings.setVisibility(View.GONE);
+                    } else {
+                        tvEmpty.setVisibility(View.GONE);
+                        rvPrayerGatherings.setVisibility(View.VISIBLE);
+                    }
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void fetchGatherings(double lat, double lng) {

@@ -2,16 +2,19 @@ package com.example.gatherforgood;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class UserProfileFragment extends Fragment {
@@ -85,11 +88,16 @@ public class UserProfileFragment extends Fragment {
                 .addOnSuccessListener(snap ->
                         tvPrayersHosted.setText(String.valueOf(snap.size())));
 
-        db.collection("prayerGatherings")
-                .whereArrayContains("joinedUids", uid)
+        db.collectionGroup("participants")
+                .whereEqualTo("uid", uid)
+                .whereEqualTo("role", "participant")
                 .get()
-                .addOnSuccessListener(snap ->
-                        tvPrayersJoined.setText(String.valueOf(snap.size())));
+                .addOnSuccessListener(snap -> {
+                    tvPrayersJoined.setText(String.valueOf(snap.size()));
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Error: " + e.toString(), Toast.LENGTH_LONG).show();
+                });
     }
 
     private void setInitials(String fullName) {
@@ -119,5 +127,10 @@ public class UserProfileFragment extends Fragment {
         Intent intent = new Intent(requireActivity(), LoginScreen.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchUserData();
     }
 }
