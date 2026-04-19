@@ -97,6 +97,15 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
         checkPermissionAndLoad();
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(),
+                new androidx.activity.OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        requireActivity().finish();
+                    }
+                }
+        );
     }
 
     public void init(View view) {

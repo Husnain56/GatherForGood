@@ -132,5 +132,14 @@ public class UserProfileFragment extends Fragment {
     public void onResume() {
         super.onResume();
         fetchUserData();
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(),
+                new androidx.activity.OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        ((HomeScreen) requireActivity()).navigateToTab(0);
+                    }
+                }
+        );
     }
 }
