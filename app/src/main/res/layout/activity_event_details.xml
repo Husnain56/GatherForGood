@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/register_bg_gradient">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.15"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_star_pattern" />
+
+    <!-- ─── Hero Image ─── -->
+    <FrameLayout
+        android:id="@+id/heroFrame"
+        android:layout_width="match_parent"
+        android:layout_height="280dp">
+
+        <ImageView
+            android:id="@+id/ivEventHero"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_mosque_outside"
+            android:alpha="0.75" />
+
+        <!-- Bottom fade -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/home_bg_card_overlay" />
+
+        <!-- Back button -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top|start"
+            android:layout_margin="16dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/register_bg_input_field"
+            android:padding="8dp"
+            android:src="@drawable/register_ic_back_arrow"
+            app:tint="@color/soft_gold" />
+
+        <!-- Status + Type badges top-right -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_margin="16dp"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvEventType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/prayer_chip_inactive"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:textColor="#80E5C76B"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                tools:text="FOOD DRIVE" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/register_bg_gender_active"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:textColor="@color/white"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                tools:text="UPCOMING" />
+
+        </LinearLayout>
+
+        <!-- Slots badge bottom-right -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:background="@drawable/register_bg_input_field"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="8dp">
+
+            <TextView
+                android:id="@+id/tvSlots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/soft_gold"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/playfair_display_italic"
+                android:gravity="center"
+                tools:text="18/20" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SLOTS"
+                android:textColor="#80E5C76B"
+                android:textSize="8sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:gravity="center"
+                android:layout_marginTop="2dp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- ─── Scrollable Content ─── -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="240dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/home_bg_arch_card"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="40dp">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvEventTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/playfair_display_bold"
+                android:textColor="#F9F1D7"
+                android:textSize="26sp"
+                android:lineSpacingExtra="4dp"
+                tools:text="Ramadan Food Distribution Drive" />
+
+            <!-- Organizer subtitle -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="By "
+                    android:textColor="#80FFFFFF"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvOrganizerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gold_accent"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    tools:text="Husnain Barkat Ali" />
+
+            </LinearLayout>
+
+            <!-- ─── Info Cards Row ─── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
+                android:weightSum="2">
+
+                <!-- Date & Time -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/home_bg_next_prayer_card"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_event_nofill"
+                        app:tint="#80E5C76B"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DATE &amp; TIME"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
+
+                    <TextView
+                        android:id="@+id/tvEventDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#F9F1D7"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="4dp"
+                        tools:text="Sat, 19 Apr 2026" />
+
+                    <TextView
+                        android:id="@+id/tvEventTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/gold_accent"
+                        android:textSize="12sp"
+                        android:layout_marginTop="2dp"
+                        tools:text="09:00 AM" />
+
+                </LinearLayout>
+
+                <!-- Location -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/home_bg_next_prayer_card"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_location"
+                        app:tint="#80E5C76B"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="LOCATION"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
+
+                    <TextView
+                        android:id="@+id/tvEventLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#F9F1D7"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="4dp"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        tools:text="Grand Islamic Center, Main Hall, Lahore" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ─── About Section ─── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="ABOUT THIS EVENT"
+                android:textColor="#80E5C76B"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2" />
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:alpha="0.8"
+                android:lineSpacingExtra="6dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:maxLines="4"
+                android:ellipsize="end"
+                tools:text="Join us for our annual Ramadan food distribution drive. We will be preparing and distributing food packages to over 200 families in need across the city. Volunteers are needed for packing, loading, and distribution. No experience required — just bring your energy and willingness to serve." />
+
+            <TextView
+                android:id="@+id/tvReadMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Read more"
+                android:textColor="@color/gold_accent"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- ─── Divider ─── -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="24dp"
+                android:background="#1AFFFFFF" />
+
+            <!-- ─── Organizer Detail Row ─── -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="16dp">
+
+                <ImageView
+                    android:id="@+id/iconOrganizer"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_person_fill"
+                    android:background="@drawable/bg_circle_emerald"
+                    android:padding="10dp"
+                    app:tint="#D4AF37" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/iconOrganizer"
+                    android:layout_marginStart="12dp"
+                    android:layout_centerVertical="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ORGANIZER"
+                        android:textSize="9sp"
+                        android:textColor="#80FFFFFF"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
+
+                    <TextView
+                        android:id="@+id/tvOrganizerNameDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#F9F1D7"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:layout_marginTop="2dp"
+                        tools:text="Husnain Barkat Ali" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:orientation="vertical"
+                    android:gravity="end">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PARTICIPANTS"
+                        android:textSize="9sp"
+                        android:textColor="#80FFFFFF"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
+
+                    <TextView
+                        android:id="@+id/tvParticipantCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#F9F1D7"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:layout_marginTop="2dp"
+                        tools:text="18 Attending" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <!-- ─── Divider ─── -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#1AFFFFFF" />
+
+            <!-- ─── Progress Bar ─── -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:indeterminateTint="@color/gold_accent"
+                android:visibility="gone" />
+
+            <!-- ─── Request to Join Button ─── -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnJoin"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/register_bg_gender_active"
+                android:text="Request to Join"
+                android:textAllCaps="false"
+                android:textColor="#042F24"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- ─── Open in Maps Button ─── -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOpenMaps"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="@android:color/transparent"
+                android:text="Open in Maps"
+                android:textAllCaps="false"
+                android:textColor="#B89548"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:strokeColor="#4DB89548"
+                app:strokeWidth="1.5dp"
+                app:cornerRadius="20dp"
+                app:icon="@drawable/ic_map"
+                app:iconTint="#B89548"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                app:rippleColor="#22B89548" />
+
+            <!-- ─── Event Chat ─── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="12dp"
+                android:text="EVENT CHAT"
+                android:textColor="#80E5C76B"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chat_box_placeholder"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Community Chat"
+                        android:textColor="#F9F1D7"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="No messages yet"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:alpha="0.1"
+                    android:background="@color/white" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

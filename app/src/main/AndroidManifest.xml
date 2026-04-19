@@ -21,6 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GatherForGood">
         <activity
+            android:name=".EventDetails"
+            android:exported="false" />
+        <activity
             android:name=".CreatePrayer"
             android:exported="false" />
         <activity
