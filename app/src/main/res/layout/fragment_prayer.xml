@@ -1,40 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/register_bg_gradient">
 
-    <!-- Background Star Pattern -->
+    <!-- Star pattern overlay -->
     <ImageView
         android:id="@+id/starPattern"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.19"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_star_pattern"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:src="@drawable/ic_star_pattern" />
 
+    <!-- Main scrollable content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
-        android:fillViewport="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Header -->
+            <!-- ─── Header ─── -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,7 +72,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Hero Banner -->
+            <!-- ─── Hero Banner ─── -->
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
@@ -133,54 +126,58 @@
 
             </FrameLayout>
 
-            <!-- Action Buttons Row -->
+            <!-- ─── Segmented Toggle: All / My Gatherings ─── -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/register_bg_input_field"
+                android:padding="5dp"
                 android:weightSum="2">
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnCreateGathering"
+                    android:id="@+id/btnAllGatherings"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/register_bg_primary_button"
-                    android:text="+ Create Gathering"
+                    android:layout_marginEnd="3dp"
+                    android:background="@drawable/register_bg_gender_active"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:text="All"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnMyGatherings"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:background="@drawable/register_bg_input_field"
+                    android:layout_marginStart="3dp"
+                    android:background="@android:color/transparent"
+                    android:foreground="?attr/selectableItemBackground"
                     android:text="My Gatherings"
                     android:textAllCaps="false"
                     android:textColor="@color/gold_accent"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
 
-            <!-- Filter Chips -->
+            <!-- ─── Filter Chips ─── -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="none"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="24dp">
+                android:paddingTop="14dp"
+                android:paddingBottom="6dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -193,6 +190,7 @@
                         android:layout_height="36dp"
                         android:layout_marginEnd="8dp"
                         android:background="@drawable/prayer_chip_active"
+                        android:foreground="?attr/selectableItemBackground"
                         android:gravity="center"
                         android:paddingHorizontal="20dp"
                         android:text="ALL"
@@ -207,6 +205,7 @@
                         android:layout_height="36dp"
                         android:layout_marginEnd="8dp"
                         android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
                         android:gravity="center"
                         android:paddingHorizontal="20dp"
                         android:text="FAJR"
@@ -221,6 +220,7 @@
                         android:layout_height="36dp"
                         android:layout_marginEnd="8dp"
                         android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
                         android:gravity="center"
                         android:paddingHorizontal="20dp"
                         android:text="ZUHR"
@@ -235,6 +235,7 @@
                         android:layout_height="36dp"
                         android:layout_marginEnd="8dp"
                         android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
                         android:gravity="center"
                         android:paddingHorizontal="20dp"
                         android:text="ASR"
@@ -249,6 +250,7 @@
                         android:layout_height="36dp"
                         android:layout_marginEnd="8dp"
                         android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
                         android:gravity="center"
                         android:paddingHorizontal="20dp"
                         android:text="MAGHRIB"
@@ -263,6 +265,7 @@
                         android:layout_height="36dp"
                         android:layout_marginEnd="8dp"
                         android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
                         android:gravity="center"
                         android:paddingHorizontal="20dp"
                         android:text="ISHA"
@@ -276,11 +279,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
                         android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
                         android:gravity="center"
                         android:paddingHorizontal="20dp"
                         android:text="JUMU'AH"
                         android:textColor="#80E5C76B"
-                        android:textSize="11sp"
+                        android:textSize="10sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.15" />
 
@@ -288,13 +292,14 @@
 
             </HorizontalScrollView>
 
+            <!-- ─── Section Label ─── -->
             <TextView
                 android:id="@+id/tvSectionLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:paddingTop="4dp"
+                android:paddingTop="8dp"
                 android:paddingBottom="10dp"
                 android:text="NEARBY PRAYERS"
                 android:textColor="#80E5C76B"
@@ -302,7 +307,7 @@
                 android:textStyle="bold"
                 android:letterSpacing="0.2" />
 
-            <!-- Loading State -->
+            <!-- ─── Loading ─── -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
@@ -310,12 +315,12 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="32dp"
-                android:indeterminateTint="@color/gold_accent"
-                android:visibility="gone"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp"
+                android:indeterminateTint="@color/gold_accent"
+                android:visibility="gone" />
 
-            <!-- Empty State -->
+            <!-- ─── Empty State ─── -->
             <LinearLayout
                 android:id="@+id/tvEmpty"
                 android:layout_width="match_parent"
@@ -352,14 +357,14 @@
 
             </LinearLayout>
 
-            <!-- Gatherings List -->
+            <!-- ─── Gatherings List ─── -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvPrayerGatherings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:paddingBottom="80dp"
+                android:paddingBottom="100dp"
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
@@ -367,4 +372,20 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- ─── FAB: Create Gathering ─── -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnCreateGathering"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        android:src="@drawable/ic_add"
+        android:contentDescription="Create Gathering"
+        app:backgroundTint="@color/gold_accent"
+        app:tint="@color/white"
+        app:borderWidth="0dp"
+        app:fabSize="normal"
+        app:elevation="8dp"
+        app:pressedTranslationZ="12dp" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

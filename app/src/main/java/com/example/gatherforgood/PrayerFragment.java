@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -33,12 +34,13 @@ public class PrayerFragment extends Fragment {
 
     RecyclerView rvPrayerGatherings;
     PrayerGatheringAdapter adapter;
-    Button btnCreateGathering;
+    FloatingActionButton btnCreateGathering;
     Button btnMyGatherings;
+    Button btnAllGatherings;
     ProgressBar progressBar;
     LinearLayout tvEmpty;
     TextView tvSectionLabel;
-    Boolean isMyGatherings = false;
+    boolean isMyGatherings = false;
 
     TextView chipAll, chipFajr, chipZuhr, chipAsr, chipMaghrib, chipIsha, chipJumuah;
 
@@ -69,22 +71,23 @@ public class PrayerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         init(view);
         setListeners();
-        checkPermissionAndLoad(); // fixed
+        checkPermissionAndLoad();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        checkPermissionAndLoad(); // fixed
+        checkPermissionAndLoad();
     }
 
     public void init(View view) {
         rvPrayerGatherings = view.findViewById(R.id.rvPrayerGatherings);
         btnCreateGathering = view.findViewById(R.id.btnCreateGathering);
+        btnMyGatherings    = view.findViewById(R.id.btnMyGatherings);
+        btnAllGatherings   = view.findViewById(R.id.btnAllGatherings);
         progressBar        = view.findViewById(R.id.progressBar);
         tvEmpty            = view.findViewById(R.id.tvEmpty);
         tvSectionLabel     = view.findViewById(R.id.tvSectionLabel);
-        btnMyGatherings = view.findViewById(R.id.btnMyGatherings);
 
         chipAll     = view.findViewById(R.id.chipAll);
         chipFajr    = view.findViewById(R.id.chipFajr);
@@ -100,21 +103,31 @@ public class PrayerFragment extends Fragment {
         rvPrayerGatherings.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new PrayerGatheringAdapter(getContext(), gatheringsList);
         rvPrayerGatherings.setAdapter(adapter);
+
+        // default state
+        setActiveButton(btnAllGatherings);
     }
 
     public void setListeners() {
-        btnCreateGathering.setOnClickListener(v -> {
+        btnAllGatherings.setOnClickListener(v -> {
             isMyGatherings = false;
-            navigateToCreatePrayerScreen();
-        });
-
-        btnMyGatherings.setOnClickListener(v->{
-            isMyGatherings = true;
+            setActiveButton(btnAllGatherings);
             activeFilter = null;
             updateChipStyles(chipAll);
-            loadMyGatherings();
-
+            updateSectionLabel();
+            fetchGatherings(userLat, userLng);
         });
+
+        btnMyGatherings.setOnClickListener(v -> {
+            isMyGatherings = true;
+            setActiveButton(btnMyGatherings);
+            activeFilter = null;
+            updateChipStyles(chipAll);
+            updateSectionLabel();
+            loadMyGatherings();
+        });
+
+        btnCreateGathering.setOnClickListener(v -> navigateToCreatePrayerScreen());
 
         chipAll.setOnClickListener(v     -> selectFilter(null,      chipAll));
         chipFajr.setOnClickListener(v    -> selectFilter("Fajr",    chipFajr));
@@ -125,6 +138,18 @@ public class PrayerFragment extends Fragment {
         chipJumuah.setOnClickListener(v  -> selectFilter("Jumuah",  chipJumuah));
     }
 
+    private void setActiveButton(Button activeBtn) {
+        Button[] buttons = {btnAllGatherings, btnMyGatherings};
+        for (Button btn : buttons) {
+            if (btn == activeBtn) {
+                btn.setBackgroundResource(R.drawable.register_bg_gender_active);
+                btn.setTextColor(android.graphics.Color.WHITE);
+            } else {
+                btn.setBackgroundResource(R.drawable.register_bg_input_field);
+                btn.setTextColor(android.graphics.Color.parseColor("#D4AF37"));
+            }
+        }
+    }
 
     private boolean hasLocationPermission() {
         return ContextCompat.checkSelfPermission(requireContext(),
@@ -167,7 +192,9 @@ public class PrayerFragment extends Fragment {
         tvEmpty.setVisibility(View.GONE);
         rvPrayerGatherings.setVisibility(View.GONE);
 
-        Query query = FirebaseFirestore.getInstance().collection("prayerGatherings").whereEqualTo("hostUid", FirebaseAuth.getInstance().getUid());
+        Query query = FirebaseFirestore.getInstance()
+                .collection("prayerGatherings")
+                .whereEqualTo("hostUid", FirebaseAuth.getInstance().getUid());
 
         if (activeFilter != null) {
             query = query.whereEqualTo("prayerType", activeFilter);
@@ -182,19 +209,15 @@ public class PrayerFragment extends Fragment {
             gatheringsList.clear();
             long currentTime = System.currentTimeMillis();
             long twentyMinutes = 20 * 60 * 1000;
-            for (QueryDocumentSnapshot doc : querySnapshot) {
 
+            for (QueryDocumentSnapshot doc : querySnapshot) {
                 PrayerGathering gathering = doc.toObject(PrayerGathering.class);
                 gathering.setId(doc.getId());
-
                 long prayerTime = gathering.getCreatedAt();
-
-                if (currentTime > (prayerTime + twentyMinutes)) {
-                    continue;
-                }
-
+                if (currentTime > (prayerTime + twentyMinutes)) continue;
                 gatheringsList.add(gathering);
             }
+
             progressBar.setVisibility(View.GONE);
             if (gatheringsList.isEmpty()) {
                 tvEmpty.setVisibility(View.VISIBLE);
@@ -223,7 +246,6 @@ public class PrayerFragment extends Fragment {
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
                     gatheringsList.clear();
-
                     long currentTime = System.currentTimeMillis();
                     long twentyMinutes = 20 * 60 * 1000;
 
@@ -232,28 +254,20 @@ public class PrayerFragment extends Fragment {
                         gathering.setId(doc.getId());
 
                         long prayerTime = gathering.getCreatedAt();
+                        if (currentTime > (prayerTime + twentyMinutes)) continue;
 
-                        if (currentTime > (prayerTime + twentyMinutes)) {
-                            continue;
-                        }
-
-
-                        // fixed — apply distance filter
                         if (lat != 0 && lng != 0) {
-                            float distance = distanceBetween(
-                                    lat, lng,
-                                    gathering.getLatitude(),
-                                    gathering.getLongitude());
+                            float distance = distanceBetween(lat, lng,
+                                    gathering.getLatitude(), gathering.getLongitude());
                             if (distance <= NEARBY_RADIUS_KM) {
                                 gatheringsList.add(gathering);
                             }
                         } else {
-                            gatheringsList.add(gathering); // no location — show all
+                            gatheringsList.add(gathering);
                         }
                     }
 
                     progressBar.setVisibility(View.GONE);
-
                     if (gatheringsList.isEmpty()) {
                         tvEmpty.setVisibility(View.VISIBLE);
                         rvPrayerGatherings.setVisibility(View.GONE);
@@ -261,7 +275,6 @@ public class PrayerFragment extends Fragment {
                         tvEmpty.setVisibility(View.GONE);
                         rvPrayerGatherings.setVisibility(View.VISIBLE);
                     }
-
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
@@ -279,10 +292,9 @@ public class PrayerFragment extends Fragment {
         activeFilter = prayerType;
         updateChipStyles(selectedChip);
         updateSectionLabel();
-        if(!isMyGatherings) {
+        if (!isMyGatherings) {
             fetchGatherings(userLat, userLng);
-        }
-        else {
+        } else {
             loadMyGatherings();
         }
     }
@@ -302,7 +314,11 @@ public class PrayerFragment extends Fragment {
 
     private void updateSectionLabel() {
         if (tvSectionLabel == null) return;
-        tvSectionLabel.setText(activeFilter == null ? "NEARBY PRAYERS" : activeFilter.toUpperCase() + " PRAYERS");
+        if (isMyGatherings) {
+            tvSectionLabel.setText(activeFilter == null ? "MY GATHERINGS" : "MY " + activeFilter.toUpperCase() + " GATHERINGS");
+        } else {
+            tvSectionLabel.setText(activeFilter == null ? "NEARBY PRAYERS" : activeFilter.toUpperCase() + " PRAYERS");
+        }
     }
 
     private float distanceBetween(double lat1, double lng1, double lat2, double lng2) {
