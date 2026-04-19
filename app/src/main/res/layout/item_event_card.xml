@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="#0D2318">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ─── Event Image with overlays ─── -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="170dp">
+
+            <!-- Event Image -->
+            <ImageView
+                android:id="@+id/ivEventImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_mosque_outside" />
+
+            <!-- Bottom fade overlay so card bg bleeds through -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/home_bg_card_overlay" />
+
+            <!-- Status badge top-left -->
+            <TextView
+                android:id="@+id/tvEventStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_margin="12dp"
+                android:background="@drawable/register_bg_gender_active"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="5dp"
+                android:text="UPCOMING"
+                android:textColor="@color/white"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15" />
+
+        </FrameLayout>
+
+        <!-- ─── Event Info ─── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="16dp">
+
+            <!-- Title + Slots row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <!-- Title -->
+                <TextView
+                    android:id="@+id/tvEventTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Ramadan Food Distribution"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/playfair_display_italic"
+                    android:textStyle="bold|italic"
+                    android:layout_marginEnd="12dp" />
+
+                <!-- Slots badge -->
+                <LinearLayout
+                    android:layout_width="52dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/register_bg_input_field"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:id="@+id/tvSlotsFilled"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="18/20"
+                        android:textColor="@color/soft_gold"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:fontFamily="@font/playfair_display_italic" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SLOTS"
+                        android:textColor="#80E5C76B"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        android:gravity="center"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Date Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_event_nofill"
+                    app:tint="#80E5C76B"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:id="@+id/tvEventDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sat, Apr 15 • 09:00 AM"
+                    android:textColor="#80FFFFFF"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <!-- Location Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_location"
+                    app:tint="#80E5C76B"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:id="@+id/tvEventLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Grand Islamic Center, Main Hall"
+                    android:textColor="#80FFFFFF"
+                    android:textSize="12sp"
+                    android:ellipsize="end"
+                    android:maxLines="1" />
+
+            </LinearLayout>
+
+            <!-- CTA Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnRequestJoin"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/register_bg_gender_active"
+                android:foreground="?attr/selectableItemBackground"
+                android:text="REQUEST TO JOIN"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

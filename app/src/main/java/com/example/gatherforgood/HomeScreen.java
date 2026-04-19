@@ -74,12 +74,6 @@ public class HomeScreen extends AppCompatActivity {
             if (i < titles.length) tab.setText(titles[i]);
         });
         mediator.attach();
-
-        TabLayout.Tab eventsTab = homeTL.getTabAt(2);
-        if (eventsTab != null) {
-            eventsTab.view.setClickable(false);
-            eventsTab.view.setAlpha(0.4f);
-        }
     }
 
     public void setupTabCustomViews() {
@@ -97,7 +91,6 @@ public class HomeScreen extends AppCompatActivity {
         homeTL.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 2) return;
                 homeViewPager.setCurrentItem(tab.getPosition(), false);
             }
 
