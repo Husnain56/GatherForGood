@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -33,9 +34,11 @@ public class PrayerFragment extends Fragment {
     RecyclerView rvPrayerGatherings;
     PrayerGatheringAdapter adapter;
     Button btnCreateGathering;
+    Button btnMyGatherings;
     ProgressBar progressBar;
     LinearLayout tvEmpty;
     TextView tvSectionLabel;
+    Boolean isMyGatherings = false;
 
     TextView chipAll, chipFajr, chipZuhr, chipAsr, chipMaghrib, chipIsha, chipJumuah;
 
@@ -81,6 +84,7 @@ public class PrayerFragment extends Fragment {
         progressBar        = view.findViewById(R.id.progressBar);
         tvEmpty            = view.findViewById(R.id.tvEmpty);
         tvSectionLabel     = view.findViewById(R.id.tvSectionLabel);
+        btnMyGatherings = view.findViewById(R.id.btnMyGatherings);
 
         chipAll     = view.findViewById(R.id.chipAll);
         chipFajr    = view.findViewById(R.id.chipFajr);
@@ -99,7 +103,18 @@ public class PrayerFragment extends Fragment {
     }
 
     public void setListeners() {
-        btnCreateGathering.setOnClickListener(v -> navigateToCreatePrayerScreen());
+        btnCreateGathering.setOnClickListener(v -> {
+            isMyGatherings = false;
+            navigateToCreatePrayerScreen();
+        });
+
+        btnMyGatherings.setOnClickListener(v->{
+            isMyGatherings = true;
+            activeFilter = null;
+            updateChipStyles(chipAll);
+            loadMyGatherings();
+
+        });
 
         chipAll.setOnClickListener(v     -> selectFilter(null,      chipAll));
         chipFajr.setOnClickListener(v    -> selectFilter("Fajr",    chipFajr));
@@ -109,6 +124,7 @@ public class PrayerFragment extends Fragment {
         chipIsha.setOnClickListener(v    -> selectFilter("Isha",    chipIsha));
         chipJumuah.setOnClickListener(v  -> selectFilter("Jumuah",  chipJumuah));
     }
+
 
     private boolean hasLocationPermission() {
         return ContextCompat.checkSelfPermission(requireContext(),
@@ -144,6 +160,51 @@ public class PrayerFragment extends Fragment {
         } catch (SecurityException e) {
             fetchGatherings(0, 0);
         }
+    }
+
+    private void loadMyGatherings() {
+        progressBar.setVisibility(View.VISIBLE);
+        tvEmpty.setVisibility(View.GONE);
+        rvPrayerGatherings.setVisibility(View.GONE);
+
+        Query query = FirebaseFirestore.getInstance().collection("prayerGatherings").whereEqualTo("hostUid", FirebaseAuth.getInstance().getUid());
+
+        if (activeFilter != null) {
+            query = query.whereEqualTo("prayerType", activeFilter);
+        }
+
+        query.addSnapshotListener((querySnapshot, error) -> {
+            if (error != null) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Failed: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            gatheringsList.clear();
+            long currentTime = System.currentTimeMillis();
+            long twentyMinutes = 20 * 60 * 1000;
+            for (QueryDocumentSnapshot doc : querySnapshot) {
+
+                PrayerGathering gathering = doc.toObject(PrayerGathering.class);
+                gathering.setId(doc.getId());
+
+                long prayerTime = gathering.getCreatedAt();
+
+                if (currentTime > (prayerTime + twentyMinutes)) {
+                    continue;
+                }
+
+                gatheringsList.add(gathering);
+            }
+            progressBar.setVisibility(View.GONE);
+            if (gatheringsList.isEmpty()) {
+                tvEmpty.setVisibility(View.VISIBLE);
+                rvPrayerGatherings.setVisibility(View.GONE);
+            } else {
+                tvEmpty.setVisibility(View.GONE);
+                rvPrayerGatherings.setVisibility(View.VISIBLE);
+            }
+            adapter.notifyDataSetChanged();
+        });
     }
 
     private void fetchGatherings(double lat, double lng) {
@@ -218,7 +279,12 @@ public class PrayerFragment extends Fragment {
         activeFilter = prayerType;
         updateChipStyles(selectedChip);
         updateSectionLabel();
-        fetchGatherings(userLat, userLng);
+        if(!isMyGatherings) {
+            fetchGatherings(userLat, userLng);
+        }
+        else {
+            loadMyGatherings();
+        }
     }
 
     private void updateChipStyles(TextView activeChip) {
