@@ -52,13 +52,13 @@ public class HomeScreen extends AppCompatActivity {
     }
 
     public void initData() {
-        titles = new String[]{"Home", "Prayers", "", "Events", "Profile"};
-        fill_icons = new int[]{R.drawable.ic_home_nofill, R.drawable.ic_mosque_nofill, 0, R.drawable.ic_event_nofill, R.drawable.ic_person_nofill};
-        no_fill_icons = new int[]{R.drawable.ic_home_fill, R.drawable.ic_mosque_fill, 0, R.drawable.ic_event_fill, R.drawable.ic_person_fill};
+        titles = new String[]{"Home", "Prayers", "Events", "Profile"};
+        fill_icons   = new int[]{R.drawable.ic_home_nofill, R.drawable.ic_mosque_nofill, R.drawable.ic_event_nofill, R.drawable.ic_person_nofill};
+        no_fill_icons = new int[]{R.drawable.ic_home_fill,   R.drawable.ic_mosque_fill,   R.drawable.ic_event_fill,   R.drawable.ic_person_fill};
     }
 
     public void initViews() {
-        homeTL = findViewById(R.id.homeTL);
+        homeTL        = findViewById(R.id.homeTL);
         homeViewPager = findViewById(R.id.homeViewPager);
     }
 
@@ -75,15 +75,15 @@ public class HomeScreen extends AppCompatActivity {
         });
         mediator.attach();
 
-        Objects.requireNonNull(homeTL.getTabAt(2)).view.setClickable(false);
-        Objects.requireNonNull(homeTL.getTabAt(2)).view.setEnabled(false);
-        Objects.requireNonNull(homeTL.getTabAt(3)).view.setClickable(false);
-        Objects.requireNonNull(homeTL.getTabAt(3)).view.setEnabled(false);
+        TabLayout.Tab eventsTab = homeTL.getTabAt(2);
+        if (eventsTab != null) {
+            eventsTab.view.setClickable(false);
+            eventsTab.view.setAlpha(0.4f);
+        }
     }
 
     public void setupTabCustomViews() {
         for (int i = 0; i < homeTL.getTabCount(); i++) {
-            if (i == 2) continue;
             View tabView = LayoutInflater.from(this).inflate(R.layout.home_custom_tab, null);
             TextView text = tabView.findViewById(R.id.tabText);
             ImageView icon = tabView.findViewById(R.id.tabIcon);
@@ -132,7 +132,7 @@ public class HomeScreen extends AppCompatActivity {
         }
     }
 
-    public void navigateToTab(int position){
+    public void navigateToTab(int position) {
         homeViewPager.setCurrentItem(position, false);
     }
 }
