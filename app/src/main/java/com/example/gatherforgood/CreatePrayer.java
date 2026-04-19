@@ -108,6 +108,15 @@ public class CreatePrayer extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
     }
+    private long buildPrayerTimeMillis() {
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        calendar.setTimeInMillis(selectedDateMillis);
+        calendar.set(java.util.Calendar.HOUR_OF_DAY, getSelectedHour());
+        calendar.set(java.util.Calendar.MINUTE, getSelectedMinute());
+        calendar.set(java.util.Calendar.SECOND, 0);
+        calendar.set(java.util.Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
+    }
     private void setListeners() {
         ivPickDate.setOnClickListener(v -> showDatePicker());
         rlDate.setOnClickListener(v -> showDatePicker());
@@ -337,19 +346,19 @@ public class CreatePrayer extends AppCompatActivity {
         String genderSetting = "Male".equals(hostGender) ? "brothersOnly" : "sistersOnly";
 
         PrayerGathering gathering = new PrayerGathering(
-                docId,
-                uid,
+                docId, uid,
                 etDescription.getText().toString().trim(),
-                hostName,spinnerPrayerType.getSelectedItem().toString().trim(),                                // prayerType — update if you have a spinner for this
+                hostName,
+                spinnerPrayerType.getSelectedItem().toString().trim(),
                 tvSelectedDate.getText().toString().trim(),
                 fullTime,
                 etLocationDescription.getText().toString().trim(),
-                selectedLat,
-                selectedLng,
+                selectedLat, selectedLng,
                 genderSetting,
                 "upcoming",
                 1,
-                System.currentTimeMillis()
+                System.currentTimeMillis(),
+                buildPrayerTimeMillis()
         );
 
         db.collection("prayerGatherings")

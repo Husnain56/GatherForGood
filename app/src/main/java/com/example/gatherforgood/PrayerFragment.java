@@ -236,12 +236,13 @@ public class PrayerFragment extends Fragment {
         rvPrayerGatherings.setVisibility(View.GONE);
 
         Query query = FirebaseFirestore.getInstance()
-                .collection("prayerGatherings")
-                .orderBy("createdAt", Query.Direction.DESCENDING);
+                .collection("prayerGatherings");
 
         if (activeFilter != null) {
             query = query.whereEqualTo("prayerType", activeFilter);
         }
+
+        query = query.orderBy("timeInMillis", Query.Direction.ASCENDING);
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -253,7 +254,7 @@ public class PrayerFragment extends Fragment {
                         PrayerGathering gathering = doc.toObject(PrayerGathering.class);
                         gathering.setId(doc.getId());
 
-                        long prayerTime = gathering.getCreatedAt();
+                        long prayerTime = gathering.getTimeInMillis();
                         if (currentTime > (prayerTime + twentyMinutes)) continue;
 
                         if (lat != 0 && lng != 0) {

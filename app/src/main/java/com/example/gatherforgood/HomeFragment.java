@@ -173,7 +173,7 @@ public class HomeFragment extends Fragment {
 
         FirebaseFirestore.getInstance()
                 .collection("prayerGatherings")
-                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .orderBy("timeInMillis", Query.Direction.ASCENDING)
                 .limit(20)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -187,7 +187,7 @@ public class HomeFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         PrayerGathering gathering = doc.toObject(PrayerGathering.class);
 
-                        long prayerTime = gathering.getCreatedAt();
+                        long prayerTime = gathering.getTimeInMillis();
 
                         if (currentTime > (prayerTime + twentyMinutes)) {
                             continue;

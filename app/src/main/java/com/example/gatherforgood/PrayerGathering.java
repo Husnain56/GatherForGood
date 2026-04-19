@@ -17,15 +17,17 @@ public class PrayerGathering  implements java.io.Serializable{
     private String status;
     private int participantCount;
     private long createdAt;
+    private long timeInMillis;
 
     public PrayerGathering() {
 
     }
 
+
     public PrayerGathering(String id, String hostUid, String description, String hostName, String prayerType,
                            String date, String time, String location,
                            double latitude, double longitude,
-                           String genderSetting, String status, int participantCount,long createdAt) {
+                           String genderSetting, String status, int participantCount, long createdAt, long timeInMillis) {
         this.id = id;
         this.hostUid = hostUid;
         this.description = description;
@@ -40,7 +42,11 @@ public class PrayerGathering  implements java.io.Serializable{
         this.status = status;
         this.participantCount = participantCount;
         this.createdAt = createdAt;
+        this.timeInMillis = timeInMillis;
     }
+
+    public long getTimeInMillis() { return timeInMillis; }
+    public void setTimeInMillis(long timeInMillis) { this.timeInMillis = timeInMillis; }
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
