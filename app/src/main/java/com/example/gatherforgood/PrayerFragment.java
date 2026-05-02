@@ -77,7 +77,13 @@ public class PrayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        checkPermissionAndLoad();
+
+        if (isMyGatherings) {
+            loadMyGatherings();
+        } else {
+            checkPermissionAndLoad();
+        }
+
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
                 new androidx.activity.OnBackPressedCallback(true) {
