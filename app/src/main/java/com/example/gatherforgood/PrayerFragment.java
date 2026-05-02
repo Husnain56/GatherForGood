@@ -113,7 +113,6 @@ public class PrayerFragment extends Fragment {
         adapter = new PrayerGatheringAdapter(getContext(), gatheringsList);
         rvPrayerGatherings.setAdapter(adapter);
 
-        // default state
         setActiveButton(btnAllGatherings);
     }
 

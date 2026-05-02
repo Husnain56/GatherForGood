@@ -77,8 +77,6 @@ public class CreateEvent extends AppCompatActivity {
             "Clothing Drive",
             "Blood Donation Camp",
             "Tree Planting",
-            "Tutoring / Education",
-            "Elderly Care",
             "Mosque Cleaning",
             "Fundraising",
             "Disaster Relief",

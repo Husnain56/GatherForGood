@@ -48,7 +48,6 @@ public class PrayerGatheringAdapter extends RecyclerView.Adapter<PrayerGathering
             navigateToDetails(v.getContext(), gathering);
         });
 
-        // Logic for clicking the WHOLE card
         holder.itemView.setOnClickListener(v -> {
             navigateToDetails(v.getContext(), gathering);
         });

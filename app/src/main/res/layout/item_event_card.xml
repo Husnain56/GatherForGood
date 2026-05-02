@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
+    android:id="@+id/main"
     android:foreground="?attr/selectableItemBackground"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp"
@@ -63,7 +64,6 @@
             android:paddingTop="14dp"
             android:paddingBottom="16dp">
 
-            <!-- Title + Slots row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,7 +71,6 @@
                 android:gravity="center_vertical"
                 android:layout_marginBottom="12dp">
 
-                <!-- Title -->
                 <TextView
                     android:id="@+id/tvEventTitle"
                     android:layout_width="0dp"
@@ -172,7 +171,6 @@
 
             </LinearLayout>
 
-            <!-- CTA Button -->
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnRequestJoin"
                 android:layout_width="match_parent"
