@@ -32,12 +32,16 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class CreateEvent extends AppCompatActivity {
 
@@ -53,6 +57,8 @@ public class CreateEvent extends AppCompatActivity {
     EditText etEventTitle, etVolunteersRequired, etLocationDescription, etDescription, etRequirements;
     Button btnCreateEvent;
     ImageButton btnBack;
+    FirebaseFirestore db;
+    FirebaseAuth mAuth;
 
     private PlacesClient placesClient;
     private ActivityResultLauncher<Intent> placesLauncher;
@@ -64,7 +70,6 @@ public class CreateEvent extends AppCompatActivity {
             Place.Field.LOCATION
     );
 
-
     private static final String[] EVENT_TYPES = {
             "Select Event Type",
             "Food Drive",
@@ -72,6 +77,8 @@ public class CreateEvent extends AppCompatActivity {
             "Clothing Drive",
             "Blood Donation Camp",
             "Tree Planting",
+            "Tutoring / Education",
+            "Elderly Care",
             "Mosque Cleaning",
             "Fundraising",
             "Disaster Relief",
@@ -86,7 +93,6 @@ public class CreateEvent extends AppCompatActivity {
     };
 
     private static final String[] AM_PM_OPTIONS = { "AM", "PM" };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +136,9 @@ public class CreateEvent extends AppCompatActivity {
         tvMapHint             = findViewById(R.id.tvMapHint);
         btnCreateEvent        = findViewById(R.id.btnCreateEvent);
         btnBack               = findViewById(R.id.btnBack);
+
+        mAuth = FirebaseAuth.getInstance();
+        db    = FirebaseFirestore.getInstance();
 
         setupSpinners();
     }
@@ -277,72 +286,162 @@ public class CreateEvent extends AppCompatActivity {
             Toast.makeText(this, "Please select an event type", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (title.isEmpty()) {
             Toast.makeText(this, "Please enter an event title", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (volunteers.isEmpty()) {
             Toast.makeText(this, "Please enter number of volunteers needed", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (genderSel.equals("Select Audience")) {
             Toast.makeText(this, "Please select who this event is open to", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (selectedDateMillis == null) {
             Toast.makeText(this, "Please select a date", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (time.isEmpty() || time.equals("Select Time")) {
             Toast.makeText(this, "Please select a time", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (isToday(selectedDateMillis)) {
             int selectedHour   = getSelectedHour();
             int selectedMinute = getSelectedMinute();
-
             java.util.Calendar now = java.util.Calendar.getInstance();
-            int currentHour   = now.get(java.util.Calendar.HOUR_OF_DAY);
-            int currentMinute = now.get(java.util.Calendar.MINUTE);
-
-            if (selectedHour < currentHour ||
-                    (selectedHour == currentHour && selectedMinute <= currentMinute)) {
+            if (selectedHour < now.get(java.util.Calendar.HOUR_OF_DAY) ||
+                    (selectedHour == now.get(java.util.Calendar.HOUR_OF_DAY)
+                            && selectedMinute <= now.get(java.util.Calendar.MINUTE))) {
                 Toast.makeText(this, "Please select a future time for today", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
-
         if (selectedLat == null || selectedLng == null) {
             Toast.makeText(this, "Please pin a location first", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (location.isEmpty()) {
             Toast.makeText(this, "Please add location details", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (description.isEmpty()) {
             Toast.makeText(this, "Please add a description", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show();
-        finish();
+        saveEvent();
+    }
+
+    private void saveEvent() {
+        btnCreateEvent.setEnabled(false);
+        btnCreateEvent.setText("Saving...");
+
+        String currentUid = mAuth.getCurrentUser().getUid();
+
+        db.collection("users")
+                .document(currentUid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        String hostName = doc.getString("name");
+                        saveToFirestore(currentUid, hostName);
+                    } else {
+                        resetButton();
+                        Toast.makeText(this, "User profile not found.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    resetButton();
+                    Toast.makeText(this, "Failed to fetch user info.", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void saveToFirestore(String uid, String hostName) {
+        String docId = db.collection("volunteerEvents").document().getId();
+
+        String fullTime      = tvTime.getText().toString().trim() + " " +
+                spinnerAmPm.getSelectedItem().toString();
+        String genderSel     = spinnerGenderSetting.getSelectedItem().toString();
+
+        String genderSetting;
+        switch (genderSel) {
+            case "Brothers Only": genderSetting = "brothersOnly";  break;
+            case "Sisters Only":  genderSetting = "sistersOnly";   break;
+            default:              genderSetting = "all";           break;
+        }
+
+        Map<String, Object> event = new HashMap<>();
+        event.put("eventId",            docId);
+        event.put("hostUid",            uid);
+        event.put("hostName",           hostName);
+        event.put("eventType",          spinnerEventType.getSelectedItem().toString());
+        event.put("title",              etEventTitle.getText().toString().trim());
+        event.put("volunteersRequired", Integer.parseInt(etVolunteersRequired.getText().toString().trim()));
+        event.put("volunteersJoined",   1);
+        event.put("genderSetting",      genderSetting);
+        event.put("date",               tvSelectedDate.getText().toString().trim());
+        event.put("time",               fullTime);
+        event.put("eventTimeMillis",    buildEventTimeMillis());
+        event.put("location",           etLocationDescription.getText().toString().trim());
+        event.put("lat",                selectedLat);
+        event.put("lng",                selectedLng);
+        event.put("description",        etDescription.getText().toString().trim());
+        event.put("requirements",       etRequirements.getText().toString().trim());
+        event.put("status",             "upcoming");
+        event.put("createdAt",          System.currentTimeMillis());
+
+        db.collection("volunteerEvents")
+                .document(docId)
+                .set(event)
+                .addOnSuccessListener(unused -> {
+                    Map<String, Object> participant = new HashMap<>();
+                    participant.put("uid",      uid);
+                    participant.put("name",     hostName);
+                    participant.put("role",     "host");
+                    participant.put("joinedAt", System.currentTimeMillis());
+
+                    db.collection("volunteerEvents")
+                            .document(docId)
+                            .collection("participants")
+                            .document(uid)
+                            .set(participant)
+                            .addOnSuccessListener(unused2 -> {
+                                resetButton();
+                                Toast.makeText(this, "Event created successfully!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                resetButton();
+                                Toast.makeText(this, "Event saved!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    resetButton();
+                    Toast.makeText(this, "Failed to save event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void resetButton() {
+        btnCreateEvent.setEnabled(true);
+        btnCreateEvent.setText("Create Event");
+    }
+
+    private long buildEventTimeMillis() {
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        calendar.setTimeInMillis(selectedDateMillis);
+        calendar.set(java.util.Calendar.HOUR_OF_DAY, getSelectedHour());
+        calendar.set(java.util.Calendar.MINUTE, getSelectedMinute());
+        calendar.set(java.util.Calendar.SECOND, 0);
+        calendar.set(java.util.Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
     }
 
     private boolean isToday(long dateMillis) {
         java.util.Calendar selected = java.util.Calendar.getInstance();
         selected.setTimeInMillis(dateMillis);
-
         java.util.Calendar today = java.util.Calendar.getInstance();
-
         return selected.get(java.util.Calendar.YEAR)         == today.get(java.util.Calendar.YEAR) &&
                 selected.get(java.util.Calendar.MONTH)        == today.get(java.util.Calendar.MONTH) &&
                 selected.get(java.util.Calendar.DAY_OF_MONTH) == today.get(java.util.Calendar.DAY_OF_MONTH);
@@ -352,7 +451,6 @@ public class CreateEvent extends AppCompatActivity {
         String[] parts = tvTime.getText().toString().split(":");
         int hour = Integer.parseInt(parts[0]);
         String amPm = spinnerAmPm.getSelectedItem().toString();
-
         if (amPm.equals("AM")) {
             if (hour == 12) hour = 0;
         } else {
