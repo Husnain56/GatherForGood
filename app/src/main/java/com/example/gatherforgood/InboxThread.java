@@ -25,6 +25,6 @@ public class InboxThread {
     public long   getLastMessageTime() { return lastMessageTime; }
     public String getChatId()          { return chatId; }
 
-    public void setLastMessage(String lastMessage)         { this.lastMessage     = lastMessage; }
-    public void setLastMessageTime(long lastMessageTime)   { this.lastMessageTime = lastMessageTime; }
+    public void setLastMessage(String lastMessage)       { this.lastMessage     = lastMessage; }
+    public void setLastMessageTime(long lastMessageTime) { this.lastMessageTime = lastMessageTime; }
 }

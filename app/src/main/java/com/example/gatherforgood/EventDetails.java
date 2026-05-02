@@ -65,7 +65,7 @@ public class EventDetails extends AppCompatActivity {
 
         init();
         bindData();
-        setEventListeners();
+        setBaseListeners();
     }
 
     private void init() {
@@ -82,13 +82,13 @@ public class EventDetails extends AppCompatActivity {
         tvEventType           = findViewById(R.id.tvEventType);
         tvStatus              = findViewById(R.id.tvStatus);
 
-        btnJoin         = findViewById(R.id.btnJoin);
-        btnOpenMaps     = findViewById(R.id.btnOpenMaps);
-        btnBack         = findViewById(R.id.btnBack);
-        progressBar     = findViewById(R.id.progressBar);
+        btnJoin           = findViewById(R.id.btnJoin);
+        btnOpenMaps       = findViewById(R.id.btnOpenMaps);
+        btnBack           = findViewById(R.id.btnBack);
+        progressBar       = findViewById(R.id.progressBar);
         layoutChatButtons = findViewById(R.id.layoutChatButtons);
-        btnGroupChat    = findViewById(R.id.btnGroupChat);
-        btnMessageHost  = findViewById(R.id.btnMessageHost);
+        btnGroupChat      = findViewById(R.id.btnGroupChat);
+        btnMessageHost    = findViewById(R.id.btnMessageHost);
 
         event = (Event) getIntent().getSerializableExtra("event");
     }
@@ -116,7 +116,7 @@ public class EventDetails extends AppCompatActivity {
         }
     }
 
-    private void setEventListeners() {
+    private void setBaseListeners() {
         btnBack.setOnClickListener(v -> finish());
         btnOpenMaps.setOnClickListener(v -> openGoogleMaps());
 
@@ -139,14 +139,6 @@ public class EventDetails extends AppCompatActivity {
             startActivity(intent);
         });
 
-        btnMessageHost.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ChatActivity.class);
-            intent.putExtra("chatType",   "direct");
-            intent.putExtra("chatId",     currentUid + "_" + event.getHostUid());
-            intent.putExtra("chatName",   event.getHostName());
-            intent.putExtra("targetUid",  event.getHostUid());
-            startActivity(intent);
-        });
     }
 
     private void setupHostControls() {
@@ -157,7 +149,10 @@ public class EventDetails extends AppCompatActivity {
         btnMessageHost.setIcon(getResources().getDrawable(R.drawable.ic_chat, getTheme()));
         btnMessageHost.setOnClickListener(v -> {
             Intent intent = new Intent(this, InboxActivity.class);
-            intent.putExtra("chatName", event.getTitle());
+            intent.putExtra("eventId",    event.getEventId());
+            intent.putExtra("eventTitle", event.getTitle());
+            android.util.Log.d("INBOX", "passing eventId: " + event.getEventId());
+            android.util.Log.d("INBOX", "passing eventTitle: " + event.getTitle());
             startActivity(intent);
         });
 
@@ -287,6 +282,7 @@ public class EventDetails extends AppCompatActivity {
                 });
     }
 
+
     private void checkIfJoined() {
         progressBar.setVisibility(View.VISIBLE);
         btnJoin.setEnabled(false);
@@ -304,6 +300,7 @@ public class EventDetails extends AppCompatActivity {
                         isAlreadyJoined = true;
                         btnJoin.setText("Leave Event");
                         layoutChatButtons.setVisibility(View.VISIBLE);
+                        setMessageHostListener();
                     } else {
                         isAlreadyJoined = false;
                         btnJoin.setText("Request to Join");
@@ -322,6 +319,17 @@ public class EventDetails extends AppCompatActivity {
                             "Failed to check join status.",
                             Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void setMessageHostListener() {
+        btnMessageHost.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ChatActivity.class);
+            intent.putExtra("chatType", "direct");
+            intent.putExtra("chatId",   event.getEventId() + "_dm_" + currentUid);
+            intent.putExtra("chatName", event.getHostName());
+            android.util.Log.d("INBOX", "DM chatId being used: " + event.getEventId() + "_dm_" + currentUid);
+            startActivity(intent);
+        });
     }
 
     private void joinEvent() {
@@ -355,6 +363,7 @@ public class EventDetails extends AppCompatActivity {
                                             isAlreadyJoined = true;
                                             btnJoin.setText("Leave Event");
                                             layoutChatButtons.setVisibility(View.VISIBLE);
+                                            setMessageHostListener();
 
                                             int newCount = event.getVolunteersJoined() + 1;
                                             event.setVolunteersJoined(newCount);
