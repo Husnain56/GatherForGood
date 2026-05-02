@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/register_bg_gradient">
 
-    <!-- Background Star Pattern -->
     <ImageView
         android:id="@+id/starPattern"
         android:layout_width="match_parent"
@@ -32,7 +31,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- ─── Header ─── -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -77,7 +75,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ─── Avatar Section ─── -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -90,14 +87,12 @@
                     android:layout_width="120dp"
                     android:layout_height="120dp">
 
-                    <!-- Dashed ring -->
                     <ImageView
                         android:layout_width="120dp"
                         android:layout_height="120dp"
                         android:src="@drawable/profile_bg_dashed_ring"
                         android:layout_gravity="center" />
 
-                    <!-- Initials Avatar -->
                     <TextView
                         android:id="@+id/tvInitialsAvatar"
                         android:layout_width="100dp"
@@ -110,7 +105,6 @@
                         android:fontFamily="@font/playfair_display_italic"
                         android:textStyle="bold|italic" />
 
-                    <!-- Online dot -->
                     <View
                         android:layout_width="14dp"
                         android:layout_height="14dp"
@@ -120,7 +114,6 @@
 
                 </FrameLayout>
 
-                <!-- Full Name -->
                 <TextView
                     android:id="@+id/tvUserName"
                     android:layout_width="wrap_content"
@@ -131,7 +124,6 @@
                     android:fontFamily="@font/playfair_display_italic"
                     android:textStyle="bold|italic" />
 
-                <!-- Verified Badge -->
                 <LinearLayout
                     android:id="@+id/layoutVerified"
                     android:layout_width="wrap_content"
@@ -164,7 +156,6 @@
 
                 </LinearLayout>
 
-                <!-- Active Member -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -189,7 +180,6 @@
 
                 </LinearLayout>
 
-                <!-- City -->
                 <TextView
                     android:id="@+id/tvCity"
                     android:layout_width="wrap_content"
@@ -201,7 +191,6 @@
 
             </LinearLayout>
 
-            <!-- ─── Info Card: Email + Gender ─── -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -211,7 +200,6 @@
                 android:background="@drawable/home_bg_next_prayer_card"
                 android:padding="16dp">
 
-                <!-- Email Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -252,14 +240,12 @@
 
                 </LinearLayout>
 
-                <!-- Divider -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="#1AFFFFFF"
                     android:layout_marginBottom="12dp" />
 
-                <!-- Gender Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -301,16 +287,14 @@
 
             </LinearLayout>
 
-            <!-- ─── Stats Row ─── -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingHorizontal="24dp"
-                android:paddingBottom="32dp"
+                android:paddingBottom="12dp"
                 android:weightSum="2">
 
-                <!-- Prayers Joined -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -344,7 +328,6 @@
 
                 </LinearLayout>
 
-                <!-- Prayers Hosted -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -380,16 +363,107 @@
 
             </LinearLayout>
 
-            <!-- ─── Logout Button ─── -->
+            <!-- Events Stats Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="24dp"
+                android:paddingBottom="32dp"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/home_bg_next_prayer_card"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvEventsJoined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/soft_gold"
+                        android:textSize="28sp"
+                        android:fontFamily="@font/playfair_display_italic"
+                        android:textStyle="bold|italic" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="EVENTS\nJOINED"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:letterSpacing="0.1"
+                        android:layout_marginTop="4dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/home_bg_next_prayer_card"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvEventsHosted"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/soft_gold"
+                        android:textSize="28sp"
+                        android:fontFamily="@font/playfair_display_italic"
+                        android:textStyle="bold|italic" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="EVENTS\nHOSTED"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:letterSpacing="0.1"
+                        android:layout_marginTop="4dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/register_bg_input_field"
                 android:text="Sign Out"
+                android:textAllCaps="false"
+                android:textColor="#CC4444"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnDeleteAccount"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/register_bg_input_field"
+                android:text="Delete Account"
                 android:textAllCaps="false"
                 android:textColor="#CC4444"
                 android:textSize="14sp"

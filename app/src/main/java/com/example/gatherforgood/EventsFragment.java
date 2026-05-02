@@ -99,6 +99,15 @@ public class EventsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(),
+                new androidx.activity.OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        ((HomeScreen) requireActivity()).navigateToTab(0);
+                    }
+                }
+        );
     }
 
     @Override

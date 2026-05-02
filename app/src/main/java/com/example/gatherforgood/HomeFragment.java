@@ -392,5 +392,8 @@ public class HomeFragment extends Fragment {
                 view -> ((HomeScreen) requireActivity()).navigateToTab(4));
         tvSeeAll.setOnClickListener(
                 view -> ((HomeScreen) requireActivity()).navigateToTab(1));
+        cardVolunteerEvents.setOnClickListener(
+                view -> ((HomeScreen) requireActivity()).navigateToTab(2));
+
     }
 }
