@@ -111,9 +111,9 @@ public class GatheringDetails extends AppCompatActivity {
 
     private void openGroupChat() {
         Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("chatId", gathering.getId());
-        intent.putExtra("chatTitle", gathering.getPrayerType());
-        intent.putExtra("isGroup", true);
+        intent.putExtra("chatType", "group");
+        intent.putExtra("chatId",   gathering.getId());
+        intent.putExtra("chatName", gathering.getPrayerType() + " Gathering");
         startActivity(intent);
     }
 
