@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
         TextView tvEventTitle, tvEventDate, tvEventLocation, tvSlotsFilled;
         Button btnRequestJoin;
-        CardView mainCard;
+        ConstraintLayout mainCard;
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
