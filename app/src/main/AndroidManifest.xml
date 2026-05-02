@@ -22,7 +22,8 @@
         android:theme="@style/Theme.GatherForGood">
         <activity
             android:name=".ChatActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".CreateEvent"
             android:exported="false" />
