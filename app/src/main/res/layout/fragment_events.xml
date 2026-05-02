@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/register_bg_gradient">
 
-    <!-- Background Star Pattern -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,7 +13,6 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_star_pattern" />
 
-    <!-- Main scrollable content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -26,11 +24,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- ─── Header ─── -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp">
 
@@ -71,12 +69,12 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ─── Segmented Toggle: All / My Events / Joined ─── -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:orientation="horizontal"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/register_bg_input_field"
@@ -102,7 +100,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
                     android:background="@android:color/transparent"
                     android:foreground="?attr/selectableItemBackground"
                     android:text="My Events"
@@ -127,120 +126,13 @@
 
             </LinearLayout>
 
-            <!-- ─── Event Type Filter Chips ─── -->
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="14dp"
-                android:paddingBottom="4dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/chipAll"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/prayer_chip_active"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:paddingHorizontal="20dp"
-                        android:text="ALL"
-                        android:textColor="@color/white"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.15" />
-
-                    <TextView
-                        android:id="@+id/chipFoodDrive"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/prayer_chip_inactive"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:paddingHorizontal="20dp"
-                        android:text="FOOD DRIVE"
-                        android:textColor="#80E5C76B"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.15" />
-
-                    <TextView
-                        android:id="@+id/chipRamadan"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/prayer_chip_inactive"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:paddingHorizontal="20dp"
-                        android:text="RAMADAN"
-                        android:textColor="#80E5C76B"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.15" />
-
-                    <TextView
-                        android:id="@+id/chipEducation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/prayer_chip_inactive"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:paddingHorizontal="20dp"
-                        android:text="EDUCATION"
-                        android:textColor="#80E5C76B"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.15" />
-
-                    <TextView
-                        android:id="@+id/chipCharity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/prayer_chip_inactive"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:paddingHorizontal="20dp"
-                        android:text="CHARITY"
-                        android:textColor="#80E5C76B"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.15" />
-
-                    <TextView
-                        android:id="@+id/chipCleanup"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:background="@drawable/prayer_chip_inactive"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:paddingHorizontal="20dp"
-                        android:text="CLEANUP"
-                        android:textColor="#80E5C76B"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.15" />
-
-                </LinearLayout>
-
-            </HorizontalScrollView>
-
-            <!-- ─── Location Filter Toggle ─── -->
             <LinearLayout
+                android:id="@+id/layoutLocationChips"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="4dp"
                 android:weightSum="2">
@@ -268,51 +160,13 @@
                     android:background="@drawable/prayer_chip_inactive"
                     android:foreground="?attr/selectableItemBackground"
                     android:gravity="center"
-                    android:text="By City"
+                    android:text="Your City"
                     android:textColor="#80E5C76B"
                     android:textSize="11sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
 
-            <!-- ─── City Search (hidden by default) ─── -->
-            <LinearLayout
-                android:id="@+id/layoutCitySearch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/register_bg_input_field"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="4dp"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/ic_search"
-                    app:tint="#80E5C76B"
-                    android:layout_marginEnd="8dp" />
-
-                <EditText
-                    android:id="@+id/etCitySearch"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:background="@android:color/transparent"
-                    android:hint="Search by city..."
-                    android:textColor="@color/white"
-                    android:textSize="13sp"
-                    android:inputType="text"
-                    android:imeOptions="actionSearch"
-                    android:maxLines="1"
-                    android:singleLine="true" />
-
-            </LinearLayout>
-
-            <!-- ─── Section Label ─── -->
             <TextView
                 android:id="@+id/tvSectionLabel"
                 android:layout_width="match_parent"
@@ -327,7 +181,151 @@
                 android:textStyle="bold"
                 android:letterSpacing="0.2" />
 
-            <!-- ─── Loading ─── -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="10dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chipAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/prayer_chip_active"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:text="ALL"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15" />
+
+                    <TextView
+                        android:id="@+id/chipFoodDrive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:text="FOOD DRIVE"
+                        android:textColor="#80E5C76B"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15" />
+
+                    <TextView
+                        android:id="@+id/chipStreetCleaning"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:text="STREET CLEANING"
+                        android:textColor="#80E5C76B"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15" />
+
+                    <TextView
+                        android:id="@+id/chipClothingDrive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:text="CLOTHING DRIVE"
+                        android:textColor="#80E5C76B"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15" />
+
+                    <TextView
+                        android:id="@+id/chipBloodDonation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:text="BLOOD DONATION"
+                        android:textColor="#80E5C76B"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15" />
+
+                    <TextView
+                        android:id="@+id/chipTreePlanting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:text="TREE PLANTING"
+                        android:textColor="#80E5C76B"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15" />
+
+                    <TextView
+                        android:id="@+id/chipMosqueCleaning"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:text="MOSQUE CLEANING"
+                        android:textColor="#80E5C76B"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15" />
+
+                    <TextView
+                        android:id="@+id/Fundraising"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:background="@drawable/prayer_chip_inactive"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:text="FUNDRAISING"
+                        android:textColor="#80E5C76B"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
@@ -340,7 +338,6 @@
                 android:indeterminateTint="@color/gold_accent"
                 android:visibility="gone" />
 
-            <!-- ─── Empty State ─── -->
             <LinearLayout
                 android:id="@+id/layoutEmpty"
                 android:layout_width="match_parent"
@@ -377,12 +374,12 @@
 
             </LinearLayout>
 
-            <!-- ─── Events List ─── -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvEvents"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:paddingBottom="100dp"
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="false"
@@ -391,7 +388,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- ─── FAB: Create Event ─── -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnCreateEvent"
         android:layout_width="wrap_content"
