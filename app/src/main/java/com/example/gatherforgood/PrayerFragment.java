@@ -210,7 +210,7 @@ public class PrayerFragment extends Fragment {
     }
 
     private void loadMyGatherings() {
-        detachListener(); // remove any previous listener first
+        detachListener();
 
         progressBar.setVisibility(View.VISIBLE);
         tvEmpty.setVisibility(View.GONE);
@@ -240,7 +240,7 @@ public class PrayerFragment extends Fragment {
             for (QueryDocumentSnapshot doc : querySnapshot) {
                 PrayerGathering gathering = doc.toObject(PrayerGathering.class);
                 gathering.setId(doc.getId());
-                long prayerTime = gathering.getCreatedAt();
+                long prayerTime = gathering.getTimeInMillis();
                 if (currentTime > (prayerTime + twentyMinutes)) continue;
                 gatheringsList.add(gathering);
             }

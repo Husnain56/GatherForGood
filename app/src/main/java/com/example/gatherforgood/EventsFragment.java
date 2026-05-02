@@ -28,6 +28,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -67,6 +68,8 @@ public class EventsFragment extends Fragment {
     EventsAdapter               adapter;
     FusedLocationProviderClient fusedClient;
 
+    private ListenerRegistration activeListener;
+
     private final ActivityResultLauncher<String> locationPermissionLauncher =
             registerForActivityResult(
                     new ActivityResultContracts.RequestPermission(),
@@ -96,9 +99,20 @@ public class EventsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        checkPermissionAndLoad();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        detachListener();
+    }
+
+    private void detachListener() {
+        if (activeListener != null) {
+            activeListener.remove();
+            activeListener = null;
+        }
+    }
 
     public void init(View view) {
         btnCreateEvent  = view.findViewById(R.id.btnCreateEvent);
@@ -171,6 +185,7 @@ public class EventsFragment extends Fragment {
         chipTreePlanting.setOnClickListener(v   -> selectTypeFilter("Tree Planting",       chipTreePlanting));
         chipMosqueCleaning.setOnClickListener(v -> selectTypeFilter("Mosque Cleaning",     chipMosqueCleaning));
         chipFundraising.setOnClickListener(v    -> selectTypeFilter("Fundraising",         chipFundraising));
+
         chipNearMe.setOnClickListener(v -> {
             isNearMe = true;
             updateLocationChipStyles(chipNearMe);
@@ -254,7 +269,6 @@ public class EventsFragment extends Fragment {
                 == android.content.pm.PackageManager.PERMISSION_GRANTED;
     }
 
-
     private void reload() {
         updateSectionLabel();
         fetchEvents(userLat, userLng);
@@ -262,17 +276,24 @@ public class EventsFragment extends Fragment {
 
     private void fetchEvents(double lat, double lng) {
         if (progressBar == null) return;
+
+        if ("joined".equals(activeTab)) {
+            detachListener();
+            progressBar.setVisibility(View.VISIBLE);
+            layoutEmpty.setVisibility(View.GONE);
+            rvEvents.setVisibility(View.GONE);
+            fetchJoinedEvents(FirebaseAuth.getInstance().getUid(), lat, lng);
+            return;
+        }
+
+        detachListener();
+
         progressBar.setVisibility(View.VISIBLE);
         layoutEmpty.setVisibility(View.GONE);
         rvEvents.setVisibility(View.GONE);
 
         String currentUid = FirebaseAuth.getInstance().getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        if ("joined".equals(activeTab)) {
-            fetchJoinedEvents(currentUid, lat, lng);
-            return;
-        }
 
         Query query;
         if ("my".equals(activeTab)) {
@@ -287,7 +308,6 @@ public class EventsFragment extends Fragment {
                         .orderBy("createdAt", Query.Direction.DESCENDING);
             }
         } else {
-            // "all" tab
             if (activeFilter != null) {
                 query = db.collection("volunteerEvents")
                         .whereEqualTo("eventType", activeFilter)
@@ -298,42 +318,41 @@ public class EventsFragment extends Fragment {
             }
         }
 
-        query.get()
-                .addOnSuccessListener(querySnapshot -> {
-                    eventsList.clear();
-                    for (QueryDocumentSnapshot doc : querySnapshot) {
-                        Event event = doc.toObject(Event.class);
-                        event.setEventId(doc.getId());
+        activeListener = query.addSnapshotListener((querySnapshot, error) -> {
+            if (error != null || querySnapshot == null) {
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(),
+                        "Failed to load events: " + (error != null ? error.getMessage() : ""),
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
 
-                        if ("finished".equals(event.getStatus())) continue;
+            eventsList.clear();
+            for (QueryDocumentSnapshot doc : querySnapshot) {
+                Event event = doc.toObject(Event.class);
+                event.setEventId(doc.getId());
 
-                        if ("all".equals(activeTab)) {
-                            if (isNearMe) {
+                if ("finished".equals(event.getStatus())) continue;
 
-                                if (lat != 0 && lng != 0) {
-                                    float dist = distanceBetween(
-                                            lat, lng, event.getLat(), event.getLng());
-                                    if (dist > NEARBY_RADIUS_KM) continue;
-                                }
-                            } else {
-                                if (userCity.isEmpty()) continue;
-                                String loc = event.getLocation() != null
-                                        ? event.getLocation().toLowerCase() : "";
-                                if (!loc.contains(userCity)) continue;
-                            }
+                if ("all".equals(activeTab)) {
+                    if (isNearMe) {
+                        if (lat != 0 && lng != 0) {
+                            float dist = distanceBetween(
+                                    lat, lng, event.getLat(), event.getLng());
+                            if (dist > NEARBY_RADIUS_KM) continue;
                         }
-
-                        eventsList.add(event);
+                    } else {
+                        if (userCity.isEmpty()) continue;
+                        String loc = event.getLocation() != null
+                                ? event.getLocation().toLowerCase() : "";
+                        if (!loc.contains(userCity)) continue;
                     }
-                    updateUI();
-                })
-                .addOnFailureListener(e -> {
-                    if (progressBar != null) progressBar.setVisibility(View.GONE);
-                    android.util.Log.e(TAG, "fetchEvents error: " + e.getMessage());
-                    Toast.makeText(getContext(),
-                            "Failed to load events: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                });
+                }
+
+                eventsList.add(event);
+            }
+            updateUI();
+        });
     }
 
     private void fetchJoinedEvents(String currentUid, double lat, double lng) {
@@ -369,7 +388,6 @@ public class EventsFragment extends Fragment {
                                     Event event = doc.toObject(Event.class);
                                     event.setEventId(doc.getId());
                                     if ("finished".equals(event.getStatus())) continue;
-                                    // Joined tab — no location filter applied
                                     eventsList.add(event);
                                 }
                                 updateUI();
@@ -388,7 +406,6 @@ public class EventsFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                 });
     }
-
 
     private void updateUI() {
         if (progressBar != null) progressBar.setVisibility(View.GONE);
