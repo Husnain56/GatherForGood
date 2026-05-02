@@ -152,8 +152,15 @@ public class EventDetails extends AppCompatActivity {
     private void setupHostControls() {
         btnJoin.setVisibility(View.VISIBLE);
         btnJoin.setEnabled(true);
-        // Hide "Message Host" for the host themselves
-        btnMessageHost.setVisibility(View.GONE);
+
+        btnMessageHost.setText("View Messages");
+        btnMessageHost.setIcon(getResources().getDrawable(R.drawable.ic_chat, getTheme()));
+        btnMessageHost.setOnClickListener(v -> {
+            Intent intent = new Intent(this, InboxActivity.class);
+            intent.putExtra("chatName", event.getTitle());
+            startActivity(intent);
+        });
+
         updateHostButton();
     }
 
