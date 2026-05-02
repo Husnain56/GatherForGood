@@ -8,8 +8,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/register_bg_gradient"
     tools:context=".CreatePrayer">
-
-    <!-- Star pattern overlay (same as GatheringDetails) -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

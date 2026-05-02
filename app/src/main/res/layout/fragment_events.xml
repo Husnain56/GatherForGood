@@ -254,7 +254,7 @@
                     android:background="@drawable/prayer_chip_active"
                     android:foreground="?attr/selectableItemBackground"
                     android:gravity="center"
-                    android:text="📍  Near Me"
+                    android:text="Near Me"
                     android:textColor="@color/white"
                     android:textSize="11sp"
                     android:textStyle="bold" />
