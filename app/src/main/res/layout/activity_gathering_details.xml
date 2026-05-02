@@ -308,45 +308,44 @@
                 app:iconPadding="12dp"
                 app:rippleColor="#22B89548" />
 
-            <!-- Community Chat Placeholder -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <!-- ─── Chat Section — visible only to joined users / host ─── -->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:layout_marginBottom="40dp"
-                android:background="@drawable/bg_chat_box_placeholder"
+                android:layout_marginBottom="12dp"
+                android:text="CHAT"
+                android:textColor="#80E5C76B"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2" />
+
+            <LinearLayout
+                android:id="@+id/layoutChatButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_marginBottom="40dp"
+                android:visibility="gone">
 
-                <RelativeLayout
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGroupChat"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Community Chat"
-                        android:textColor="#F9F1D7"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:text="No messages yet"
-                        android:textColor="#80FFFFFF"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:alpha="0.1"
-                    android:background="@color/white" />
+                    android:layout_height="60dp"
+                    android:backgroundTint="@android:color/transparent"
+                    android:text="Group Chat"
+                    android:textAllCaps="false"
+                    android:textColor="#B89548"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:strokeColor="#4DB89548"
+                    app:strokeWidth="1.5dp"
+                    app:cornerRadius="20dp"
+                    app:icon="@drawable/ic_chat"
+                    app:iconTint="#B89548"
+                    app:iconGravity="textStart"
+                    app:iconPadding="12dp"
+                    app:rippleColor="#22B89548" />
 
             </LinearLayout>
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,9 +35,10 @@ public class GatheringDetails extends AppCompatActivity {
             tvPrayerName, tvHostName, tvAttendingCount, tvLocationDescription;
 
     Button btnJoin;
-    MaterialButton btnOpenMaps;
+    MaterialButton btnOpenMaps, btnGroupChat;
     ImageButton btnBack;
     ProgressBar progressBar;
+    LinearLayout layoutChatButtons;
 
     PrayerGathering gathering;
     FirebaseFirestore db;
@@ -76,8 +78,10 @@ public class GatheringDetails extends AppCompatActivity {
         btnOpenMaps           = findViewById(R.id.btnOpenMaps);
         btnBack               = findViewById(R.id.btnBack);
         progressBar           = findViewById(R.id.progressBar);
+        layoutChatButtons     = findViewById(R.id.layoutChatButtons);
+        btnGroupChat          = findViewById(R.id.btnGroupChat);
 
-        gathering  = (PrayerGathering) getIntent().getSerializableExtra("prayer_gathering");
+        gathering = (PrayerGathering) getIntent().getSerializableExtra("prayer_gathering");
     }
 
     private void bindData() {
@@ -102,27 +106,32 @@ public class GatheringDetails extends AppCompatActivity {
     private void setEventListeners() {
         btnBack.setOnClickListener(v -> finish());
         btnOpenMaps.setOnClickListener(v -> openGoogleMaps());
+        btnGroupChat.setOnClickListener(v -> openGroupChat());
     }
 
+    private void openGroupChat() {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra("chatId", gathering.getId());
+        intent.putExtra("chatTitle", gathering.getPrayerType());
+        intent.putExtra("isGroup", true);
+        startActivity(intent);
+    }
 
     private void setupHostControls() {
         btnJoin.setVisibility(View.VISIBLE);
         btnJoin.setEnabled(true);
+        layoutChatButtons.setVisibility(View.VISIBLE);
         updateHostButton();
     }
 
     private void updateHostButton() {
-        String status = gathering.getStatus().toLowerCase();
-
-        switch (status) {
+        switch (gathering.getStatus().toLowerCase()) {
             case "upcoming":
                 btnJoin.setText("Mark as Ongoing");
                 break;
-
             case "ongoing":
                 btnJoin.setText("Mark as Finished");
                 break;
-
             case "finished":
                 btnJoin.setText("Delete Gathering");
                 break;
@@ -131,10 +140,9 @@ public class GatheringDetails extends AppCompatActivity {
         btnJoin.setOnClickListener(v -> {
             switch (gathering.getStatus().toLowerCase()) {
                 case "upcoming":
-                    if(isPrayerTimeReached()) {
+                    if (isPrayerTimeReached()) {
                         updateStatus("ongoing");
-                    }
-                    else{
+                    } else {
                         Toast.makeText(this, "Prayer time not reached yet", Toast.LENGTH_SHORT).show();
                     }
                     break;
@@ -170,6 +178,7 @@ public class GatheringDetails extends AppCompatActivity {
                 .update("status", newStatus)
                 .addOnSuccessListener(unused -> {
                     progressBar.setVisibility(View.GONE);
+                    btnJoin.setEnabled(true);
                     gathering.setStatus(newStatus);
                     tvStatus.setText(newStatus.toUpperCase());
                     updateHostButton();
@@ -252,17 +261,16 @@ public class GatheringDetails extends AppCompatActivity {
                     if (doc.exists()) {
                         isAlreadyJoined = true;
                         btnJoin.setText("Leave Gathering");
+                        layoutChatButtons.setVisibility(View.VISIBLE);
                     } else {
                         isAlreadyJoined = false;
                         btnJoin.setText("Join Gathering");
+                        layoutChatButtons.setVisibility(View.GONE);
                     }
 
                     btnJoin.setOnClickListener(v -> {
-                        if (isAlreadyJoined) {
-                            leaveGathering();
-                        } else {
-                            joinGathering();
-                        }
+                        if (isAlreadyJoined) leaveGathering();
+                        else joinGathering();
                     });
                 })
                 .addOnFailureListener(e -> {
@@ -304,6 +312,7 @@ public class GatheringDetails extends AppCompatActivity {
                                             btnJoin.setEnabled(true);
                                             isAlreadyJoined = true;
                                             btnJoin.setText("Leave Gathering");
+                                            layoutChatButtons.setVisibility(View.VISIBLE);
 
                                             int newCount = gathering.getParticipantCount() + 1;
                                             gathering.setParticipantCount(newCount);
@@ -349,6 +358,7 @@ public class GatheringDetails extends AppCompatActivity {
                                 btnJoin.setEnabled(true);
                                 isAlreadyJoined = false;
                                 btnJoin.setText("Join Gathering");
+                                layoutChatButtons.setVisibility(View.GONE);
 
                                 int newCount = Math.max(0, gathering.getParticipantCount() - 1);
                                 gathering.setParticipantCount(newCount);

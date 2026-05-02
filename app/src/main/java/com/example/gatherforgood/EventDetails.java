@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,9 +37,10 @@ public class EventDetails extends AppCompatActivity {
             tvReadMore, tvEventType, tvStatus;
 
     Button         btnJoin;
-    MaterialButton btnOpenMaps;
+    MaterialButton btnOpenMaps, btnGroupChat, btnMessageHost;
     ImageButton    btnBack;
     ProgressBar    progressBar;
+    LinearLayout   layoutChatButtons;
 
     Event            event;
     FirebaseFirestore db;
@@ -80,10 +82,13 @@ public class EventDetails extends AppCompatActivity {
         tvEventType           = findViewById(R.id.tvEventType);
         tvStatus              = findViewById(R.id.tvStatus);
 
-        btnJoin     = findViewById(R.id.btnJoin);
-        btnOpenMaps = findViewById(R.id.btnOpenMaps);
-        btnBack     = findViewById(R.id.btnBack);
-        progressBar = findViewById(R.id.progressBar);
+        btnJoin         = findViewById(R.id.btnJoin);
+        btnOpenMaps     = findViewById(R.id.btnOpenMaps);
+        btnBack         = findViewById(R.id.btnBack);
+        progressBar     = findViewById(R.id.progressBar);
+        layoutChatButtons = findViewById(R.id.layoutChatButtons);
+        btnGroupChat    = findViewById(R.id.btnGroupChat);
+        btnMessageHost  = findViewById(R.id.btnMessageHost);
 
         event = (Event) getIntent().getSerializableExtra("event");
     }
@@ -104,6 +109,7 @@ public class EventDetails extends AppCompatActivity {
         isHost = event.getHostUid().equals(currentUid);
 
         if (isHost) {
+            layoutChatButtons.setVisibility(View.VISIBLE);
             setupHostControls();
         } else {
             checkIfJoined();
@@ -124,11 +130,30 @@ public class EventDetails extends AppCompatActivity {
             }
             descExpanded = !descExpanded;
         });
+
+        btnGroupChat.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ChatActivity.class);
+            intent.putExtra("chatType", "group");
+            intent.putExtra("chatId",   event.getEventId());
+            intent.putExtra("chatName", event.getTitle());
+            startActivity(intent);
+        });
+
+        btnMessageHost.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ChatActivity.class);
+            intent.putExtra("chatType",   "direct");
+            intent.putExtra("chatId",     currentUid + "_" + event.getHostUid());
+            intent.putExtra("chatName",   event.getHostName());
+            intent.putExtra("targetUid",  event.getHostUid());
+            startActivity(intent);
+        });
     }
 
     private void setupHostControls() {
         btnJoin.setVisibility(View.VISIBLE);
         btnJoin.setEnabled(true);
+        // Hide "Message Host" for the host themselves
+        btnMessageHost.setVisibility(View.GONE);
         updateHostButton();
     }
 
@@ -271,9 +296,11 @@ public class EventDetails extends AppCompatActivity {
                     if (doc.exists()) {
                         isAlreadyJoined = true;
                         btnJoin.setText("Leave Event");
+                        layoutChatButtons.setVisibility(View.VISIBLE);
                     } else {
                         isAlreadyJoined = false;
                         btnJoin.setText("Request to Join");
+                        layoutChatButtons.setVisibility(View.GONE);
                     }
 
                     btnJoin.setOnClickListener(v -> {
@@ -320,6 +347,7 @@ public class EventDetails extends AppCompatActivity {
                                             btnJoin.setEnabled(true);
                                             isAlreadyJoined = true;
                                             btnJoin.setText("Leave Event");
+                                            layoutChatButtons.setVisibility(View.VISIBLE);
 
                                             int newCount = event.getVolunteersJoined() + 1;
                                             event.setVolunteersJoined(newCount);
@@ -366,6 +394,7 @@ public class EventDetails extends AppCompatActivity {
                                 btnJoin.setEnabled(true);
                                 isAlreadyJoined = false;
                                 btnJoin.setText("Request to Join");
+                                layoutChatButtons.setVisibility(View.GONE);
 
                                 int newCount = Math.max(0, event.getVolunteersJoined() - 1);
                                 event.setVolunteersJoined(newCount);
@@ -385,7 +414,6 @@ public class EventDetails extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 });
     }
-
 
     private void openGoogleMaps() {
         String uri = "geo:" + event.getLat() + "," + event.getLng() +

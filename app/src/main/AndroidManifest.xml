@@ -21,6 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GatherForGood">
         <activity
+            android:name=".ChatActivity"
+            android:exported="false" />
+        <activity
             android:name=".CreateEvent"
             android:exported="false" />
         <activity
