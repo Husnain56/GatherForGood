@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -59,6 +61,7 @@ public class HomeFragment extends Fragment {
     TextView tvTimeLeft;
 
     FusedLocationProviderClient fusedClient;
+    private ListenerRegistration activeListener;
 
     double userLat = 0;
     double userLng = 0;
@@ -96,7 +99,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        checkPermissionAndLoad();
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
                 new androidx.activity.OnBackPressedCallback(true) {
@@ -106,6 +108,19 @@ public class HomeFragment extends Fragment {
                     }
                 }
         );
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        detachListener();
+    }
+
+    private void detachListener() {
+        if (activeListener != null) {
+            activeListener.remove();
+            activeListener = null;
+        }
     }
 
     public void init(View view) {
@@ -142,8 +157,7 @@ public class HomeFragment extends Fragment {
 
     private void checkPermissionAndLoad() {
         if (!hasLocationPermission()) {
-            locationPermissionLauncher.launch(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION);
+            locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
             fetchPrayerTimes();
             fetchUserLocationThenGatherings();
@@ -155,7 +169,6 @@ public class HomeFragment extends Fragment {
             fetchGatherings(0, 0);
             return;
         }
-
         try {
             fusedClient.getLastLocation()
                     .addOnSuccessListener(location -> {
@@ -176,41 +189,43 @@ public class HomeFragment extends Fragment {
     private void fetchGatherings(double lat, double lng) {
         if (getContext() == null) return;
 
+        detachListener();
+
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
         if (emptyNearby != null) emptyNearby.setVisibility(View.GONE);
         if (rvPrayerGatherings != null) rvPrayerGatherings.setVisibility(View.GONE);
 
-        FirebaseFirestore.getInstance()
+        activeListener = FirebaseFirestore.getInstance()
                 .collection("prayerGatherings")
                 .orderBy("timeInMillis", Query.Direction.ASCENDING)
                 .limit(20)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
+                .addSnapshotListener((querySnapshot, error) -> {
                     if (getContext() == null) return;
+
+                    if (error != null || querySnapshot == null) {
+                        if (progressBar != null) progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getContext(),
+                                "Failed to load gatherings: " + (error != null ? error.getMessage() : ""),
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
                     gatheringsList.clear();
 
-                    long currentTime = System.currentTimeMillis();
+                    long currentTime   = System.currentTimeMillis();
                     long twentyMinutes = 20 * 60 * 1000;
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         PrayerGathering gathering = doc.toObject(PrayerGathering.class);
+                        gathering.setId(doc.getId());
 
                         long prayerTime = gathering.getTimeInMillis();
-
-                        if (currentTime > (prayerTime + twentyMinutes)) {
-                            continue;
-                        }
+                        if (currentTime > (prayerTime + twentyMinutes)) continue;
 
                         if (lat != 0 && lng != 0) {
-                            float distanceKm = distanceBetween(
-                                    lat, lng,
-                                    gathering.getLatitude(),
-                                    gathering.getLongitude());
-
-                            if (distanceKm <= NEARBY_RADIUS_KM) {
-                                gatheringsList.add(gathering);
-                            }
+                            float distance = distanceBetween(lat, lng,
+                                    gathering.getLatitude(), gathering.getLongitude());
+                            if (distance <= NEARBY_RADIUS_KM) gatheringsList.add(gathering);
                         } else {
                             gatheringsList.add(gathering);
                         }
@@ -227,16 +242,10 @@ public class HomeFragment extends Fragment {
                         if (emptyNearby != null) emptyNearby.setVisibility(View.GONE);
                         if (rvPrayerGatherings != null) rvPrayerGatherings.setVisibility(View.VISIBLE);
                     }
-                })
-                .addOnFailureListener(e -> {
-                    if (getContext() == null) return;
-                    if (progressBar != null) progressBar.setVisibility(View.GONE);
-                    if (rvPrayerGatherings != null) rvPrayerGatherings.setVisibility(View.VISIBLE);
                 });
     }
 
-    private float distanceBetween(double lat1, double lng1,
-                                  double lat2, double lng2) {
+    private float distanceBetween(double lat1, double lng1, double lat2, double lng2) {
         float[] results = new float[1];
         Location.distanceBetween(lat1, lng1, lat2, lng2, results);
         return results[0] / 1000f;
@@ -247,14 +256,11 @@ public class HomeFragment extends Fragment {
             fetchPrayerTimesFallback();
             return;
         }
-
         try {
             fusedClient.getLastLocation()
                     .addOnSuccessListener(location -> {
                         if (location != null) {
-                            fetchPrayerTimesForLocation(
-                                    location.getLatitude(),
-                                    location.getLongitude());
+                            fetchPrayerTimesForLocation(location.getLatitude(), location.getLongitude());
                         } else {
                             fetchPrayerTimesFallback();
                         }
@@ -285,9 +291,7 @@ public class HomeFragment extends Fragment {
         RequestQueue queue = Volley.newRequestQueue(requireContext());
 
         JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.GET,
-                url,
-                null,
+                Request.Method.GET, url, null,
                 response -> {
                     try {
                         JSONObject timings = response
@@ -302,7 +306,6 @@ public class HomeFragment extends Fragment {
                         prayers.put("Isha",    timings.getString("Isha"));
 
                         showNextPrayer(prayers);
-
                     } catch (Exception e) {
                         showFallback();
                     }
@@ -327,7 +330,6 @@ public class HomeFragment extends Fragment {
                 String prayerTime = entry.getValue().length() > 5
                         ? entry.getValue().substring(0, 5)
                         : entry.getValue();
-
                 if (prayerTime.compareTo(currentTime) > 0) {
                     nextName   = entry.getKey();
                     nextTime24 = prayerTime;
@@ -338,9 +340,8 @@ public class HomeFragment extends Fragment {
             if (nextName == null) {
                 nextName   = "Fajr";
                 nextTime24 = prayers.get("Fajr");
-                if (nextTime24 != null && nextTime24.length() > 5) {
+                if (nextTime24 != null && nextTime24.length() > 5)
                     nextTime24 = nextTime24.substring(0, 5);
-                }
             }
 
             Date prayerDate    = sdf24.parse(nextTime24);
@@ -356,9 +357,7 @@ public class HomeFragment extends Fragment {
             prayerCal.set(Calendar.SECOND, 0);
             prayerCal.set(Calendar.MILLISECOND, 0);
 
-            if (prayerCal.before(now)) {
-                prayerCal.add(Calendar.DAY_OF_MONTH, 1);
-            }
+            if (prayerCal.before(now)) prayerCal.add(Calendar.DAY_OF_MONTH, 1);
 
             long diffMillis  = prayerCal.getTimeInMillis() - now.getTimeInMillis();
             long diffMinutes = diffMillis / 60000;
