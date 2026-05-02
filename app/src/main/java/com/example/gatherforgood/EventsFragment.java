@@ -41,7 +41,6 @@ public class EventsFragment extends Fragment {
     private static final String TAG              = "EventsFragment";
     private static final float  NEARBY_RADIUS_KM = 10f;
 
-    // ── Views ─────────────────────────────────────────────────────────────────
     FloatingActionButton btnCreateEvent;
     RecyclerView         rvEvents;
     ProgressBar          progressBar;
@@ -53,20 +52,17 @@ public class EventsFragment extends Fragment {
     TextView chipAll, chipFoodDrive, chipStreetCleaning, chipClothingDrive,
             chipBloodDonation, chipTreePlanting, chipMosqueCleaning, chipFundraising;
 
-    // The entire Near Me / Your City row — shown only on the "All" tab
     LinearLayout layoutLocationChips;
     TextView     chipNearMe, chipYourCity;
 
-    // ── State ─────────────────────────────────────────────────────────────────
     String  activeTab    = "all";
     String  activeFilter = null;
     boolean isNearMe     = true;
 
     double  userLat          = 0, userLng = 0;
     String  userCity         = "";
-    boolean locationResolved = false;   // true once GPS callback has returned
+    boolean locationResolved = false;
 
-    // ── Adapter + Location ────────────────────────────────────────────────────
     ArrayList<Event>            eventsList = new ArrayList<>();
     EventsAdapter               adapter;
     FusedLocationProviderClient fusedClient;
@@ -78,13 +74,11 @@ public class EventsFragment extends Fragment {
                         if (isGranted) {
                             fetchUserLocationThenEvents();
                         } else {
-                            // Permission denied — mark resolved, load without filter
                             locationResolved = true;
                             fetchEvents(0, 0);
                         }
                     });
 
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -105,7 +99,6 @@ public class EventsFragment extends Fragment {
         checkPermissionAndLoad();
     }
 
-    // ── Init ──────────────────────────────────────────────────────────────────
 
     public void init(View view) {
         btnCreateEvent  = view.findViewById(R.id.btnCreateEvent);
@@ -127,7 +120,6 @@ public class EventsFragment extends Fragment {
         chipMosqueCleaning = view.findViewById(R.id.chipMosqueCleaning);
         chipFundraising    = view.findViewById(R.id.Fundraising);
 
-        // Location row + its chips
         layoutLocationChips = view.findViewById(R.id.layoutLocationChips);
         chipNearMe          = view.findViewById(R.id.chipNearMe);
         chipYourCity        = view.findViewById(R.id.chipSearchCity);
@@ -139,20 +131,17 @@ public class EventsFragment extends Fragment {
         adapter = new EventsAdapter(getContext(), eventsList);
         rvEvents.setAdapter(adapter);
 
-        // Set initial UI state
         setActiveTab(btnAllEvents);
         updateLocationChipStyles(chipNearMe);
-        updateLocationChipsVisibility();   // All tab → chips visible
+        updateLocationChipsVisibility();
     }
 
-    // ── Listeners ─────────────────────────────────────────────────────────────
 
     public void setListeners() {
 
         btnCreateEvent.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), CreateEvent.class)));
 
-        // All tab — show location chips
         btnAllEvents.setOnClickListener(v -> {
             activeTab = "all";
             setActiveTab(btnAllEvents);
@@ -160,7 +149,6 @@ public class EventsFragment extends Fragment {
             reload();
         });
 
-        // My Events — hide location chips (personal tab, location irrelevant)
         btnMyEvents.setOnClickListener(v -> {
             activeTab = "my";
             setActiveTab(btnMyEvents);
@@ -168,7 +156,6 @@ public class EventsFragment extends Fragment {
             reload();
         });
 
-        // Joined — hide location chips (personal tab, location irrelevant)
         btnJoinedEvents.setOnClickListener(v -> {
             activeTab = "joined";
             setActiveTab(btnJoinedEvents);
@@ -176,7 +163,6 @@ public class EventsFragment extends Fragment {
             reload();
         });
 
-        // Type filter chips
         chipAll.setOnClickListener(v            -> selectTypeFilter(null,                  chipAll));
         chipFoodDrive.setOnClickListener(v      -> selectTypeFilter("Food Drive",          chipFoodDrive));
         chipStreetCleaning.setOnClickListener(v -> selectTypeFilter("Street Cleaning",     chipStreetCleaning));
@@ -185,21 +171,16 @@ public class EventsFragment extends Fragment {
         chipTreePlanting.setOnClickListener(v   -> selectTypeFilter("Tree Planting",       chipTreePlanting));
         chipMosqueCleaning.setOnClickListener(v -> selectTypeFilter("Mosque Cleaning",     chipMosqueCleaning));
         chipFundraising.setOnClickListener(v    -> selectTypeFilter("Fundraising",         chipFundraising));
-
-        // Near Me chip — wait for location before reloading
         chipNearMe.setOnClickListener(v -> {
             isNearMe = true;
             updateLocationChipStyles(chipNearMe);
             if (locationResolved) {
                 reload();
             } else {
-                // Location not ready yet — re-trigger fetch;
-                // reload() fires inside detectCityFromLocation() once coords are set
                 checkPermissionAndLoad();
             }
         });
 
-        // Your City chip
         chipYourCity.setOnClickListener(v -> {
             isNearMe = false;
             updateLocationChipStyles(chipYourCity);
@@ -210,8 +191,6 @@ public class EventsFragment extends Fragment {
             reload();
         });
     }
-
-    // ── Location ──────────────────────────────────────────────────────────────
 
     private void checkPermissionAndLoad() {
         if (!hasLocationPermission()) {
@@ -234,8 +213,6 @@ public class EventsFragment extends Fragment {
                         if (location != null) {
                             userLat = location.getLatitude();
                             userLng = location.getLongitude();
-                            // detectCityFromLocation sets locationResolved = true
-                            // and calls fetchEvents internally
                             detectCityFromLocation(location);
                         } else {
                             locationResolved = true;
@@ -267,7 +244,6 @@ public class EventsFragment extends Fragment {
         } catch (IOException e) {
             userCity = "";
         }
-        // Coords + city are both ready — mark resolved then load
         locationResolved = true;
         fetchEvents(userLat, userLng);
     }
@@ -278,7 +254,6 @@ public class EventsFragment extends Fragment {
                 == android.content.pm.PackageManager.PERMISSION_GRANTED;
     }
 
-    // ── Data ──────────────────────────────────────────────────────────────────
 
     private void reload() {
         updateSectionLabel();
@@ -332,19 +307,15 @@ public class EventsFragment extends Fragment {
 
                         if ("finished".equals(event.getStatus())) continue;
 
-                        // Location filter only applies on the "all" tab;
-                        // My Events and Joined never filter by location
                         if ("all".equals(activeTab)) {
                             if (isNearMe) {
-                                // Only apply radius when we have real coords.
-                                // If GPS was unavailable show everything (mirrors PrayerFragment)
+
                                 if (lat != 0 && lng != 0) {
                                     float dist = distanceBetween(
                                             lat, lng, event.getLat(), event.getLng());
                                     if (dist > NEARBY_RADIUS_KM) continue;
                                 }
                             } else {
-                                // Your City filter
                                 if (userCity.isEmpty()) continue;
                                 String loc = event.getLocation() != null
                                         ? event.getLocation().toLowerCase() : "";
@@ -418,7 +389,6 @@ public class EventsFragment extends Fragment {
                 });
     }
 
-    // ── UI Helpers ────────────────────────────────────────────────────────────
 
     private void updateUI() {
         if (progressBar != null) progressBar.setVisibility(View.GONE);
@@ -432,11 +402,6 @@ public class EventsFragment extends Fragment {
         }
     }
 
-    /**
-     * Shows the Near Me / Your City row only on the "All" tab.
-     * My Events and Joined are personal — location makes no sense there.
-     * Also resets isNearMe = true so state is clean on return to All.
-     */
     private void updateLocationChipsVisibility() {
         if (layoutLocationChips == null) return;
         boolean isAllTab = "all".equals(activeTab);

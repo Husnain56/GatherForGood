@@ -1,6 +1,8 @@
 package com.example.gatherforgood;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,11 +41,17 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         holder.tvEventLocation.setText(event.getLocation());
         holder.tvSlotsFilled.setText(event.getVolunteersJoined() + "/" + event.getVolunteersRequired());
         holder.btnRequestJoin.setOnClickListener(v -> {
-            Toast.makeText(context,"Button Clicked",Toast.LENGTH_SHORT).show();
+            navigateToDetails(context,event);
         });
         holder.mainCard.setOnClickListener(v -> {
-            Toast.makeText(context,"Card Clicked",Toast.LENGTH_SHORT).show();
+            navigateToDetails(context,event);
         });
+    }
+
+    private void navigateToDetails(Context context,Event event) {
+        Intent intent = new Intent(context, EventDetails.class);
+        intent.putExtra("event", event);
+        context.startActivity(intent);
     }
 
     @Override
