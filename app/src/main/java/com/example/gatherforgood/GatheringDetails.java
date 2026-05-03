@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
@@ -25,17 +27,28 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class GatheringDetails extends AppCompatActivity {
 
     TextView tvStatus, tvTitle, tvDescription, tvPrayerTime,
             tvPrayerName, tvHostName, tvAttendingCount, tvLocationDescription;
+
+    LinearLayout            layoutParticipants;
+    ProgressBar             progressParticipants;
+    TextView                tvNoParticipants;
+    RecyclerView rvParticipants;
+    ParticipantAdapter      participantAdapter;
+    ArrayList<ParticipantItem> participantList = new ArrayList<>();
 
     Button btnJoin;
     MaterialButton btnOpenMaps, btnGroupChat;
@@ -87,6 +100,17 @@ public class GatheringDetails extends AppCompatActivity {
         layoutChatButtons     = findViewById(R.id.layoutChatButtons);
         btnGroupChat          = findViewById(R.id.btnGroupChat);
         btnCancelGathering = findViewById(R.id.btnCancelGathering);
+
+        layoutParticipants   = findViewById(R.id.layoutParticipants);
+        progressParticipants = findViewById(R.id.progressParticipants);
+        tvNoParticipants     = findViewById(R.id.tvNoParticipants);
+        rvParticipants       = findViewById(R.id.rvParticipants);
+
+        rvParticipants.setLayoutManager(new LinearLayoutManager(this));
+        rvParticipants.setHasFixedSize(true);
+
+        participantAdapter = new ParticipantAdapter(this, participantList, null);
+        rvParticipants.setAdapter(participantAdapter);
 
         llLocation = findViewById(R.id.llLocation);
 
@@ -152,6 +176,78 @@ public class GatheringDetails extends AppCompatActivity {
         btnJoin.setEnabled(true);
         layoutChatButtons.setVisibility(View.VISIBLE);
         updateHostButton();
+        loadParticipants();
+    }
+
+    private void loadParticipants() {
+        layoutParticipants.setVisibility(View.VISIBLE);
+        progressParticipants.setVisibility(View.VISIBLE);
+        rvParticipants.setVisibility(View.GONE);
+        tvNoParticipants.setVisibility(View.GONE);
+
+        db.collection("prayerGatherings")
+                .document(gathering.getId())
+                .collection("participants")
+                .orderBy("joinedAt", Query.Direction.ASCENDING)
+                .get()
+                .addOnSuccessListener(snapshots -> {
+                    int nonHostCount = 0;
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        if (!"host".equals(doc.getString("role"))) nonHostCount++;
+                    }
+
+                    if (nonHostCount == 0) {
+                        progressParticipants.setVisibility(View.GONE);
+                        tvNoParticipants.setVisibility(View.VISIBLE);
+                        return;
+                    }
+
+                    int[] pending = {nonHostCount};
+                    participantList.clear();
+
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        String role = doc.getString("role");
+                        if ("host".equals(role)) continue;
+
+                        String uid      = doc.getString("uid");
+                        String name     = doc.getString("name");
+                        long   joinedAt = doc.getLong("joinedAt") != null ? doc.getLong("joinedAt") : 0L;
+
+                        db.collection("users")
+                                .document(uid)
+                                .get()
+                                .addOnSuccessListener(userDoc -> {
+                                    String gender = userDoc.getString("gender");
+                                    if (gender == null) gender = "—";
+                                    participantList.add(new ParticipantItem(uid, name, gender, role, joinedAt));
+
+                                    pending[0]--;
+                                    if (pending[0] == 0) {
+                                        participantList.sort((a, b) -> Long.compare(a.joinedAt, b.joinedAt));
+                                        progressParticipants.setVisibility(View.GONE);
+                                        rvParticipants.setVisibility(View.VISIBLE);
+                                        participantAdapter.notifyDataSetChanged();
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    participantList.add(new ParticipantItem(uid, name, "—", role, joinedAt));
+
+                                    pending[0]--;
+                                    if (pending[0] == 0) {
+                                        participantList.sort((a, b) -> Long.compare(a.joinedAt, b.joinedAt));
+                                        progressParticipants.setVisibility(View.GONE);
+                                        rvParticipants.setVisibility(View.VISIBLE);
+                                        participantAdapter.notifyDataSetChanged();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    progressParticipants.setVisibility(View.GONE);
+                    tvNoParticipants.setVisibility(View.VISIBLE);
+                    Toast.makeText(this, "Failed to load participants: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
     }
     private void showCancelDialog() {
         View view = getLayoutInflater().inflate(R.layout.dialog_cancel_gathering, null);
@@ -159,16 +255,16 @@ public class GatheringDetails extends AppCompatActivity {
         BottomSheetDialog sheet = new BottomSheetDialog(this, R.style.CancelGatheringSheetTheme);
         sheet.setContentView(view);
 
-        View bottomSheet = sheet.getWindow()
-                .findViewById(com.google.android.material.R.id.design_bottom_sheet);
-        bottomSheet.setBackgroundResource(android.R.color.transparent);
+        if (sheet.getWindow() != null) {
+            sheet.getWindow().setBackgroundDrawable(
+                    new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
 
         RadioGroup rgReasons = view.findViewById(R.id.rgReasons);
         Button btnGoBack     = view.findViewById(R.id.btnDialogGoBack);
         Button btnConfirm    = view.findViewById(R.id.btnDialogConfirm);
 
         btnGoBack.setOnClickListener(v -> sheet.dismiss());
-
         btnConfirm.setOnClickListener(v -> {
             int selectedId = rgReasons.getCheckedRadioButtonId();
             if (selectedId == -1) {

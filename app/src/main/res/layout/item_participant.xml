@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="14dp"
+    android:background="@drawable/bg_participant_row"
+    android:layout_marginBottom="8dp">
+
+    <!-- Avatar circle with initial -->
+    <TextView
+        android:id="@+id/tvAvatar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:gravity="center"
+        android:textColor="#042F24"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/bg_avatar_circle" />
+
+    <!-- Name + Gender -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="14dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvParticipantName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#F9F1D7"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- HOST badge -->
+            <TextView
+                android:id="@+id/tvRole"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/prayer_bg_time_badge"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:text="HOST"
+                android:textColor="#0FBD66"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvParticipantGender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textColor="#80F9F1D7"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <!-- Joined time -->
+    <TextView
+        android:id="@+id/tvJoinedAt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#55D4AF37"
+        android:textSize="11sp" />
+
+</LinearLayout>
