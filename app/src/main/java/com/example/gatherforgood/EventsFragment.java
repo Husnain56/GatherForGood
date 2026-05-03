@@ -66,6 +66,10 @@ public class EventsFragment extends Fragment {
     String  userCity         = "";
     boolean locationResolved = false;
 
+    // ── gender filter ──
+    String  currentUserGender = ""; // "Male" or "Female"
+    boolean genderResolved    = false;
+
     ArrayList<Event> allEventsList      = new ArrayList<>();
     ArrayList<Event> filteredEventsList = new ArrayList<>();
 
@@ -97,7 +101,7 @@ public class EventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         init(view);
         setListeners();
-        checkPermissionAndLoad();
+        fetchCurrentUserGender();
     }
 
     @Override
@@ -124,6 +128,59 @@ public class EventsFragment extends Fragment {
         if (activeListener != null) {
             activeListener.remove();
             activeListener = null;
+        }
+    }
+
+    // ─────────────────────────────────────────────
+    //  FETCH CURRENT USER GENDER FIRST
+    // ─────────────────────────────────────────────
+    private void fetchCurrentUserGender() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) {
+            genderResolved = true;
+            checkPermissionAndLoad();
+            return;
+        }
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        String gender = doc.getString("gender");
+                        currentUserGender = gender != null ? gender : "";
+                    }
+                    genderResolved = true;
+                    checkPermissionAndLoad();
+                })
+                .addOnFailureListener(e -> {
+                    genderResolved = true;
+                    checkPermissionAndLoad();
+                });
+    }
+
+    // ─────────────────────────────────────────────
+    //  GENDER FILTER HELPER
+    // ─────────────────────────────────────────────
+    private boolean isEventAllowedForCurrentUser(Event event) {
+        String setting = event.getGenderSetting();
+        if (setting == null || setting.isEmpty()) return true;
+
+        switch (setting.toLowerCase()) {
+            case "brothersonly":
+            case "brothers only":
+            case "male":
+                // only males can see this
+                return "Male".equalsIgnoreCase(currentUserGender);
+            case "sistersonly":
+            case "sisters only":
+            case "female":
+                // only females can see this
+                return "Female".equalsIgnoreCase(currentUserGender);
+            default:
+                // "both", "everyone", or anything else — show to all
+                return true;
         }
     }
 
@@ -161,7 +218,6 @@ public class EventsFragment extends Fragment {
     }
 
     public void setListeners() {
-
         btnCreateEvent.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), CreateEvent.class)));
 
@@ -347,6 +403,9 @@ public class EventsFragment extends Fragment {
                 if (event.getEventEndTimeMillis() > 0 &&
                         System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
 
+                // ── gender filter — skip for "my" tab (host sees own events always) ──
+                if (!"my".equals(activeTab) && !isEventAllowedForCurrentUser(event)) continue;
+
                 if ("all".equals(activeTab)) {
                     if (!userCity.isEmpty()) {
                         String loc = event.getLocation() != null
@@ -368,15 +427,19 @@ public class EventsFragment extends Fragment {
         for (Event event : allEventsList) {
             if ("all".equals(activeTab) && isNearMe) {
                 if (userLat != 0 && userLng != 0) {
-                    float dist = distanceBetween(userLat, userLng, event.getLat(), event.getLng());
+                    float dist = distanceBetween(userLat, userLng,
+                            event.getLat(), event.getLng());
                     if (dist > NEARBY_RADIUS_KM) continue;
                 }
             }
 
             if (!currentSearchQuery.isEmpty()) {
-                String title = event.getTitle() != null ? event.getTitle().toLowerCase() : "";
-                String type  = event.getEventType() != null ? event.getEventType().toLowerCase() : "";
-                if (!title.contains(currentSearchQuery) && !type.contains(currentSearchQuery)) continue;
+                String title = event.getTitle() != null
+                        ? event.getTitle().toLowerCase() : "";
+                String type  = event.getEventType() != null
+                        ? event.getEventType().toLowerCase() : "";
+                if (!title.contains(currentSearchQuery) &&
+                        !type.contains(currentSearchQuery)) continue;
             }
 
             filteredEventsList.add(event);
@@ -407,7 +470,8 @@ public class EventsFragment extends Fragment {
                     }
 
                     ArrayList<String> batch = new ArrayList<>(
-                            joinedEventIds.subList(0, Math.min(10, joinedEventIds.size())));
+                            joinedEventIds.subList(0,
+                                    Math.min(10, joinedEventIds.size())));
 
                     FirebaseFirestore.getInstance()
                             .collection("volunteerEvents")
@@ -423,7 +487,9 @@ public class EventsFragment extends Fragment {
                                     if ("finished".equals(event.getStatus())) continue;
 
                                     if (event.getEventEndTimeMillis() > 0 &&
-                                            System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
+                                            System.currentTimeMillis() >
+                                                    event.getEventEndTimeMillis()) continue;
+
                                     allEventsList.add(event);
                                 }
                                 applyFiltersAndSearch();

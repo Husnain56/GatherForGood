@@ -47,12 +47,15 @@ public class PrayerFragment extends Fragment {
 
     TextView chipAll, chipFajr, chipZuhr, chipAsr, chipMaghrib, chipIsha;
 
-    String activeFilter = null;
-    double userLat = 0, userLng = 0;
+    String  activeFilter   = null;
+    double  userLat        = 0, userLng = 0;
+    String  currentUserGender = "";
+    boolean genderResolved    = false;
+
     private static final float NEARBY_RADIUS_KM = 10f;
 
-    FusedLocationProviderClient  fusedClient;
-    ArrayList<PrayerGathering>   gatheringsList = new ArrayList<>();
+    FusedLocationProviderClient fusedClient;
+    ArrayList<PrayerGathering>  gatheringsList = new ArrayList<>();
 
     private final ActivityResultLauncher<String> locationPermissionLauncher =
             registerForActivityResult(
@@ -75,7 +78,7 @@ public class PrayerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         init(view);
         setListeners();
-        checkPermissionAndLoad();
+        fetchCurrentUserGender();
     }
 
     @Override
@@ -102,6 +105,50 @@ public class PrayerFragment extends Fragment {
         if (activeListener != null) {
             activeListener.remove();
             activeListener = null;
+        }
+    }
+
+    private void fetchCurrentUserGender() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) {
+            genderResolved = true;
+            checkPermissionAndLoad();
+            return;
+        }
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        String gender = doc.getString("gender");
+                        currentUserGender = gender != null ? gender : "";
+                    }
+                    genderResolved = true;
+                    checkPermissionAndLoad();
+                })
+                .addOnFailureListener(e -> {
+                    genderResolved = true;
+                    checkPermissionAndLoad();
+                });
+    }
+
+    private boolean isGatheringAllowedForCurrentUser(PrayerGathering gathering) {
+        String setting = gathering.getGenderSetting();
+        if (setting == null || setting.isEmpty()) return true;
+
+        switch (setting.toLowerCase()) {
+            case "brothersonly":
+            case "brothers only":
+            case "male":
+                return "Male".equalsIgnoreCase(currentUserGender);
+            case "sistersonly":
+            case "sisters only":
+            case "female":
+                return "Female".equalsIgnoreCase(currentUserGender);
+            default:
+                return true;
         }
     }
 
@@ -133,7 +180,6 @@ public class PrayerFragment extends Fragment {
     }
 
     public void setListeners() {
-
         btnAllGatherings.setOnClickListener(v -> {
             isMyGatherings     = false;
             isJoinedGatherings = false;
@@ -195,7 +241,8 @@ public class PrayerFragment extends Fragment {
 
     private void checkPermissionAndLoad() {
         if (!hasLocationPermission()) {
-            locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
+            locationPermissionLauncher.launch(
+                    android.Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
             fetchUserLocationThenGatherings();
         }
@@ -230,7 +277,7 @@ public class PrayerFragment extends Fragment {
         tvEmpty.setVisibility(View.GONE);
         rvPrayerGatherings.setVisibility(View.GONE);
 
-        com.google.firebase.firestore.Query query = FirebaseFirestore.getInstance()
+        Query query = FirebaseFirestore.getInstance()
                 .collection("prayerGatherings");
 
         if (activeFilter != null) {
@@ -243,7 +290,8 @@ public class PrayerFragment extends Fragment {
             if (error != null || querySnapshot == null) {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(getContext(),
-                        "Failed to load gatherings: " + (error != null ? error.getMessage() : ""),
+                        "Failed to load gatherings: " +
+                                (error != null ? error.getMessage() : ""),
                         Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -259,6 +307,9 @@ public class PrayerFragment extends Fragment {
                 if ("cancelled".equals(gathering.getStatus())) continue;
                 if ("finished".equals(gathering.getStatus())) continue;
                 if (currentTime > (gathering.getTimeInMillis() + twentyMinutes)) continue;
+
+                // gender filter — skip for My Gatherings tab (host sees own always)
+                if (!isGatheringAllowedForCurrentUser(gathering)) continue;
 
                 if (lat != 0 && lng != 0) {
                     float distance = distanceBetween(lat, lng,
@@ -280,7 +331,7 @@ public class PrayerFragment extends Fragment {
         tvEmpty.setVisibility(View.GONE);
         rvPrayerGatherings.setVisibility(View.GONE);
 
-        com.google.firebase.firestore.Query query = FirebaseFirestore.getInstance()
+        Query query = FirebaseFirestore.getInstance()
                 .collection("prayerGatherings")
                 .whereEqualTo("hostUid", FirebaseAuth.getInstance().getUid());
 
@@ -304,6 +355,7 @@ public class PrayerFragment extends Fragment {
             for (QueryDocumentSnapshot doc : querySnapshot) {
                 PrayerGathering gathering = doc.toObject(PrayerGathering.class);
                 gathering.setId(doc.getId());
+                // no gender filter on own gatherings
                 if (currentTime > (gathering.getTimeInMillis() + twentyMinutes)) continue;
                 gatheringsList.add(gathering);
             }
@@ -353,10 +405,15 @@ public class PrayerFragment extends Fragment {
                                 long twentyMinutes = 20 * 60 * 1000;
 
                                 for (QueryDocumentSnapshot doc : gatheringSnapshots) {
-                                    PrayerGathering gathering = doc.toObject(PrayerGathering.class);
+                                    PrayerGathering gathering =
+                                            doc.toObject(PrayerGathering.class);
                                     gathering.setId(doc.getId());
-                                    if (currentTime > (gathering.getTimeInMillis() + twentyMinutes)) continue;
-                                    if (activeFilter != null && !activeFilter.equals(gathering.getPrayerType())) continue;
+                                    if (currentTime > (gathering.getTimeInMillis()
+                                            + twentyMinutes)) continue;
+                                    if (activeFilter != null &&
+                                            !activeFilter.equals(
+                                                    gathering.getPrayerType())) continue;
+                                    // joined gatherings — user already joined so show them
                                     gatheringsList.add(gathering);
                                 }
 

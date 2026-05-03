@@ -18,15 +18,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
 
-    TextView     tvChatName, tvChatSubtitle;
+    TextView     tvChatName, tvChatSubtitle, tvEmptyMessages;
     RecyclerView rvMessages;
     EditText     etMessage;
     ImageButton  btnBack, btnSend;
@@ -36,13 +35,15 @@ public class ChatActivity extends AppCompatActivity {
 
     String  currentUid;
     String  currentUserName;
+    String  currentUserRole  = "participant";
     String  chatId;
     String  chatName;
     String  chatType;
+    String  chatCollection;
     boolean isGroup;
 
-    List<Message>  messageList;
-    MessageAdapter adapter;
+    List<Message>      messageList;
+    MessageAdapter     adapter;
     ChildEventListener childEventListener;
 
     @Override
@@ -50,14 +51,14 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        chatId   = getIntent().getStringExtra("chatId");
-        chatName = getIntent().getStringExtra("chatName");
-        chatType = getIntent().getStringExtra("chatType");
-        isGroup  = "group".equals(chatType);
+        chatId         = getIntent().getStringExtra("chatId");
+        chatName       = getIntent().getStringExtra("chatName");
+        chatType       = getIntent().getStringExtra("chatType");
+        chatCollection = getIntent().getStringExtra("chatCollection");
+        isGroup        = "group".equals(chatType);
 
-        db        = FirebaseDatabase.getInstance();
+        db          = FirebaseDatabase.getInstance();
         currentUid  = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
         messagesRef = db.getReference("chats").child(chatId).child("messages");
 
         init();
@@ -65,12 +66,13 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void init() {
-        tvChatName     = findViewById(R.id.tvChatName);
-        tvChatSubtitle = findViewById(R.id.tvChatSubtitle);
-        rvMessages     = findViewById(R.id.rvMessages);
-        etMessage      = findViewById(R.id.etMessage);
-        btnBack        = findViewById(R.id.btnBack);
-        btnSend        = findViewById(R.id.btnSend);
+        tvChatName      = findViewById(R.id.tvChatName);
+        tvChatSubtitle  = findViewById(R.id.tvChatSubtitle);
+        rvMessages      = findViewById(R.id.rvMessages);
+        etMessage       = findViewById(R.id.etMessage);
+        btnBack         = findViewById(R.id.btnBack);
+        btnSend         = findViewById(R.id.btnSend);
+        tvEmptyMessages = findViewById(R.id.tvEmptyMessages);
 
         tvChatName.setText(chatName);
         tvChatSubtitle.setText(isGroup ? "Group Chat" : "Direct Message");
@@ -79,7 +81,7 @@ public class ChatActivity extends AppCompatActivity {
         adapter     = new MessageAdapter(messageList, currentUid, isGroup);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setStackFromEnd(true); // newest messages at bottom
+        layoutManager.setStackFromEnd(true);
         rvMessages.setLayoutManager(layoutManager);
         rvMessages.setAdapter(adapter);
 
@@ -100,7 +102,7 @@ public class ChatActivity extends AppCompatActivity {
                 .addOnSuccessListener(doc -> {
                     currentUserName = doc.getString("name");
                     if (currentUserName == null) currentUserName = "Unknown";
-                    listenForMessages();
+                    fetchCurrentUserRole();
                 })
                 .addOnFailureListener(e -> {
                     currentUserName = "Unknown";
@@ -108,29 +110,69 @@ public class ChatActivity extends AppCompatActivity {
                 });
     }
 
+    private void fetchCurrentUserRole() {
+        // only fetch role for group chats and only if collection is known
+        if (!isGroup || chatCollection == null || chatCollection.isEmpty()) {
+            listenForMessages();
+            return;
+        }
+
+        android.util.Log.d("CHAT_ROLE", "Fetching role from: " + chatCollection
+                + " / " + chatId + " / " + currentUid);
+
+        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                .collection(chatCollection)
+                .document(chatId)
+                .collection("participants")
+                .document(currentUid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists() && doc.getString("role") != null) {
+                        currentUserRole = doc.getString("role");
+                        android.util.Log.d("CHAT_ROLE", "Role found: " + currentUserRole);
+                    } else {
+                        android.util.Log.d("CHAT_ROLE", "Doc exists: " + doc.exists()
+                                + " | role: " + doc.getString("role"));
+                    }
+                    listenForMessages();
+                })
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("CHAT_ROLE", "Failed: " + e.getMessage());
+                    listenForMessages();
+                });
+    }
+
     private void listenForMessages() {
+        // check empty state first
+        messagesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists() || snapshot.getChildrenCount() == 0) {
+                    if (tvEmptyMessages != null)
+                        tvEmptyMessages.setVisibility(View.VISIBLE);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+
         childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, String previousChildName) {
                 Message message = snapshot.getValue(Message.class);
                 if (message != null) {
+                    if (tvEmptyMessages != null)
+                        tvEmptyMessages.setVisibility(View.GONE);
                     messageList.add(message);
                     adapter.notifyItemInserted(messageList.size() - 1);
                     rvMessages.scrollToPosition(messageList.size() - 1);
                 }
             }
 
-            @Override
-            public void onChildChanged(DataSnapshot snapshot, String previousChildName) {}
-
-            @Override
-            public void onChildRemoved(DataSnapshot snapshot) {}
-
-            @Override
-            public void onChildMoved(DataSnapshot snapshot, String previousChildName) {}
-
-            @Override
-            public void onCancelled(DatabaseError error) {}
+            @Override public void onChildChanged(DataSnapshot s, String p) {}
+            @Override public void onChildRemoved(DataSnapshot s) {}
+            @Override public void onChildMoved(DataSnapshot s, String p) {}
+            @Override public void onCancelled(DatabaseError error) {}
         };
 
         messagesRef.orderByChild("timestamp")
@@ -151,13 +193,12 @@ public class ChatActivity extends AppCompatActivity {
                 currentUid,
                 currentUserName,
                 text,
-                System.currentTimeMillis()
+                System.currentTimeMillis(),
+                currentUserRole
         );
 
         messagesRef.child(messageId).setValue(message)
-                .addOnFailureListener(e -> {
-                    etMessage.setText(text);
-                });
+                .addOnFailureListener(e -> etMessage.setText(text));
     }
 
     @Override

@@ -205,9 +205,10 @@ public class EventDetails extends AppCompatActivity {
 
         btnGroupChat.setOnClickListener(v -> {
             Intent intent = new Intent(this, ChatActivity.class);
-            intent.putExtra("chatType", "group");
-            intent.putExtra("chatId",   event.getEventId());
-            intent.putExtra("chatName", event.getTitle());
+            intent.putExtra("chatType",       "group");
+            intent.putExtra("chatId",         event.getEventId());
+            intent.putExtra("chatName",       event.getTitle());
+            intent.putExtra("chatCollection", "volunteerEvents");
             startActivity(intent);
         });
 

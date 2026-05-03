@@ -63,7 +63,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return messages.size();
     }
 
-
     static class SentViewHolder extends RecyclerView.ViewHolder {
         TextView tvMessageText, tvTimestamp;
 
@@ -95,7 +94,16 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             if (isGroupChat) {
                 tvSenderName.setVisibility(View.VISIBLE);
-                tvSenderName.setText(message.getSenderName());
+                String name = message.getSenderName();
+                if ("host".equals(message.getRole())) {
+                    tvSenderName.setText(name + " (Host)");
+                    tvSenderName.setTextColor(
+                            android.graphics.Color.parseColor("#D4AF37"));
+                } else {
+                    tvSenderName.setText(name);
+                    tvSenderName.setTextColor(
+                            android.graphics.Color.parseColor("#80FFFFFF"));
+                }
             } else {
                 tvSenderName.setVisibility(View.GONE);
             }
