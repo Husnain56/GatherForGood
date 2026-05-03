@@ -254,6 +254,9 @@ public class HomeFragment extends Fragment {
                         PrayerGathering gathering = doc.toObject(PrayerGathering.class);
                         gathering.setId(doc.getId());
 
+                        if ("cancelled".equals(gathering.getStatus())) continue;
+                        if ("finished".equals(gathering.getStatus())) continue;
+
                         long prayerTime = gathering.getTimeInMillis();
                         if (currentTime > (prayerTime + twentyMinutes)) continue;
 

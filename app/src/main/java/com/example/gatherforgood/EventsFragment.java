@@ -195,7 +195,6 @@ public class EventsFragment extends Fragment {
         chipMosqueCleaning.setOnClickListener(v -> selectTypeFilter("Mosque Cleaning",     chipMosqueCleaning));
         chipFundraising.setOnClickListener(v    -> selectTypeFilter("Fundraising",         chipFundraising));
 
-        // Near Me toggle
         chipNearMe.setOnClickListener(v -> {
             isNearMe = !isNearMe;
             updateNearMeChipStyle();
@@ -206,7 +205,6 @@ public class EventsFragment extends Fragment {
             }
         });
 
-        // Client-side search
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -343,6 +341,9 @@ public class EventsFragment extends Fragment {
                 Event event = doc.toObject(Event.class);
                 event.setEventId(doc.getId());
 
+                if ("cancelled".equals(event.getStatus())) continue;
+                if ("finished".equals(event.getStatus())) continue;
+
                 if (event.getEventEndTimeMillis() > 0 &&
                         System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
 
@@ -417,6 +418,10 @@ public class EventsFragment extends Fragment {
                                 for (QueryDocumentSnapshot doc : eventSnapshots) {
                                     Event event = doc.toObject(Event.class);
                                     event.setEventId(doc.getId());
+
+                                    if ("cancelled".equals(event.getStatus())) continue;
+                                    if ("finished".equals(event.getStatus())) continue;
+
                                     if (event.getEventEndTimeMillis() > 0 &&
                                             System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
                                     allEventsList.add(event);

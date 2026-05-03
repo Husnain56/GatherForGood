@@ -63,7 +63,6 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- ─── Type + Status badges ─── -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,7 +97,6 @@
 
             </LinearLayout>
 
-            <!-- ─── Title ─── -->
             <TextView
                 android:id="@+id/tvEventTitle"
                 android:layout_width="match_parent"
@@ -110,7 +108,6 @@
                 android:lineSpacingExtra="4dp"
                 tools:text="Ramadan Food Distribution Drive" />
 
-            <!-- ─── Organizer ─── -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -136,7 +133,6 @@
 
             </LinearLayout>
 
-            <!-- ─── Location Box ─── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -176,7 +172,6 @@
 
             </LinearLayout>
 
-            <!-- ─── Date/Time Card (start → end) + Slots Card ─── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -187,7 +182,6 @@
                 android:textStyle="bold"
                 android:letterSpacing="0.2" />
 
-            <!-- Date card showing FROM / TO rows -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -203,7 +197,7 @@
                     app:tint="#80E5C76B"
                     android:layout_marginBottom="10dp" />
 
-                <!-- FROM row -->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -241,14 +235,12 @@
 
                 </LinearLayout>
 
-                <!-- Thin divider between rows -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:layout_marginVertical="10dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- TO row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -288,7 +280,6 @@
 
             </LinearLayout>
 
-            <!-- Slots card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -327,7 +318,6 @@
 
             </LinearLayout>
 
-            <!-- ─── About Section ─── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -361,7 +351,6 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <!-- ─── Requirements Section ─── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -432,14 +421,12 @@
 
             </LinearLayout>
 
-            <!-- ─── Divider ─── -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:layout_marginTop="24dp"
                 android:background="#1AFFFFFF" />
 
-            <!-- ─── Organizer Detail Row ─── -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -514,13 +501,11 @@
 
             </RelativeLayout>
 
-            <!-- ─── Divider ─── -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:background="#1AFFFFFF" />
 
-            <!-- ─── Progress Bar ─── -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
@@ -530,7 +515,6 @@
                 android:indeterminateTint="@color/gold_accent"
                 android:visibility="gone" />
 
-            <!-- ─── Join Button ─── -->
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnJoin"
                 android:layout_width="match_parent"
@@ -543,7 +527,26 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- ─── Open in Maps Button ─── -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelEvent"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="#1AFF4444"
+                android:text="Cancel Event"
+                android:textAllCaps="false"
+                android:textColor="#FF6B6B"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:strokeColor="#55FF4444"
+                app:strokeWidth="1dp"
+                app:cornerRadius="16dp"
+                app:iconTint="#FF6B6B"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                app:rippleColor="#22FF4444" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnOpenMaps"
                 android:layout_width="match_parent"
@@ -564,7 +567,6 @@
                 app:iconPadding="12dp"
                 app:rippleColor="#22D4AF37" />
 
-            <!-- ─── Chat Section ─── -->
             <LinearLayout
                 android:id="@+id/layoutChatButtons"
                 android:layout_width="match_parent"

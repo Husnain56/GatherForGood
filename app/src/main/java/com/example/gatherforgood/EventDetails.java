@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +19,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -35,6 +38,8 @@ public class EventDetails extends AppCompatActivity {
             tvEventDate, tvEventTime, tvEventLocation,
             tvSlots, tvParticipantCount, tvDescription,
             tvReadMore, tvEventType, tvStatus, tvRequirementGender, tvRequirements;
+
+    MaterialButton btnCancelEvent;
 
     TextView tvEventEndDate, tvEventEndTime;
 
@@ -93,6 +98,8 @@ public class EventDetails extends AppCompatActivity {
         btnGroupChat      = findViewById(R.id.btnGroupChat);
         btnMessageHost    = findViewById(R.id.btnMessageHost);
 
+        btnCancelEvent = findViewById(R.id.btnCancelEvent);
+
         tvRequirementGender = findViewById(R.id.tvRequirementGender);
         tvRequirements      = findViewById(R.id.tvRequirements);
 
@@ -133,6 +140,16 @@ public class EventDetails extends AppCompatActivity {
         }
 
         isHost = event.getHostUid().equals(currentUid);
+
+        if ("cancelled".equals(event.getStatus())) {
+            btnJoin.setText("Event Cancelled");
+            btnJoin.setEnabled(false);
+            btnJoin.setAlpha(0.5f);
+            tvStatus.setTextColor(getColor(android.R.color.holo_red_light));
+            layoutChatButtons.setVisibility(View.GONE);
+            if (isHost) btnCancelEvent.setVisibility(View.GONE);
+            return;
+        }
 
         if (isHost) {
             layoutChatButtons.setVisibility(View.VISIBLE);
@@ -176,6 +193,9 @@ public class EventDetails extends AppCompatActivity {
     private void setupHostControls() {
         btnJoin.setVisibility(View.VISIBLE);
         btnJoin.setEnabled(true);
+
+        btnCancelEvent.setVisibility(View.VISIBLE);
+        btnCancelEvent.setOnClickListener(v -> showCancelDialog());
 
         btnMessageHost.setText("View Messages");
         btnMessageHost.setIcon(getResources().getDrawable(R.drawable.ic_chat, getTheme()));
@@ -330,6 +350,13 @@ public class EventDetails extends AppCompatActivity {
                     btnJoin.setEnabled(true);
 
                     if (doc.exists()) {
+                        if ("cancelled".equals(event.getStatus())) {
+                            btnJoin.setText("Event Cancelled");
+                            btnJoin.setEnabled(false);
+                            btnJoin.setAlpha(0.5f);
+                            layoutChatButtons.setVisibility(View.GONE);
+                            return;
+                        }
                         isAlreadyJoined = true;
                         btnJoin.setText("Leave Event");
                         btnJoin.setEnabled(true);
@@ -344,8 +371,8 @@ public class EventDetails extends AppCompatActivity {
                         return;
                     }
                     else {
-                        if ("finished".equals(event.getStatus())) {
-                            btnJoin.setText("Event Ended");
+                        if ("finished".equals(event.getStatus()) || "cancelled".equals(event.getStatus())) {
+                            btnJoin.setText("finished".equals(event.getStatus()) ? "Event Ended" : "Event Cancelled");
                             btnJoin.setEnabled(false);
                             btnJoin.setAlpha(0.5f);
                             layoutChatButtons.setVisibility(View.GONE);
@@ -381,6 +408,68 @@ public class EventDetails extends AppCompatActivity {
             android.util.Log.d("INBOX", "DM chatId being used: " + event.getEventId() + "_dm_" + currentUid);
             startActivity(intent);
         });
+    }
+
+    private void showCancelDialog() {
+        View view = getLayoutInflater().inflate(R.layout.dialog_cancel_gathering, null);
+
+        BottomSheetDialog sheet = new BottomSheetDialog(this, R.style.CancelGatheringSheetTheme);
+        sheet.setContentView(view);
+
+        sheet.getWindow()
+                .findViewById(com.google.android.material.R.id.design_bottom_sheet)
+                .setBackgroundResource(android.R.color.transparent);
+
+        RadioGroup rgReasons = view.findViewById(R.id.rgReasons);
+        Button btnGoBack     = view.findViewById(R.id.btnDialogGoBack);
+        Button btnConfirm    = view.findViewById(R.id.btnDialogConfirm);
+
+        btnGoBack.setOnClickListener(v -> sheet.dismiss());
+        btnConfirm.setOnClickListener(v -> {
+            int selectedId = rgReasons.getCheckedRadioButtonId();
+            if (selectedId == -1) {
+                Toast.makeText(this, "Please select a reason", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            RadioButton selected = view.findViewById(selectedId);
+            sheet.dismiss();
+            cancelEvent(selected.getText().toString());
+        });
+
+        sheet.show();
+    }
+
+    private void cancelEvent(String reason) {
+        btnCancelEvent.setEnabled(false);
+        btnJoin.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", "cancelled");
+        updates.put("cancellationReason", reason);
+        updates.put("cancelledAt", System.currentTimeMillis());
+
+        db.collection("volunteerEvents")
+                .document(event.getEventId())
+                .update(updates)
+                .addOnSuccessListener(unused -> {
+                    progressBar.setVisibility(View.GONE);
+                    event.setStatus("cancelled");
+                    tvStatus.setText("CANCELLED");
+                    tvStatus.setTextColor(getColor(android.R.color.holo_red_light));
+                    btnJoin.setText("Event Cancelled");
+                    btnJoin.setEnabled(false);
+                    btnJoin.setAlpha(0.5f);
+                    btnCancelEvent.setVisibility(View.GONE);
+                    layoutChatButtons.setVisibility(View.GONE);
+                    Toast.makeText(this, "Event cancelled: " + reason, Toast.LENGTH_LONG).show();
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    btnCancelEvent.setEnabled(true);
+                    btnJoin.setEnabled(true);
+                    Toast.makeText(this, "Failed to cancel: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void joinEvent() {
