@@ -71,7 +71,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBaseline_toBaselineOf="@id/tvPrayerName" />
 
-    <!-- ── Description snippet (new — shows gathering description) ── -->
     <TextView
         android:id="@+id/tvDescription"
         android:layout_width="0dp"

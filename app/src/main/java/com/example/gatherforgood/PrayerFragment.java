@@ -32,26 +32,27 @@ import java.util.ArrayList;
 
 public class PrayerFragment extends Fragment {
 
-    RecyclerView rvPrayerGatherings;
-    PrayerGatheringAdapter adapter;
-    FloatingActionButton btnCreateGathering;
-    Button btnMyGatherings;
-    Button btnAllGatherings;
-    ProgressBar progressBar;
-    LinearLayout tvEmpty;
-    TextView tvSectionLabel;
-    boolean isMyGatherings = false;
+    RecyclerView             rvPrayerGatherings;
+    PrayerGatheringAdapter   adapter;
+    FloatingActionButton     btnCreateGathering;
+    Button                   btnMyGatherings, btnAllGatherings, btnJoinedGatherings;
+    ProgressBar              progressBar;
+    LinearLayout             tvEmpty;
+    TextView                 tvSectionLabel;
+
+    boolean isMyGatherings     = false;
+    boolean isJoinedGatherings = false;
 
     private com.google.firebase.firestore.ListenerRegistration activeListener;
 
-    TextView chipAll, chipFajr, chipZuhr, chipAsr, chipMaghrib, chipIsha, chipJumuah;
+    TextView chipAll, chipFajr, chipZuhr, chipAsr, chipMaghrib, chipIsha;
 
     String activeFilter = null;
     double userLat = 0, userLng = 0;
     private static final float NEARBY_RADIUS_KM = 10f;
 
-    FusedLocationProviderClient fusedClient;
-    ArrayList<PrayerGathering> gatheringsList = new ArrayList<>();
+    FusedLocationProviderClient  fusedClient;
+    ArrayList<PrayerGathering>   gatheringsList = new ArrayList<>();
 
     private final ActivityResultLauncher<String> locationPermissionLauncher =
             registerForActivityResult(
@@ -65,7 +66,8 @@ public class PrayerFragment extends Fragment {
                     });
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_prayer, container, false);
     }
 
@@ -104,13 +106,14 @@ public class PrayerFragment extends Fragment {
     }
 
     public void init(View view) {
-        rvPrayerGatherings = view.findViewById(R.id.rvPrayerGatherings);
-        btnCreateGathering = view.findViewById(R.id.btnCreateGathering);
-        btnMyGatherings    = view.findViewById(R.id.btnMyGatherings);
-        btnAllGatherings   = view.findViewById(R.id.btnAllGatherings);
-        progressBar        = view.findViewById(R.id.progressBar);
-        tvEmpty            = view.findViewById(R.id.tvEmpty);
-        tvSectionLabel     = view.findViewById(R.id.tvSectionLabel);
+        rvPrayerGatherings  = view.findViewById(R.id.rvPrayerGatherings);
+        btnCreateGathering  = view.findViewById(R.id.btnCreateGathering);
+        btnAllGatherings    = view.findViewById(R.id.btnAllGatherings);
+        btnMyGatherings     = view.findViewById(R.id.btnMyGatherings);
+        btnJoinedGatherings = view.findViewById(R.id.btnJoinedGatherings);
+        progressBar         = view.findViewById(R.id.progressBar);
+        tvEmpty             = view.findViewById(R.id.tvEmpty);
+        tvSectionLabel      = view.findViewById(R.id.tvSectionLabel);
 
         chipAll     = view.findViewById(R.id.chipAll);
         chipFajr    = view.findViewById(R.id.chipFajr);
@@ -118,7 +121,6 @@ public class PrayerFragment extends Fragment {
         chipAsr     = view.findViewById(R.id.chipAsr);
         chipMaghrib = view.findViewById(R.id.chipMaghrib);
         chipIsha    = view.findViewById(R.id.chipIsha);
-        chipJumuah  = view.findViewById(R.id.chipJumuah);
 
         fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
@@ -131,8 +133,10 @@ public class PrayerFragment extends Fragment {
     }
 
     public void setListeners() {
+
         btnAllGatherings.setOnClickListener(v -> {
-            isMyGatherings = false;
+            isMyGatherings     = false;
+            isJoinedGatherings = false;
             setActiveButton(btnAllGatherings);
             activeFilter = null;
             updateChipStyles(chipAll);
@@ -141,12 +145,23 @@ public class PrayerFragment extends Fragment {
         });
 
         btnMyGatherings.setOnClickListener(v -> {
-            isMyGatherings = true;
+            isMyGatherings     = true;
+            isJoinedGatherings = false;
             setActiveButton(btnMyGatherings);
             activeFilter = null;
             updateChipStyles(chipAll);
             updateSectionLabel();
             loadMyGatherings();
+        });
+
+        btnJoinedGatherings.setOnClickListener(v -> {
+            isMyGatherings     = false;
+            isJoinedGatherings = true;
+            setActiveButton(btnJoinedGatherings);
+            activeFilter = null;
+            updateChipStyles(chipAll);
+            updateSectionLabel();
+            loadJoinedGatherings();
         });
 
         btnCreateGathering.setOnClickListener(v -> navigateToCreatePrayerScreen());
@@ -157,11 +172,10 @@ public class PrayerFragment extends Fragment {
         chipAsr.setOnClickListener(v     -> selectFilter("Asr",     chipAsr));
         chipMaghrib.setOnClickListener(v -> selectFilter("Maghrib", chipMaghrib));
         chipIsha.setOnClickListener(v    -> selectFilter("Isha",    chipIsha));
-        chipJumuah.setOnClickListener(v  -> selectFilter("Jumuah",  chipJumuah));
     }
 
     private void setActiveButton(Button activeBtn) {
-        Button[] buttons = {btnAllGatherings, btnMyGatherings};
+        Button[] buttons = {btnAllGatherings, btnMyGatherings, btnJoinedGatherings};
         for (Button btn : buttons) {
             if (btn == activeBtn) {
                 btn.setBackgroundResource(R.drawable.register_bg_gender_active);
@@ -209,6 +223,54 @@ public class PrayerFragment extends Fragment {
         }
     }
 
+    private void fetchGatherings(double lat, double lng) {
+        detachListener();
+
+        progressBar.setVisibility(View.VISIBLE);
+        tvEmpty.setVisibility(View.GONE);
+        rvPrayerGatherings.setVisibility(View.GONE);
+
+        com.google.firebase.firestore.Query query = FirebaseFirestore.getInstance()
+                .collection("prayerGatherings");
+
+        if (activeFilter != null) {
+            query = query.whereEqualTo("prayerType", activeFilter);
+        }
+
+        query = query.orderBy("timeInMillis", Query.Direction.ASCENDING);
+
+        activeListener = query.addSnapshotListener((querySnapshot, error) -> {
+            if (error != null || querySnapshot == null) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(),
+                        "Failed to load gatherings: " + (error != null ? error.getMessage() : ""),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            gatheringsList.clear();
+            long currentTime   = System.currentTimeMillis();
+            long twentyMinutes = 20 * 60 * 1000;
+
+            for (QueryDocumentSnapshot doc : querySnapshot) {
+                PrayerGathering gathering = doc.toObject(PrayerGathering.class);
+                gathering.setId(doc.getId());
+
+                if (currentTime > (gathering.getTimeInMillis() + twentyMinutes)) continue;
+
+                if (lat != 0 && lng != 0) {
+                    float distance = distanceBetween(lat, lng,
+                            gathering.getLatitude(), gathering.getLongitude());
+                    if (distance > NEARBY_RADIUS_KM) continue;
+                }
+
+                gatheringsList.add(gathering);
+            }
+
+            updateUI();
+        });
+    }
+
     private void loadMyGatherings() {
         detachListener();
 
@@ -234,86 +296,95 @@ public class PrayerFragment extends Fragment {
             }
 
             gatheringsList.clear();
-            long currentTime = System.currentTimeMillis();
+            long currentTime   = System.currentTimeMillis();
             long twentyMinutes = 20 * 60 * 1000;
 
             for (QueryDocumentSnapshot doc : querySnapshot) {
                 PrayerGathering gathering = doc.toObject(PrayerGathering.class);
                 gathering.setId(doc.getId());
-                long prayerTime = gathering.getTimeInMillis();
-                if (currentTime > (prayerTime + twentyMinutes)) continue;
+                if (currentTime > (gathering.getTimeInMillis() + twentyMinutes)) continue;
                 gatheringsList.add(gathering);
             }
 
-            progressBar.setVisibility(View.GONE);
-            if (gatheringsList.isEmpty()) {
-                tvEmpty.setVisibility(View.VISIBLE);
-                rvPrayerGatherings.setVisibility(View.GONE);
-            } else {
-                tvEmpty.setVisibility(View.GONE);
-                rvPrayerGatherings.setVisibility(View.VISIBLE);
-            }
-            adapter.notifyDataSetChanged();
+            updateUI();
         });
     }
 
-    private void fetchGatherings(double lat, double lng) {
+    private void loadJoinedGatherings() {
         detachListener();
 
         progressBar.setVisibility(View.VISIBLE);
         tvEmpty.setVisibility(View.GONE);
         rvPrayerGatherings.setVisibility(View.GONE);
 
-        com.google.firebase.firestore.Query query = FirebaseFirestore.getInstance()
-                .collection("prayerGatherings");
+        String currentUid = FirebaseAuth.getInstance().getUid();
 
-        if (activeFilter != null) {
-            query = query.whereEqualTo("prayerType", activeFilter);
-        }
-
-        query = query.orderBy("timeInMillis", com.google.firebase.firestore.Query.Direction.ASCENDING);
-
-        activeListener = query.addSnapshotListener((querySnapshot, error) -> {
-            if (error != null || querySnapshot == null) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(),
-                        "Failed to load gatherings: " + (error != null ? error.getMessage() : ""),
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            gatheringsList.clear();
-            long currentTime = System.currentTimeMillis();
-            long twentyMinutes = 20 * 60 * 1000;
-
-            for (QueryDocumentSnapshot doc : querySnapshot) {
-                PrayerGathering gathering = doc.toObject(PrayerGathering.class);
-                gathering.setId(doc.getId());
-
-                long prayerTime = gathering.getTimeInMillis();
-                if (currentTime > (prayerTime + twentyMinutes)) continue;
-
-                if (lat != 0 && lng != 0) {
-                    float distance = distanceBetween(lat, lng,
-                            gathering.getLatitude(), gathering.getLongitude());
-                    if (distance <= NEARBY_RADIUS_KM) {
-                        gatheringsList.add(gathering);
+        FirebaseFirestore.getInstance()
+                .collectionGroup("participants")
+                .whereEqualTo("uid", currentUid)
+                .whereEqualTo("role", "participant")
+                .get()
+                .addOnSuccessListener(snapshots -> {
+                    if (snapshots.isEmpty()) {
+                        gatheringsList.clear();
+                        updateUI();
+                        return;
                     }
-                } else {
-                    gatheringsList.add(gathering);
-                }
-            }
 
-            progressBar.setVisibility(View.GONE);
-            if (gatheringsList.isEmpty()) {
-                tvEmpty.setVisibility(View.VISIBLE);
-                rvPrayerGatherings.setVisibility(View.GONE);
-            } else {
-                tvEmpty.setVisibility(View.GONE);
-                rvPrayerGatherings.setVisibility(View.VISIBLE);
-            }
-            adapter.notifyDataSetChanged();
-        });
+                    ArrayList<String> joinedIds = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        String gatheringId = doc.getReference()
+                                .getParent().getParent().getId();
+                        if (gatheringId != null) joinedIds.add(gatheringId);
+                    }
+
+                    ArrayList<String> batch = new ArrayList<>(
+                            joinedIds.subList(0, Math.min(10, joinedIds.size())));
+
+                    FirebaseFirestore.getInstance()
+                            .collection("prayerGatherings")
+                            .whereIn("id", batch)
+                            .get()
+                            .addOnSuccessListener(gatheringSnapshots -> {
+                                gatheringsList.clear();
+                                long currentTime   = System.currentTimeMillis();
+                                long twentyMinutes = 20 * 60 * 1000;
+
+                                for (QueryDocumentSnapshot doc : gatheringSnapshots) {
+                                    PrayerGathering gathering = doc.toObject(PrayerGathering.class);
+                                    gathering.setId(doc.getId());
+                                    if (currentTime > (gathering.getTimeInMillis() + twentyMinutes)) continue;
+                                    if (activeFilter != null && !activeFilter.equals(gathering.getPrayerType())) continue;
+                                    gatheringsList.add(gathering);
+                                }
+
+                                updateUI();
+                            })
+                            .addOnFailureListener(e -> {
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(getContext(),
+                                        "Failed: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getContext(),
+                            "Failed: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void updateUI() {
+        progressBar.setVisibility(View.GONE);
+        adapter.notifyDataSetChanged();
+        if (gatheringsList.isEmpty()) {
+            tvEmpty.setVisibility(View.VISIBLE);
+            rvPrayerGatherings.setVisibility(View.GONE);
+        } else {
+            tvEmpty.setVisibility(View.GONE);
+            rvPrayerGatherings.setVisibility(View.VISIBLE);
+        }
     }
 
     private void selectFilter(String prayerType, TextView selectedChip) {
@@ -322,15 +393,17 @@ public class PrayerFragment extends Fragment {
         activeFilter = prayerType;
         updateChipStyles(selectedChip);
         updateSectionLabel();
-        if (!isMyGatherings) {
-            fetchGatherings(userLat, userLng);
-        } else {
+        if (isMyGatherings) {
             loadMyGatherings();
+        } else if (isJoinedGatherings) {
+            loadJoinedGatherings();
+        } else {
+            fetchGatherings(userLat, userLng);
         }
     }
 
     private void updateChipStyles(TextView activeChip) {
-        TextView[] allChips = {chipAll, chipFajr, chipZuhr, chipAsr, chipMaghrib, chipIsha, chipJumuah};
+        TextView[] allChips = {chipAll, chipFajr, chipZuhr, chipAsr, chipMaghrib, chipIsha};
         for (TextView chip : allChips) {
             if (chip == activeChip) {
                 chip.setBackgroundResource(R.drawable.prayer_chip_active);
@@ -344,14 +417,18 @@ public class PrayerFragment extends Fragment {
 
     private void updateSectionLabel() {
         if (tvSectionLabel == null) return;
+        String typeLabel = activeFilter != null ? activeFilter.toUpperCase() + " " : "";
         if (isMyGatherings) {
-            tvSectionLabel.setText(activeFilter == null ? "MY GATHERINGS" : "MY " + activeFilter.toUpperCase() + " GATHERINGS");
+            tvSectionLabel.setText("MY " + typeLabel + "GATHERINGS");
+        } else if (isJoinedGatherings) {
+            tvSectionLabel.setText("JOINED " + typeLabel + "GATHERINGS");
         } else {
-            tvSectionLabel.setText(activeFilter == null ? "NEARBY PRAYERS" : activeFilter.toUpperCase() + " PRAYERS");
+            tvSectionLabel.setText("NEARBY " + typeLabel + "PRAYERS");
         }
     }
 
-    private float distanceBetween(double lat1, double lng1, double lat2, double lng2) {
+    private float distanceBetween(double lat1, double lng1,
+                                  double lat2, double lng2) {
         float[] results = new float[1];
         Location.distanceBetween(lat1, lng1, lat2, lng2, results);
         return results[0] / 1000f;

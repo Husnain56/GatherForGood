@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/register_bg_gradient">
 
-    <!-- Star pattern overlay -->
     <ImageView
         android:id="@+id/starPattern"
         android:layout_width="match_parent"
@@ -15,7 +14,6 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_star_pattern" />
 
-    <!-- Main scrollable content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -33,7 +31,6 @@
                 android:paddingHorizontal="16dp"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp">
-
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -60,7 +57,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ─── Hero Banner ─── -->
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
@@ -114,10 +110,9 @@
 
             </FrameLayout>
 
-            <!-- ─── Segmented Toggle: All / My Gatherings ─── -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="52dp"
                 android:orientation="horizontal"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
@@ -125,20 +120,20 @@
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/register_bg_input_field"
                 android:padding="5dp"
-                android:weightSum="2">
+                android:weightSum="3">
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnAllGatherings"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginEnd="3dp"
+                    android:layout_marginEnd="2dp"
                     android:background="@drawable/register_bg_gender_active"
                     android:foreground="?attr/selectableItemBackground"
                     android:text="All"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="13sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -146,18 +141,32 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="3dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
                     android:background="@android:color/transparent"
                     android:foreground="?attr/selectableItemBackground"
                     android:text="My Gatherings"
                     android:textAllCaps="false"
                     android:textColor="@color/gold_accent"
-                    android:textSize="13sp"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnJoinedGatherings"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="2dp"
+                    android:background="@android:color/transparent"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:text="Joined"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gold_accent"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
 
-            <!-- ─── Filter Chips ─── -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -262,25 +271,10 @@
                         android:textStyle="bold"
                         android:letterSpacing="0.15" />
 
-                    <TextView
-                        android:id="@+id/chipJumuah"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:background="@drawable/prayer_chip_inactive"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:paddingHorizontal="20dp"
-                        android:text="JUMU'AH"
-                        android:textColor="#80E5C76B"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.15" />
-
                 </LinearLayout>
 
             </HorizontalScrollView>
 
-            <!-- ─── Section Label ─── -->
             <TextView
                 android:id="@+id/tvSectionLabel"
                 android:layout_width="match_parent"
@@ -295,7 +289,6 @@
                 android:textStyle="bold"
                 android:letterSpacing="0.2" />
 
-            <!-- ─── Loading ─── -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
@@ -308,7 +301,6 @@
                 android:indeterminateTint="@color/gold_accent"
                 android:visibility="gone" />
 
-            <!-- ─── Empty State ─── -->
             <LinearLayout
                 android:id="@+id/tvEmpty"
                 android:layout_width="match_parent"
@@ -345,7 +337,6 @@
 
             </LinearLayout>
 
-            <!-- ─── Gatherings List ─── -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvPrayerGatherings"
                 android:layout_width="match_parent"
@@ -360,7 +351,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- ─── FAB: Create Gathering ─── -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnCreateGathering"
         android:layout_width="wrap_content"

@@ -100,6 +100,14 @@ public class GatheringDetails extends AppCompatActivity {
 
         isHost = gathering.getHostUid().equals(currentUid);
 
+        if (!isHost && "finished".equals(gathering.getStatus())) {
+            btnJoin.setText("Prayer Ended");
+            btnJoin.setEnabled(false);
+            btnJoin.setAlpha(0.5f);
+            layoutChatButtons.setVisibility(View.GONE);
+            return;
+        }
+
         if (isHost) {
             setupHostControls();
         } else {
@@ -268,6 +276,13 @@ public class GatheringDetails extends AppCompatActivity {
                         btnJoin.setText("Leave Gathering");
                         layoutChatButtons.setVisibility(View.VISIBLE);
                     } else {
+                        if ("finished".equals(gathering.getStatus())) {
+                            btnJoin.setText("Prayer Ended");
+                            btnJoin.setEnabled(false);
+                            btnJoin.setAlpha(0.5f);
+                            layoutChatButtons.setVisibility(View.GONE);
+                            return;
+                        }
                         isAlreadyJoined = false;
                         btnJoin.setText("Join Gathering");
                         layoutChatButtons.setVisibility(View.GONE);

@@ -42,6 +42,7 @@ public class PrayerGatheringAdapter extends RecyclerView.Adapter<PrayerGathering
         holder.tvHostName.setText("Hosted by " + gathering.getHostName());
         holder.tvLocation.setText(gathering.getLocation());
         holder.tvParticipantCount.setText(gathering.getParticipantCount() + " joined");
+        holder.tvDescription.setText(gathering.getDescription());
 
 
         holder.btnJoin.setOnClickListener(v -> {
@@ -66,7 +67,7 @@ public class PrayerGatheringAdapter extends RecyclerView.Adapter<PrayerGathering
     }
 
     public static class PrayerViewHolder extends RecyclerView.ViewHolder {
-        TextView tvStatus, tvPrayerName, tvTime, tvHostName, tvLocation, tvDistance, tvParticipantCount;
+        TextView tvStatus, tvPrayerName, tvTime, tvHostName, tvLocation, tvParticipantCount, tvDescription;
         Button btnJoin;
 
         View mainCard;
@@ -81,6 +82,7 @@ public class PrayerGatheringAdapter extends RecyclerView.Adapter<PrayerGathering
             tvParticipantCount = itemView.findViewById(R.id.tvParticipantCount);
             btnJoin = itemView.findViewById(R.id.btnJoin);
             mainCard = itemView.findViewById(R.id.main);
+            tvDescription = itemView.findViewById(R.id.tvDescription);
         }
     }
 }
