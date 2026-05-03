@@ -206,7 +206,6 @@
                     android:orientation="horizontal"
                     android:weightSum="2">
 
-                    <!-- Volunteers — slightly narrower -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -244,7 +243,6 @@
 
                     </LinearLayout>
 
-                    <!-- Open To — slightly wider so text fits -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -301,7 +299,7 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- ── Date ── -->
+                <!-- ── Start Date ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -313,7 +311,7 @@
                         android:drawableStart="@drawable/ic_calendar"
                         android:drawablePadding="6dp"
                         android:drawableTint="#D4AF37"
-                        android:text="DATE"
+                        android:text="START DATE"
                         android:textColor="#D4AF37"
                         android:textSize="9sp"
                         android:textStyle="bold"
@@ -348,7 +346,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toEndOf="@id/ivPickDate"
                             android:layout_marginStart="12dp"
-                            android:text="Tap to select date"
+                            android:text="Tap to select start date"
                             android:textColor="#80F9F1D7"
                             android:textSize="14sp"
                             android:focusable="false"
@@ -372,7 +370,7 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- ── Time ── -->
+                <!-- ── Start Time ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -384,13 +382,12 @@
                         android:drawableStart="@drawable/ic_schedule"
                         android:drawablePadding="6dp"
                         android:drawableTint="#D4AF37"
-                        android:text="TIME"
+                        android:text="START TIME"
                         android:textColor="#D4AF37"
                         android:textSize="9sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.15" />
 
-                    <!-- Single full-width row. AM/PM baked into tvTime text ("07:00 AM"). -->
                     <RelativeLayout
                         android:id="@+id/rlTime"
                         android:layout_width="match_parent"
@@ -421,7 +418,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toEndOf="@id/ivTimeIcon"
                             android:layout_marginStart="12dp"
-                            android:text="Tap to select time"
+                            android:text="Tap to select start time"
                             android:textColor="#80F9F1D7"
                             android:textSize="14sp"
                             android:singleLine="true"
@@ -447,7 +444,152 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- ── Location (unchanged) ── -->
+                <!-- ── End Date ── -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_calendar"
+                        android:drawablePadding="6dp"
+                        android:drawableTint="#D4AF37"
+                        android:text="END DATE"
+                        android:textColor="#D4AF37"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15" />
+
+                    <RelativeLayout
+                        android:id="@+id/rlEndDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/register_bg_input_field"
+                        android:paddingHorizontal="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/ivPickEndDate"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_calendar"
+                            android:focusable="false"
+                            android:clickable="false"
+                            app:tint="#D4AF37" />
+
+                        <TextView
+                            android:id="@+id/tvSelectedEndDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@id/ivPickEndDate"
+                            android:layout_marginStart="12dp"
+                            android:text="Tap to select end date"
+                            android:textColor="#80F9F1D7"
+                            android:textSize="14sp"
+                            android:focusable="false"
+                            android:clickable="false" />
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_arrow_drop_down"
+                            app:tint="#D4AF37" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="20dp"
+                    android:background="#1AFFFFFF" />
+
+                <!-- ── End Time ── -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_schedule"
+                        android:drawablePadding="6dp"
+                        android:drawableTint="#D4AF37"
+                        android:text="END TIME"
+                        android:textColor="#D4AF37"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15" />
+
+                    <RelativeLayout
+                        android:id="@+id/rlEndTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/register_bg_input_field"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/ivEndTimeIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_schedule"
+                            android:focusable="false"
+                            android:clickable="false"
+                            app:tint="#D4AF37" />
+
+                        <TextView
+                            android:id="@+id/tvEndTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@id/ivEndTimeIcon"
+                            android:layout_marginStart="12dp"
+                            android:text="Tap to select end time"
+                            android:textColor="#80F9F1D7"
+                            android:textSize="14sp"
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:focusable="false"
+                            android:clickable="false" />
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_arrow_drop_down"
+                            app:tint="#D4AF37" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="20dp"
+                    android:background="#1AFFFFFF" />
+
+                <!-- ── Location ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -516,7 +658,6 @@
 
                     </LinearLayout>
 
-                    <!-- Coordinates hint shown after location picked -->
                     <TextView
                         android:id="@+id/tvMapHint"
                         android:layout_width="match_parent"

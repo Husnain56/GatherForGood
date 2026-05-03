@@ -36,6 +36,8 @@ public class EventDetails extends AppCompatActivity {
             tvSlots, tvParticipantCount, tvDescription,
             tvReadMore, tvEventType, tvStatus, tvRequirementGender, tvRequirements;
 
+    TextView tvEventEndDate, tvEventEndTime;
+
     Button         btnJoin;
     LinearLayout llLocation;
     MaterialButton btnOpenMaps, btnGroupChat, btnMessageHost;
@@ -94,6 +96,9 @@ public class EventDetails extends AppCompatActivity {
         tvRequirementGender = findViewById(R.id.tvRequirementGender);
         tvRequirements      = findViewById(R.id.tvRequirements);
 
+        tvEventEndDate = findViewById(R.id.tvEventEndDate);
+        tvEventEndTime = findViewById(R.id.tvEventEndTime);
+
         llLocation = findViewById(R.id.llLocation);
 
         event = (Event) getIntent().getSerializableExtra("event");
@@ -105,6 +110,13 @@ public class EventDetails extends AppCompatActivity {
         tvOrganizerNameDetail.setText(event.getHostName());
         tvEventDate.setText(event.getDate());
         tvEventTime.setText(event.getTime());
+        if (event.getEndDate() != null && !event.getEndDate().isEmpty()) {
+            tvEventEndDate.setText(event.getEndDate());
+            tvEventEndTime.setText(event.getEndTime());
+        } else {
+            tvEventEndDate.setText("—");
+            tvEventEndTime.setText("—");
+        }
         tvEventLocation.setText(event.getLocation());
         tvDescription.setText(event.getDescription());
         tvEventType.setText(event.getEventType().toUpperCase());
@@ -128,9 +140,9 @@ public class EventDetails extends AppCompatActivity {
         } else {
             checkIfJoined();
         }
-        if (!isHost && event.getVolunteersJoined() >= event.getVolunteersRequired()) {
+        if (!isHost && ("finished".equals(event.getStatus()) || event.getVolunteersJoined() >= event.getVolunteersRequired())) {
             btnJoin.setEnabled(false);
-            btnJoin.setText("Slots Full");
+            btnJoin.setText("finished".equals(event.getStatus()) ? "Event Ended" : "Slots Full");
             btnJoin.setAlpha(0.5f);
         }
     }
@@ -332,6 +344,13 @@ public class EventDetails extends AppCompatActivity {
                         return;
                     }
                     else {
+                        if ("finished".equals(event.getStatus())) {
+                            btnJoin.setText("Event Ended");
+                            btnJoin.setEnabled(false);
+                            btnJoin.setAlpha(0.5f);
+                            layoutChatButtons.setVisibility(View.GONE);
+                            return;
+                        }
                         isAlreadyJoined = false;
                         btnJoin.setText("Join");
                         btnJoin.setEnabled(true);

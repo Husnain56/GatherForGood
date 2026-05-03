@@ -15,6 +15,9 @@ public class Event implements Serializable {
     private String date;
     private String time;
     private long eventTimeMillis;
+    private String endDate;
+    private String endTime;
+    private long eventEndTimeMillis;
     private String location;
     private double lat;
     private double lng;
@@ -26,31 +29,35 @@ public class Event implements Serializable {
     public Event() {}
 
     public Event(String eventId, String hostUid, String hostName,
-                          String eventType, String title,
-                          int volunteersRequired, int volunteersJoined,
-                          String genderSetting, String date, String time,
-                          long eventTimeMillis, String location,
-                          double lat, double lng,
-                          String description, String requirements,
-                          String status, long createdAt) {
-        this.eventId            = eventId;
-        this.hostUid            = hostUid;
-        this.hostName           = hostName;
-        this.eventType          = eventType;
-        this.title              = title;
-        this.volunteersRequired = volunteersRequired;
-        this.volunteersJoined   = volunteersJoined;
-        this.genderSetting      = genderSetting;
-        this.date               = date;
-        this.time               = time;
-        this.eventTimeMillis    = eventTimeMillis;
-        this.location           = location;
-        this.lat                = lat;
-        this.lng                = lng;
-        this.description        = description;
-        this.requirements       = requirements;
-        this.status             = status;
-        this.createdAt          = createdAt;
+                 String eventType, String title,
+                 int volunteersRequired, int volunteersJoined,
+                 String genderSetting, String date, String time,
+                 long eventTimeMillis, String endDate, String endTime,
+                 long eventEndTimeMillis, String location,
+                 double lat, double lng,
+                 String description, String requirements,
+                 String status, long createdAt) {
+        this.eventId             = eventId;
+        this.hostUid             = hostUid;
+        this.hostName            = hostName;
+        this.eventType           = eventType;
+        this.title               = title;
+        this.volunteersRequired  = volunteersRequired;
+        this.volunteersJoined    = volunteersJoined;
+        this.genderSetting       = genderSetting;
+        this.date                = date;
+        this.time                = time;
+        this.eventTimeMillis     = eventTimeMillis;
+        this.endDate             = endDate;
+        this.endTime             = endTime;
+        this.eventEndTimeMillis  = eventEndTimeMillis;
+        this.location            = location;
+        this.lat                 = lat;
+        this.lng                 = lng;
+        this.description         = description;
+        this.requirements        = requirements;
+        this.status              = status;
+        this.createdAt           = createdAt;
     }
 
     public String getEventId() { return eventId; }
@@ -85,6 +92,15 @@ public class Event implements Serializable {
 
     public long getEventTimeMillis() { return eventTimeMillis; }
     public void setEventTimeMillis(long eventTimeMillis) { this.eventTimeMillis = eventTimeMillis; }
+
+    public String getEndDate() { return endDate; }
+    public void setEndDate(String endDate) { this.endDate = endDate; }
+
+    public String getEndTime() { return endTime; }
+    public void setEndTime(String endTime) { this.endTime = endTime; }
+
+    public long getEventEndTimeMillis() { return eventEndTimeMillis; }
+    public void setEventEndTimeMillis(long eventEndTimeMillis) { this.eventEndTimeMillis = eventEndTimeMillis; }
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }

@@ -148,13 +148,13 @@
                 android:letterSpacing="0.2" />
 
             <LinearLayout
+                android:id="@+id/llLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/home_bg_next_prayer_card"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:id="@+id/llLocation"
                 android:padding="16dp">
 
                 <ImageView
@@ -176,48 +176,58 @@
 
             </LinearLayout>
 
-            <!-- ─── Date & Slots Cards ─── -->
+            <!-- ─── Date/Time Card (start → end) + Slots Card ─── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="DATE &amp; TIME"
+                android:textColor="#80E5C76B"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2" />
+
+            <!-- Date card showing FROM / TO rows -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="24dp"
-                android:baselineAligned="false"
-                android:weightSum="2">
+                android:layout_marginTop="10dp"
+                android:background="@drawable/home_bg_next_prayer_card"
+                android:orientation="vertical"
+                android:padding="14dp">
 
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_event_nofill"
+                    app:tint="#80E5C76B"
+                    android:layout_marginBottom="10dp" />
+
+                <!-- FROM row -->
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/home_bg_next_prayer_card"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_event_nofill"
-                        app:tint="#80E5C76B"
-                        android:layout_marginBottom="8dp" />
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="40dp"
                         android:layout_height="wrap_content"
-                        android:text="DATE &amp; TIME"
-                        android:textColor="#80FFFFFF"
+                        android:text="FROM"
+                        android:textColor="#66FFFFFF"
                         android:textSize="9sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1" />
 
                     <TextView
                         android:id="@+id/tvEventDate"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
                         android:textColor="#F9F1D7"
                         android:textSize="13sp"
                         android:textStyle="bold"
-                        android:layout_marginTop="4dp"
                         tools:text="Sat, 19 Apr 2026" />
 
                     <TextView
@@ -226,49 +236,94 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/gold_accent"
                         android:textSize="12sp"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginStart="8dp"
                         tools:text="09:00 AM" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:background="@drawable/home_bg_next_prayer_card"
-                    android:orientation="vertical"
-                    android:padding="14dp"
-                    android:gravity="center_horizontal">
+                <!-- Thin divider between rows -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginVertical="10dp"
+                    android:background="#1AFFFFFF" />
 
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_person_fill"
-                        app:tint="#80E5C76B"
-                        android:layout_marginBottom="8dp" />
+                <!-- TO row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="40dp"
                         android:layout_height="wrap_content"
-                        android:text="SLOTS"
-                        android:textColor="#80FFFFFF"
+                        android:text="TO"
+                        android:textColor="#66FFFFFF"
                         android:textSize="9sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1" />
 
                     <TextView
-                        android:id="@+id/tvSlots"
+                        android:id="@+id/tvEventEndDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:textColor="#F9F1D7"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        tools:text="Sat, 19 Apr 2026" />
+
+                    <TextView
+                        android:id="@+id/tvEventEndTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/soft_gold"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/playfair_display_italic"
-                        android:layout_marginTop="4dp"
-                        tools:text="18/20" />
+                        android:textColor="@color/gold_accent"
+                        android:textSize="12sp"
+                        android:layout_marginStart="8dp"
+                        tools:text="05:00 PM" />
 
                 </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Slots card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/home_bg_next_prayer_card"
+                android:orientation="vertical"
+                android:padding="14dp"
+                android:gravity="center_horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_person_fill"
+                    app:tint="#80E5C76B"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SLOTS"
+                    android:textColor="#80FFFFFF"
+                    android:textSize="9sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1" />
+
+                <TextView
+                    android:id="@+id/tvSlots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/soft_gold"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/playfair_display_italic"
+                    android:layout_marginTop="4dp"
+                    tools:text="18/20" />
 
             </LinearLayout>
 

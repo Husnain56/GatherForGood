@@ -341,7 +341,7 @@ public class EventsFragment extends Fragment {
                 Event event = doc.toObject(Event.class);
                 event.setEventId(doc.getId());
 
-                if ("finished".equals(event.getStatus())) continue;
+                if (event.getEventEndTimeMillis() > 0 && System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
 
                 if ("all".equals(activeTab)) {
                     if (isNearMe) {
@@ -396,7 +396,7 @@ public class EventsFragment extends Fragment {
                                 for (QueryDocumentSnapshot doc : eventSnapshots) {
                                     Event event = doc.toObject(Event.class);
                                     event.setEventId(doc.getId());
-                                    if ("finished".equals(event.getStatus())) continue;
+                                    if (event.getEventEndTimeMillis() > 0 && System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
                                     eventsList.add(event);
                                 }
                                 updateUI();
