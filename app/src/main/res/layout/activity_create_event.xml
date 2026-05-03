@@ -16,7 +16,6 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_star_pattern" />
 
-    <!-- ─── Toolbar ─── -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -52,7 +51,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- ─── Scrollable content ─── -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -80,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/playfair_display_bold"
-                    android:text="Organise a\nVolunteer Event"
+                    android:text="Organise a&#10;Volunteer Event"
                     android:gravity="center"
                     android:textColor="#F9F1D7"
                     android:textSize="34sp"
@@ -125,15 +123,32 @@
                         android:textStyle="bold"
                         android:letterSpacing="0.15" />
 
-                    <Spinner
-                        android:id="@+id/spinnerEventType"
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:layout_marginTop="8dp"
-                        android:background="@drawable/register_bg_input_field"
-                        android:paddingHorizontal="16dp"
-                        android:spinnerMode="dropdown"
-                        />
+                        android:background="@drawable/register_bg_input_field">
+
+                        <Spinner
+                            android:id="@+id/spinnerEventType"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@android:color/transparent"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="40dp"
+                            android:spinnerMode="dropdown"
+                            android:popupBackground="@drawable/register_bg_input_field" />
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="14dp"
+                            android:src="@drawable/ic_arrow_drop_down"
+                            app:tint="#D4AF37" />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -143,6 +158,7 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
+                <!-- ── Event Title ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -183,16 +199,18 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
+                <!-- ── Volunteers + Gender ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
+                    <!-- Volunteers — slightly narrower -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="0.8"
                         android:layout_marginEnd="8dp"
                         android:orientation="vertical">
 
@@ -226,10 +244,11 @@
 
                     </LinearLayout>
 
+                    <!-- Open To — slightly wider so text fits -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="1.2"
                         android:layout_marginStart="8dp"
                         android:orientation="vertical">
 
@@ -245,14 +264,32 @@
                             android:textStyle="bold"
                             android:letterSpacing="0.15" />
 
-                        <Spinner
-                            android:id="@+id/spinnerGenderSetting"
+                        <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="52dp"
                             android:layout_marginTop="8dp"
-                            android:background="@drawable/register_bg_input_field"
-                            android:paddingHorizontal="12dp"
-                            android:spinnerMode="dropdown" />
+                            android:background="@drawable/register_bg_input_field">
+
+                            <Spinner
+                                android:id="@+id/spinnerGenderSetting"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@android:color/transparent"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="28dp"
+                                android:spinnerMode="dropdown"
+                                android:popupBackground="@drawable/register_bg_input_field" />
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/ic_arrow_drop_down"
+                                app:tint="#D4AF37" />
+
+                        </RelativeLayout>
 
                     </LinearLayout>
 
@@ -264,6 +301,7 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
+                <!-- ── Date ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -287,24 +325,41 @@
                         android:layout_height="52dp"
                         android:layout_marginTop="8dp"
                         android:background="@drawable/register_bg_input_field"
-                        android:paddingHorizontal="16dp">
+                        android:paddingHorizontal="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/ivPickDate"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_calendar"
+                            android:focusable="false"
+                            android:clickable="false"
+                            app:tint="#D4AF37" />
 
                         <TextView
                             android:id="@+id/tvSelectedDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:text="Select Date"
+                            android:layout_toEndOf="@id/ivPickDate"
+                            android:layout_marginStart="12dp"
+                            android:text="Tap to select date"
                             android:textColor="#80F9F1D7"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            android:focusable="false"
+                            android:clickable="false" />
 
                         <ImageView
-                            android:id="@+id/ivPickDate"
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:src="@drawable/ic_calendar"
+                            android:src="@drawable/ic_arrow_drop_down"
                             app:tint="#D4AF37" />
 
                     </RelativeLayout>
@@ -317,6 +372,7 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
+                <!-- ── Time ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -334,35 +390,54 @@
                         android:textStyle="bold"
                         android:letterSpacing="0.15" />
 
-                    <LinearLayout
+                    <!-- Single full-width row. AM/PM baked into tvTime text ("07:00 AM"). -->
+                    <RelativeLayout
+                        android:id="@+id/rlTime"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="52dp"
                         android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
+                        android:background="@drawable/register_bg_input_field"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/ivTimeIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_schedule"
+                            android:focusable="false"
+                            android:clickable="false"
+                            app:tint="#D4AF37" />
 
                         <TextView
                             android:id="@+id/tvTime"
-                            android:layout_width="0dp"
-                            android:layout_height="52dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/register_bg_input_field"
-                            android:gravity="center"
-                            android:hint="Select Time"
-                            android:textColorHint="#80F9F1D7"
-                            android:maxLength="5"
-                            android:textColor="#F9F1D7"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@id/ivTimeIcon"
+                            android:layout_marginStart="12dp"
+                            android:text="Tap to select time"
+                            android:textColor="#80F9F1D7"
                             android:textSize="14sp"
-                            android:paddingHorizontal="16dp" />
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:focusable="false"
+                            android:clickable="false" />
 
-                        <Spinner
-                            android:id="@+id/spinnerAmPm"
-                            android:layout_width="88dp"
-                            android:layout_height="52dp"
-                            android:layout_marginStart="10dp"
-                            android:background="@drawable/register_bg_input_field"
-                            android:spinnerMode="dropdown" />
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_arrow_drop_down"
+                            app:tint="#D4AF37" />
 
-                    </LinearLayout>
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -372,6 +447,7 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
+                <!-- ── Location (unchanged) ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -389,91 +465,67 @@
                         android:textStyle="bold"
                         android:letterSpacing="0.15" />
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnFetchLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="#1AD4AF37"
+                        android:text="Tap to Pin Location"
+                        android:textAllCaps="false"
+                        android:textColor="#F9F1D7"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:strokeColor="#80D4AF37"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="14dp"
+                        app:icon="@drawable/ic_location"
+                        app:iconTint="#D4AF37"
+                        app:iconGravity="textStart"
+                        app:iconPadding="10dp"
+                        app:iconSize="18dp"
+                        app:rippleColor="#22D4AF37" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/home_bg_next_prayer_card"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="14dp">
 
-                        <EditText
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_location"
+                            app:tint="#80E5C76B"
+                            android:layout_marginEnd="10dp" />
+
+                        <TextView
                             android:id="@+id/etLocationDescription"
                             android:layout_width="0dp"
-                            android:layout_height="52dp"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/register_bg_input_field"
-                            android:hint="e.g. Grand Islamic Center, Main Hall"
-                            android:textColorHint="#80F9F1D7"
-                            android:inputType="text"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:textColor="#F9F1D7"
-                            android:textSize="13sp"
-                            android:paddingHorizontal="16dp" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnFetchLocation"
-                            android:layout_width="wrap_content"
-                            android:layout_height="52dp"
-                            android:layout_marginStart="10dp"
-                            android:backgroundTint="@android:color/transparent"
-                            android:text="GPS"
-                            android:textAllCaps="false"
-                            android:textColor="#D4AF37"
-                            android:textSize="11sp"
-                            android:textStyle="bold"
-                            app:strokeColor="#4DD4AF37"
-                            app:strokeWidth="1.5dp"
-                            app:cornerRadius="14dp"
-                            app:icon="@drawable/ic_location"
-                            app:iconTint="#D4AF37"
-                            app:iconGravity="textStart"
-                            app:iconPadding="6dp"
-                            app:iconSize="16dp"
-                            app:rippleColor="#22D4AF37" />
+                            android:text="No location selected yet"
+                            android:textColor="#80F9F1D7"
+                            android:textSize="12sp"
+                            android:lineSpacingExtra="3dp"
+                            android:focusable="false"
+                            android:clickable="false" />
 
                     </LinearLayout>
 
-                    <FrameLayout
+                    <!-- Coordinates hint shown after location picked -->
+                    <TextView
+                        android:id="@+id/tvMapHint"
                         android:layout_width="match_parent"
-                        android:layout_height="110dp"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/bg_details_image_frame"
-                        android:clipToOutline="true">
-
-                        <ImageView
-                            android:id="@+id/ivMapPreview"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:alpha="0.45" />
-
-                        <FrameLayout
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:layout_gravity="center"
-                            android:background="@drawable/bg_circle_emerald">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_location"
-                                app:tint="#D4AF37" />
-
-                        </FrameLayout>
-
-                        <TextView
-                            android:id="@+id/tvMapHint"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|center_horizontal"
-                            android:layout_marginBottom="10dp"
-                            android:text="Tap GPS to pin your location"
-                            android:textColor="#80F9F1D7"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-
-                    </FrameLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text=""
+                        android:textColor="#80F9F1D7"
+                        android:textSize="11sp"
+                        android:gravity="center" />
 
                 </LinearLayout>
 
@@ -483,6 +535,7 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
+                <!-- ── Description ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -527,6 +580,7 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
+                <!-- ── Requirements ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

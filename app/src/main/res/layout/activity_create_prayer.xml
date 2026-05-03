@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/register_bg_gradient"
     tools:context=".CreatePrayer">
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,7 +21,8 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:paddingHorizontal="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:elevation="4dp">
 
         <ImageButton
@@ -70,7 +72,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:paddingHorizontal="24dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="24dp">
 
@@ -78,7 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/playfair_display_bold"
-                    android:text="Host a Prayer\nGathering"
+                    android:text="Host a Prayer&#10;Gathering"
                     android:gravity="center"
                     android:textColor="#F9F1D7"
                     android:textSize="34sp"
@@ -97,7 +100,7 @@
 
             </LinearLayout>
 
-            <!-- Form card (arched top like GatheringDetails) -->
+            <!-- Form card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -123,15 +126,41 @@
                         android:textStyle="bold"
                         android:letterSpacing="0.15" />
 
-                    <Spinner
-                        android:id="@+id/spinnerPrayerType"
+                    <!--
+                        FIX: Spinner dropdown overlapping the closed label.
+                        The first entry in @array/prayer_types must be an empty string ""
+                        so the closed view shows the hint text from the adapter set in Java,
+                        and the open dropdown shows the real options below it without covering
+                        the label above.
+                        The Spinner itself is given android:prompt so accessibility still works.
+                    -->
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:layout_marginTop="8dp"
-                        android:background="@drawable/register_bg_input_field"
-                        android:paddingHorizontal="16dp"
-                        android:entries="@array/prayer_types"
-                        android:spinnerMode="dropdown" />
+                        android:background="@drawable/register_bg_input_field">
+
+                        <Spinner
+                            android:id="@+id/spinnerPrayerType"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@android:color/transparent"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="40dp"
+                            android:spinnerMode="dropdown"
+                            android:popupBackground="@drawable/register_bg_input_field" />
+
+                        <!-- Dropdown arrow -->
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="14dp"
+                            android:src="@drawable/ic_arrow_drop_down"
+                            app:tint="#D4AF37" />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -157,29 +186,45 @@
                         android:letterSpacing="0.15" />
 
                     <RelativeLayout
+                        android:id="@+id/rldate"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:layout_marginTop="8dp"
                         android:background="@drawable/register_bg_input_field"
-                        android:paddingHorizontal="16dp"
-                        android:id="@+id/rldate">
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/ivPickDate"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_calendar"
+                            app:tint="#D4AF37" />
 
                         <TextView
                             android:id="@+id/tvSelectedDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:text="Select Date"
+                            android:layout_toEndOf="@id/ivPickDate"
+                            android:layout_marginStart="12dp"
+                            android:text="Tap to select date"
                             android:textColor="#80F9F1D7"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            android:focusable="false"
+                            android:clickable="false" />
 
                         <ImageView
-                            android:id="@+id/ivPickDate"
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:src="@drawable/ic_calendar"
+                            android:src="@drawable/ic_arrow_drop_down"
                             app:tint="#D4AF37" />
 
                     </RelativeLayout>
@@ -207,38 +252,54 @@
                         android:textStyle="bold"
                         android:letterSpacing="0.15" />
 
-                    <LinearLayout
+                    <!-- Single full-width row. AM/PM is included in tvTime text ("07:00 AM").
+                         No separate spinner — eliminates the overflow/overlap entirely. -->
+                    <RelativeLayout
+                        android:id="@+id/rlTime"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="52dp"
                         android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
+                        android:background="@drawable/register_bg_input_field"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
 
-                        <!-- Hour : Minute input -->
+                        <ImageView
+                            android:id="@+id/ivTimeIcon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_schedule"
+                            app:tint="#D4AF37" />
+
                         <TextView
                             android:id="@+id/tvTime"
-                            android:layout_width="0dp"
-                            android:layout_height="52dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/register_bg_input_field"
-                            android:gravity="center"
-                            android:hint="Select Time"
-                            android:textColorHint="#80F9F1D7"
-                            android:maxLength="5"
-                            android:textColor="#F9F1D7"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@id/ivTimeIcon"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginStart="12dp"
+                            android:text="Tap to select time"
+                            android:textColor="#80F9F1D7"
                             android:textSize="14sp"
-                            android:paddingHorizontal="16dp" />
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:focusable="false"
+                            android:clickable="false" />
 
-                        <!-- AM / PM Spinner -->
-                        <Spinner
-                            android:id="@+id/spinnerAmPm"
-                            android:layout_width="88dp"
-                            android:layout_height="52dp"
-                            android:layout_marginStart="10dp"
-                            android:background="@drawable/register_bg_input_field"
-                            android:entries="@array/am_pm_options"
-                            android:spinnerMode="dropdown" />
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_arrow_drop_down"
+                            app:tint="#D4AF37" />
 
-                    </LinearLayout>
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -263,99 +324,66 @@
                         android:textStyle="bold"
                         android:letterSpacing="0.15" />
 
-                    <!-- Location description + GPS button row -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnFetchLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="#1AD4AF37"
+                        android:text="Tap to Pin Location"
+                        android:textAllCaps="false"
+                        android:textColor="#F9F1D7"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:strokeColor="#80D4AF37"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="14dp"
+                        app:icon="@drawable/ic_location"
+                        app:iconTint="#D4AF37"
+                        app:iconGravity="textStart"
+                        app:iconPadding="10dp"
+                        app:iconSize="18dp"
+                        app:rippleColor="#22D4AF37" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/home_bg_next_prayer_card"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="14dp">
 
-                        <EditText
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_location"
+                            app:tint="#80E5C76B"
+                            android:layout_marginEnd="10dp" />
+
+                        <TextView
                             android:id="@+id/etLocationDescription"
                             android:layout_width="0dp"
-                            android:layout_height="52dp"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/register_bg_input_field"
-                            android:hint="e.g. Al-Noor Mosque, Block 7"
-                            android:textColorHint="#80F9F1D7"
-                            android:inputType="text"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:textColor="#F9F1D7"
-                            android:textSize="13sp"
-                            android:paddingHorizontal="16dp" />
-
-                        <!-- Fetch from Google Maps button -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnFetchLocation"
-                            android:layout_width="wrap_content"
-                            android:layout_height="52dp"
-                            android:layout_marginStart="10dp"
-                            android:backgroundTint="@android:color/transparent"
-                            android:text="GPS"
-                            android:textAllCaps="false"
-                            android:textColor="#D4AF37"
-                            android:textSize="11sp"
-                            android:textStyle="bold"
-                            app:strokeColor="#4DD4AF37"
-                            app:strokeWidth="1.5dp"
-                            app:cornerRadius="14dp"
-                            app:icon="@drawable/ic_location"
-                            app:iconTint="#D4AF37"
-                            app:iconGravity="textStart"
-                            app:iconPadding="6dp"
-                            app:iconSize="16dp"
-                            app:rippleColor="#22D4AF37" />
+                            android:text="No location selected yet"
+                            android:textColor="#80F9F1D7"
+                            android:textSize="12sp"
+                            android:lineSpacingExtra="3dp"
+                            android:focusable="false"
+                            android:clickable="false" />
 
                     </LinearLayout>
 
-                    <!-- Map preview frame -->
-                    <FrameLayout
+                    <TextView
+                        android:id="@+id/tvMapHint"
                         android:layout_width="match_parent"
-                        android:layout_height="110dp"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/bg_details_image_frame"
-                        android:clipToOutline="true">
-
-                        <ImageView
-                            android:id="@+id/ivMapPreview"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:alpha="0.45" />
-
-                        <!-- Gradient overlay -->
-
-
-                        <!-- Center pin -->
-                        <FrameLayout
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:layout_gravity="center"
-                            android:background="@drawable/bg_circle_emerald">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_location"
-                                app:tint="#D4AF37" />
-
-                        </FrameLayout>
-
-                        <!-- Tap hint label -->
-                        <TextView
-                            android:id="@+id/tvMapHint"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|center_horizontal"
-                            android:layout_marginBottom="10dp"
-                            android:text="Tap GPS to pin your location"
-                            android:textColor="#80F9F1D7"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-
-                    </FrameLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text=""
+                        android:textColor="#80F9F1D7"
+                        android:textSize="11sp"
+                        android:gravity="center" />
 
                 </LinearLayout>
 
@@ -396,12 +424,14 @@
                         android:textColor="#F9F1D7"
                         android:textSize="13sp"
                         android:lineSpacingExtra="4dp"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="14dp" />
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="14dp"
+                        android:paddingBottom="14dp" />
 
                 </LinearLayout>
 
-                <!-- ── Create Gathering button ── -->
+                <!-- ── Create button ── -->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnCreateGathering"
                     android:layout_width="match_parent"
@@ -414,15 +444,10 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <!-- Bottom spacer -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="24dp" />
+                <View android:layout_width="match_parent" android:layout_height="24dp" />
 
             </LinearLayout>
-
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
