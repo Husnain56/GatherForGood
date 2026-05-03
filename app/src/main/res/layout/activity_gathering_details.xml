@@ -312,6 +312,26 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelGathering"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="#1AFF4444"
+                android:text="Cancel Gathering"
+                android:textAllCaps="false"
+                android:textColor="#FF6B6B"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:strokeColor="#55FF4444"
+                app:strokeWidth="1dp"
+                app:cornerRadius="16dp"
+                app:iconTint="#FF6B6B"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                app:rippleColor="#22FF4444" />
+
             <!-- Open in Maps Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnOpenMaps"

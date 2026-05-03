@@ -6,4 +6,32 @@
     </style>
 
     <style name="Theme.GatherForGood" parent="Base.Theme.GatherForGood" />
+
+    <style name="CancelGatheringDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">#FF6B6B</item>
+        <item name="android:background">#1E2D2A</item>
+        <item name="android:textColor">#F9F1D7</item>
+        <item name="android:textColorPrimary">#F9F1D7</item>
+    </style>
+
+    <style name="CancelReasonRadio" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:textColor">#CCF9F1D7</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="buttonTint">#D4AF37</item>
+    </style>
+
+    <style name="CancelGatheringSheetTheme" parent="Theme.Material3.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="bottomSheetStyle">@style/TransparentBottomSheet</item>
+    </style>
+
+    <style name="TransparentBottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
 </resources>
