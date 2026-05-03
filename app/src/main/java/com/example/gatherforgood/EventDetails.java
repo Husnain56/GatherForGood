@@ -37,6 +37,7 @@ public class EventDetails extends AppCompatActivity {
             tvReadMore, tvEventType, tvStatus, tvRequirementGender, tvRequirements;
 
     Button         btnJoin;
+    LinearLayout llLocation;
     MaterialButton btnOpenMaps, btnGroupChat, btnMessageHost;
     ImageButton    btnBack;
     ProgressBar    progressBar;
@@ -93,6 +94,8 @@ public class EventDetails extends AppCompatActivity {
         tvRequirementGender = findViewById(R.id.tvRequirementGender);
         tvRequirements      = findViewById(R.id.tvRequirements);
 
+        llLocation = findViewById(R.id.llLocation);
+
         event = (Event) getIntent().getSerializableExtra("event");
     }
 
@@ -135,6 +138,7 @@ public class EventDetails extends AppCompatActivity {
     private void setBaseListeners() {
         btnBack.setOnClickListener(v -> finish());
         btnOpenMaps.setOnClickListener(v -> openGoogleMaps());
+        llLocation.setOnClickListener(v->openGoogleMaps());
 
         tvReadMore.setOnClickListener(v -> {
             if (descExpanded) {

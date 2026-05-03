@@ -40,6 +40,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         holder.tvEventTitle.setText(event.getTitle());
         holder.tvEventDate.setText(event.getDate());
         holder.tvEventLocation.setText(event.getLocation());
+        holder.tvEventStatus.setText(event.getStatus());
         holder.tvSlotsFilled.setText(event.getVolunteersJoined() + "/" + event.getVolunteersRequired());
         holder.btnRequestJoin.setOnClickListener(v -> {
             navigateToDetails(context,event);
@@ -63,7 +64,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
     public static class EventViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvEventTitle, tvEventDate, tvEventLocation, tvSlotsFilled;
+        TextView tvEventTitle, tvEventDate, tvEventLocation, tvSlotsFilled, tvEventStatus;
         Button btnRequestJoin;
         ConstraintLayout mainCard;
 
@@ -75,6 +76,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             tvSlotsFilled = itemView.findViewById(R.id.tvSlotsFilled);
             btnRequestJoin = itemView.findViewById(R.id.btnRequestJoin);
             mainCard = itemView.findViewById(R.id.main);
+            tvEventStatus = itemView.findViewById(R.id.tvEventStatus);
         }
     }
 }

@@ -63,7 +63,7 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-
+            <!-- ─── Type + Status badges ─── -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,17 +98,19 @@
 
             </LinearLayout>
 
+            <!-- ─── Title ─── -->
             <TextView
                 android:id="@+id/tvEventTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="12dp"
                 android:fontFamily="@font/playfair_display_bold"
                 android:textColor="#F9F1D7"
                 android:textSize="26sp"
                 android:lineSpacingExtra="4dp"
                 tools:text="Ramadan Food Distribution Drive" />
 
+            <!-- ─── Organizer ─── -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -134,35 +136,52 @@
 
             </LinearLayout>
 
+            <!-- ─── Location Box ─── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="LOCATION"
+                android:textColor="#80E5C76B"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/home_bg_next_prayer_card"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="10dp">
+                android:id="@+id/llLocation"
+                android:padding="16dp">
 
                 <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:src="@drawable/ic_location"
-                    app:tint="#80E5C76B" />
+                    app:tint="#80E5C76B"
+                    android:layout_marginEnd="12dp" />
 
                 <TextView
                     android:id="@+id/tvEventLocation"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:textColor="#CCF9F1D7"
                     android:textSize="13sp"
+                    android:lineSpacingExtra="3dp"
                     tools:text="Grand Islamic Center, Lahore" />
 
             </LinearLayout>
 
+            <!-- ─── Date & Slots Cards ─── -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="24dp"
                 android:baselineAligned="false"
                 android:weightSum="2">
 
@@ -253,6 +272,7 @@
 
             </LinearLayout>
 
+            <!-- ─── About Section ─── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -286,6 +306,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
+            <!-- ─── Requirements Section ─── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -356,12 +377,14 @@
 
             </LinearLayout>
 
+            <!-- ─── Divider ─── -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:layout_marginTop="24dp"
                 android:background="#1AFFFFFF" />
 
+            <!-- ─── Organizer Detail Row ─── -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -436,12 +459,13 @@
 
             </RelativeLayout>
 
+            <!-- ─── Divider ─── -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:background="#1AFFFFFF" />
 
-
+            <!-- ─── Progress Bar ─── -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
@@ -451,6 +475,7 @@
                 android:indeterminateTint="@color/gold_accent"
                 android:visibility="gone" />
 
+            <!-- ─── Join Button ─── -->
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnJoin"
                 android:layout_width="match_parent"
@@ -463,6 +488,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+            <!-- ─── Open in Maps Button ─── -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnOpenMaps"
                 android:layout_width="match_parent"
@@ -483,6 +509,7 @@
                 app:iconPadding="12dp"
                 app:rippleColor="#22D4AF37" />
 
+            <!-- ─── Chat Section ─── -->
             <LinearLayout
                 android:id="@+id/layoutChatButtons"
                 android:layout_width="match_parent"

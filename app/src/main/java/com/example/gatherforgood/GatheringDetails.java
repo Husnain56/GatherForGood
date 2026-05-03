@@ -40,6 +40,8 @@ public class GatheringDetails extends AppCompatActivity {
     ProgressBar progressBar;
     LinearLayout layoutChatButtons;
 
+    LinearLayout llLocation;
+
     PrayerGathering gathering;
     FirebaseFirestore db;
     String currentUid;
@@ -81,6 +83,8 @@ public class GatheringDetails extends AppCompatActivity {
         layoutChatButtons     = findViewById(R.id.layoutChatButtons);
         btnGroupChat          = findViewById(R.id.btnGroupChat);
 
+        llLocation = findViewById(R.id.llLocation);
+
         gathering = (PrayerGathering) getIntent().getSerializableExtra("prayer_gathering");
     }
 
@@ -106,6 +110,7 @@ public class GatheringDetails extends AppCompatActivity {
     private void setEventListeners() {
         btnBack.setOnClickListener(v -> finish());
         btnOpenMaps.setOnClickListener(v -> openGoogleMaps());
+        llLocation.setOnClickListener(v -> openGoogleMaps());
         btnGroupChat.setOnClickListener(v -> openGroupChat());
     }
 
