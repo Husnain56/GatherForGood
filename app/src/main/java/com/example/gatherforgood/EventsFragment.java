@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -100,21 +101,32 @@ public class EventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         init(view);
         setListeners();
-        fetchCurrentUserGender();
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
-                new androidx.activity.OnBackPressedCallback(true) {
+                new OnBackPressedCallback(true) {
                     @Override
                     public void handleOnBackPressed() {
                         ((HomeScreen) requireActivity()).navigateToTab(0);
                     }
-                }
-        );
+                });
+
+        fetchCurrentUserGender();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        detachListener();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null
+                && isAdded() && locationResolved) {
+            fetchEvents(userLat, userLng);
+        }
     }
 
     @Override
@@ -123,7 +135,7 @@ public class EventsFragment extends Fragment {
         detachListener();
     }
 
-    private void detachListener() {
+    public void detachListener() {
         if (activeListener != null) {
             activeListener.remove();
             activeListener = null;
@@ -139,9 +151,7 @@ public class EventsFragment extends Fragment {
         }
 
         FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(uid)
-                .get()
+                .collection("users").document(uid).get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
                         String gender = doc.getString("gender");
@@ -159,34 +169,26 @@ public class EventsFragment extends Fragment {
     private boolean isEventAllowedForCurrentUser(Event event) {
         String setting = event.getGenderSetting();
         if (setting == null || setting.isEmpty()) return true;
-
         switch (setting.toLowerCase()) {
-            case "brothersonly":
-            case "brothers only":
-            case "male":
+            case "brothersonly": case "brothers only": case "male":
                 return "Male".equalsIgnoreCase(currentUserGender);
-            case "sistersonly":
-            case "sisters only":
-            case "female":
+            case "sistersonly": case "sisters only": case "female":
                 return "Female".equalsIgnoreCase(currentUserGender);
-            default:
-                return true;
+            default: return true;
         }
     }
 
     public void init(View view) {
-        btnCreateEvent = view.findViewById(R.id.btnCreateEvent);
-        rvEvents       = view.findViewById(R.id.rvEvents);
-        progressBar    = view.findViewById(R.id.progressBar);
-        layoutEmpty    = view.findViewById(R.id.layoutEmpty);
-        tvSectionLabel = view.findViewById(R.id.tvSectionLabel);
-        etSearch       = view.findViewById(R.id.etSearch);
-        chipNearMe     = view.findViewById(R.id.chipNearMe);
-
-        btnAllEvents    = view.findViewById(R.id.btnAllEvents);
-        btnMyEvents     = view.findViewById(R.id.btnMyEvents);
-        btnJoinedEvents = view.findViewById(R.id.btnJoinedEvents);
-
+        btnCreateEvent     = view.findViewById(R.id.btnCreateEvent);
+        rvEvents           = view.findViewById(R.id.rvEvents);
+        progressBar        = view.findViewById(R.id.progressBar);
+        layoutEmpty        = view.findViewById(R.id.layoutEmpty);
+        tvSectionLabel     = view.findViewById(R.id.tvSectionLabel);
+        etSearch           = view.findViewById(R.id.etSearch);
+        chipNearMe         = view.findViewById(R.id.chipNearMe);
+        btnAllEvents       = view.findViewById(R.id.btnAllEvents);
+        btnMyEvents        = view.findViewById(R.id.btnMyEvents);
+        btnJoinedEvents    = view.findViewById(R.id.btnJoinedEvents);
         chipAll            = view.findViewById(R.id.chipAll);
         chipFoodDrive      = view.findViewById(R.id.chipFoodDrive);
         chipStreetCleaning = view.findViewById(R.id.chipStreetCleaning);
@@ -244,11 +246,8 @@ public class EventsFragment extends Fragment {
         chipNearMe.setOnClickListener(v -> {
             isNearMe = !isNearMe;
             updateNearMeChipStyle();
-            if (!locationResolved) {
-                checkPermissionAndLoad();
-            } else {
-                applyFiltersAndSearch();
-            }
+            if (!locationResolved) checkPermissionAndLoad();
+            else                   applyFiltersAndSearch();
         });
 
         etSearch.addTextChangedListener(new TextWatcher() {
@@ -264,8 +263,7 @@ public class EventsFragment extends Fragment {
 
     private void checkPermissionAndLoad() {
         if (!hasLocationPermission()) {
-            locationPermissionLauncher.launch(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION);
+            locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
             fetchUserLocationThenEvents();
         }
@@ -330,7 +328,8 @@ public class EventsFragment extends Fragment {
     }
 
     private void fetchEvents(double lat, double lng) {
-        if (progressBar == null) return;
+        if (!isAdded() || progressBar == null) return;
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
 
         if ("joined".equals(activeTab)) {
             detachListener();
@@ -342,43 +341,38 @@ public class EventsFragment extends Fragment {
         }
 
         detachListener();
-
         progressBar.setVisibility(View.VISIBLE);
         layoutEmpty.setVisibility(View.GONE);
         rvEvents.setVisibility(View.GONE);
 
-        String currentUid = FirebaseAuth.getInstance().getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String           currentUid = FirebaseAuth.getInstance().getUid();
+        FirebaseFirestore db        = FirebaseFirestore.getInstance();
 
         Query query;
         if ("my".equals(activeTab)) {
-            if (activeFilter != null) {
-                query = db.collection("volunteerEvents")
-                        .whereEqualTo("hostUid", currentUid)
-                        .whereEqualTo("eventType", activeFilter)
-                        .orderBy("createdAt", Query.Direction.DESCENDING);
-            } else {
-                query = db.collection("volunteerEvents")
-                        .whereEqualTo("hostUid", currentUid)
-                        .orderBy("createdAt", Query.Direction.DESCENDING);
-            }
+            query = activeFilter != null
+                    ? db.collection("volunteerEvents")
+                    .whereEqualTo("hostUid", currentUid)
+                    .whereEqualTo("eventType", activeFilter)
+                    .orderBy("createdAt", Query.Direction.DESCENDING)
+                    : db.collection("volunteerEvents")
+                    .whereEqualTo("hostUid", currentUid)
+                    .orderBy("createdAt", Query.Direction.DESCENDING);
         } else {
-            if (activeFilter != null) {
-                query = db.collection("volunteerEvents")
-                        .whereEqualTo("eventType", activeFilter)
-                        .orderBy("createdAt", Query.Direction.DESCENDING);
-            } else {
-                query = db.collection("volunteerEvents")
-                        .orderBy("createdAt", Query.Direction.DESCENDING);
-            }
+            query = activeFilter != null
+                    ? db.collection("volunteerEvents")
+                    .whereEqualTo("eventType", activeFilter)
+                    .orderBy("createdAt", Query.Direction.DESCENDING)
+                    : db.collection("volunteerEvents")
+                    .orderBy("createdAt", Query.Direction.DESCENDING);
         }
 
         activeListener = query.addSnapshotListener((querySnapshot, error) -> {
+            if (!isAdded()) return;
             if (error != null || querySnapshot == null) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(),
-                        "Failed to load events: " + (error != null ? error.getMessage() : ""),
-                        Toast.LENGTH_LONG).show();
+                if (error != null && "PERMISSION_DENIED".equals(error.getCode().name())) return;
+                Toast.makeText(getContext(), "Failed to load ...", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -388,20 +382,16 @@ public class EventsFragment extends Fragment {
                 event.setEventId(doc.getId());
 
                 if ("cancelled".equals(event.getStatus())) continue;
-                if ("finished".equals(event.getStatus())) continue;
-
+                if ("finished".equals(event.getStatus()))  continue;
                 if (event.getEventEndTimeMillis() > 0 &&
                         System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
 
-                // ── gender filter — skip for "my" tab (host sees own events always) ──
                 if (!"my".equals(activeTab) && !isEventAllowedForCurrentUser(event)) continue;
 
-                if ("all".equals(activeTab)) {
-                    if (!userCity.isEmpty()) {
-                        String loc = event.getLocation() != null
-                                ? event.getLocation().toLowerCase() : "";
-                        if (!loc.contains(userCity)) continue;
-                    }
+                if ("all".equals(activeTab) && !userCity.isEmpty()) {
+                    String loc = event.getLocation() != null
+                            ? event.getLocation().toLowerCase() : "";
+                    if (!loc.contains(userCity)) continue;
                 }
 
                 allEventsList.add(event);
@@ -412,24 +402,19 @@ public class EventsFragment extends Fragment {
     }
 
     private void applyFiltersAndSearch() {
+        if (!isAdded()) return;
         filteredEventsList.clear();
 
         for (Event event : allEventsList) {
-            if ("all".equals(activeTab) && isNearMe) {
-                if (userLat != 0 && userLng != 0) {
-                    float dist = distanceBetween(userLat, userLng,
-                            event.getLat(), event.getLng());
-                    if (dist > NEARBY_RADIUS_KM) continue;
-                }
+            if ("all".equals(activeTab) && isNearMe && userLat != 0 && userLng != 0) {
+                float dist = distanceBetween(userLat, userLng, event.getLat(), event.getLng());
+                if (dist > NEARBY_RADIUS_KM) continue;
             }
 
             if (!currentSearchQuery.isEmpty()) {
-                String title = event.getTitle() != null
-                        ? event.getTitle().toLowerCase() : "";
-                String type  = event.getEventType() != null
-                        ? event.getEventType().toLowerCase() : "";
-                if (!title.contains(currentSearchQuery) &&
-                        !type.contains(currentSearchQuery)) continue;
+                String title = event.getTitle()     != null ? event.getTitle().toLowerCase()     : "";
+                String type  = event.getEventType() != null ? event.getEventType().toLowerCase() : "";
+                if (!title.contains(currentSearchQuery) && !type.contains(currentSearchQuery)) continue;
             }
 
             filteredEventsList.add(event);
@@ -439,12 +424,15 @@ public class EventsFragment extends Fragment {
     }
 
     private void fetchJoinedEvents(String currentUid, double lat, double lng) {
+        if (!isAdded()) return;
+
         FirebaseFirestore.getInstance()
                 .collectionGroup("participants")
                 .whereEqualTo("uid", currentUid)
                 .whereEqualTo("role", "participant")
                 .get()
                 .addOnSuccessListener(snapshots -> {
+                    if (!isAdded()) return;
                     if (snapshots.isEmpty()) {
                         allEventsList.clear();
                         filteredEventsList.clear();
@@ -454,53 +442,47 @@ public class EventsFragment extends Fragment {
 
                     ArrayList<String> joinedEventIds = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : snapshots) {
-                        String eventId = doc.getReference()
-                                .getParent().getParent().getId();
+                        String eventId = doc.getReference().getParent().getParent().getId();
                         if (eventId != null) joinedEventIds.add(eventId);
                     }
 
                     ArrayList<String> batch = new ArrayList<>(
-                            joinedEventIds.subList(0,
-                                    Math.min(10, joinedEventIds.size())));
+                            joinedEventIds.subList(0, Math.min(10, joinedEventIds.size())));
 
                     FirebaseFirestore.getInstance()
                             .collection("volunteerEvents")
                             .whereIn("eventId", batch)
                             .get()
                             .addOnSuccessListener(eventSnapshots -> {
+                                if (!isAdded()) return;
                                 allEventsList.clear();
                                 for (QueryDocumentSnapshot doc : eventSnapshots) {
                                     Event event = doc.toObject(Event.class);
                                     event.setEventId(doc.getId());
-
                                     if ("cancelled".equals(event.getStatus())) continue;
-                                    if ("finished".equals(event.getStatus())) continue;
-
+                                    if ("finished".equals(event.getStatus()))  continue;
                                     if (event.getEventEndTimeMillis() > 0 &&
-                                            System.currentTimeMillis() >
-                                                    event.getEventEndTimeMillis()) continue;
-
+                                            System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
                                     allEventsList.add(event);
                                 }
                                 applyFiltersAndSearch();
                             })
                             .addOnFailureListener(e -> {
+                                if (!isAdded()) return;
                                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                                Toast.makeText(getContext(),
-                                        "Failed: " + e.getMessage(),
-                                        Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                             });
                 })
                 .addOnFailureListener(e -> {
+                    if (!isAdded()) return;
                     if (progressBar != null) progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getContext(),
-                            "Failed: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
     private void updateUI() {
-        if (progressBar != null) progressBar.setVisibility(View.GONE);
+        if (!isAdded() || progressBar == null) return;
+        progressBar.setVisibility(View.GONE);
         adapter.notifyDataSetChanged();
         if (filteredEventsList.isEmpty()) {
             layoutEmpty.setVisibility(View.VISIBLE);
@@ -521,10 +503,8 @@ public class EventsFragment extends Fragment {
     }
 
     private void updateTypeChipStyles(TextView activeChip) {
-        TextView[] chips = {
-                chipAll, chipFoodDrive, chipStreetCleaning, chipClothingDrive,
-                chipBloodDonation, chipTreePlanting, chipMosqueCleaning, chipFundraising
-        };
+        TextView[] chips = {chipAll, chipFoodDrive, chipStreetCleaning, chipClothingDrive,
+                chipBloodDonation, chipTreePlanting, chipMosqueCleaning, chipFundraising};
         for (TextView chip : chips) {
             if (chip == activeChip) {
                 chip.setBackgroundResource(R.drawable.prayer_chip_active);
@@ -564,22 +544,17 @@ public class EventsFragment extends Fragment {
         if (tvSectionLabel == null) return;
         String typeLabel = activeFilter != null ? activeFilter.toUpperCase() + " " : "";
         switch (activeTab) {
-            case "my":
-                tvSectionLabel.setText("MY " + typeLabel + "EVENTS");
-                break;
-            case "joined":
-                tvSectionLabel.setText("JOINED " + typeLabel + "EVENTS");
-                break;
+            case "my":     tvSectionLabel.setText("MY " + typeLabel + "EVENTS");     break;
+            case "joined": tvSectionLabel.setText("JOINED " + typeLabel + "EVENTS"); break;
             default:
-                String locLabel = isNearMe ? "NEARBY " :
-                        (userCity.isEmpty() ? "" : userCity.toUpperCase() + " ");
+                String locLabel = isNearMe ? "NEARBY "
+                        : (userCity.isEmpty() ? "" : userCity.toUpperCase() + " ");
                 tvSectionLabel.setText(locLabel + typeLabel + "EVENTS");
                 break;
         }
     }
 
-    private float distanceBetween(double lat1, double lng1,
-                                  double lat2, double lng2) {
+    private float distanceBetween(double lat1, double lng1, double lat2, double lng2) {
         float[] results = new float[1];
         Location.distanceBetween(lat1, lng1, lat2, lng2, results);
         return results[0] / 1000f;

@@ -6,6 +6,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
@@ -50,10 +52,10 @@ public class HomeFragment extends Fragment {
 
     FrameLayout cardPrayerGatherings;
     FrameLayout cardVolunteerEvents;
-    TextView tvUserName;
+    TextView    tvUserName;
     SharedPreferences sPref;
-    ImageView ivProfilePic;
-    TextView tvSeeAll;
+    ImageView   ivProfilePic;
+    TextView    tvSeeAll;
     RecyclerView rvPrayerGatherings;
     PrayerGatheringAdapter adapter;
     ProgressBar progressBar;
@@ -96,21 +98,31 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         init(view);
         setEventListeners();
-        checkPermissionAndLoad();
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
-                new androidx.activity.OnBackPressedCallback(true) {
+                new OnBackPressedCallback(true) {
                     @Override
                     public void handleOnBackPressed() {
                         requireActivity().finish();
                     }
-                }
-        );
+                });
+
+        checkPermissionAndLoad();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        detachListener();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null && isAdded()) {
+            fetchGatherings(userLat, userLng);
+        }
     }
 
     @Override
@@ -119,7 +131,7 @@ public class HomeFragment extends Fragment {
         detachListener();
     }
 
-    private void detachListener() {
+    public void detachListener() {
         if (activeListener != null) {
             activeListener.remove();
             activeListener = null;
@@ -199,54 +211,52 @@ public class HomeFragment extends Fragment {
                 if (addresses != null && !addresses.isEmpty()) {
                     Address address = addresses.get(0);
 
-                    String city = address.getLocality();
+                    String city    = address.getLocality();
                     if (city == null) city = address.getSubAdminArea();
                     if (city == null) city = address.getAdminArea();
-
                     String country = address.getCountryName();
 
                     String finalCity    = city    != null ? city    : "";
                     String finalCountry = country != null ? country : "";
 
-                    requireActivity().runOnUiThread(() ->
-                            sPref.edit()
-                                    .putString("user_city",    finalCity)
-                                    .putString("user_country", finalCountry)
-                                    .apply()
-                    );
+                    if (isAdded()) {
+                        requireActivity().runOnUiThread(() ->
+                                sPref.edit()
+                                        .putString("user_city",    finalCity)
+                                        .putString("user_country", finalCountry)
+                                        .apply());
+                    }
                 }
-            } catch (Exception ignored) {
-                // Geocoder failure is silent — profile will show "City not set"
-            }
+            } catch (Exception ignored) {}
         }).start();
     }
 
     private void fetchGatherings(double lat, double lng) {
-        if (getContext() == null) return;
+        if (!isAdded() || getContext() == null) return;
+        // Guard: don't attach a listener if user is signed out
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
 
         detachListener();
 
-        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
-        if (emptyNearby != null) emptyNearby.setVisibility(View.GONE);
-        if (rvPrayerGatherings != null) rvPrayerGatherings.setVisibility(View.GONE);
+        if (progressBar != null)          progressBar.setVisibility(View.VISIBLE);
+        if (emptyNearby != null)          emptyNearby.setVisibility(View.GONE);
+        if (rvPrayerGatherings != null)   rvPrayerGatherings.setVisibility(View.GONE);
 
         activeListener = FirebaseFirestore.getInstance()
                 .collection("prayerGatherings")
                 .orderBy("timeInMillis", Query.Direction.ASCENDING)
                 .limit(20)
                 .addSnapshotListener((querySnapshot, error) -> {
-                    if (getContext() == null) return;
+                    if (!isAdded() || getContext() == null) return;
 
                     if (error != null || querySnapshot == null) {
                         if (progressBar != null) progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getContext(),
-                                "Failed to load gatherings: " + (error != null ? error.getMessage() : ""),
-                                Toast.LENGTH_SHORT).show();
+                        if (error != null && "PERMISSION_DENIED".equals(error.getCode().name())) return;
+                        Toast.makeText(getContext(), "Failed to load ...", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     gatheringsList.clear();
-
                     long currentTime   = System.currentTimeMillis();
                     long twentyMinutes = 20 * 60 * 1000;
 
@@ -255,7 +265,7 @@ public class HomeFragment extends Fragment {
                         gathering.setId(doc.getId());
 
                         if ("cancelled".equals(gathering.getStatus())) continue;
-                        if ("finished".equals(gathering.getStatus())) continue;
+                        if ("finished".equals(gathering.getStatus()))   continue;
 
                         long prayerTime = gathering.getTimeInMillis();
                         if (currentTime > (prayerTime + twentyMinutes)) continue;
@@ -270,14 +280,13 @@ public class HomeFragment extends Fragment {
                     }
 
                     adapter.notifyDataSetChanged();
-
                     if (progressBar != null) progressBar.setVisibility(View.GONE);
 
                     if (gatheringsList.isEmpty()) {
-                        if (emptyNearby != null) emptyNearby.setVisibility(View.VISIBLE);
+                        if (emptyNearby != null)        emptyNearby.setVisibility(View.VISIBLE);
                         if (rvPrayerGatherings != null) rvPrayerGatherings.setVisibility(View.GONE);
                     } else {
-                        if (emptyNearby != null) emptyNearby.setVisibility(View.GONE);
+                        if (emptyNearby != null)        emptyNearby.setVisibility(View.GONE);
                         if (rvPrayerGatherings != null) rvPrayerGatherings.setVisibility(View.VISIBLE);
                     }
                 });
@@ -325,10 +334,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void fetchFromAladhan(String url) {
-        if (getContext() == null) return;
+        if (!isAdded() || getContext() == null) return;
 
         RequestQueue queue = Volley.newRequestQueue(requireContext());
-
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET, url, null,
                 response -> {
@@ -351,7 +359,6 @@ public class HomeFragment extends Fragment {
                 },
                 error -> showFallback()
         );
-
         queue.add(request);
     }
 
@@ -383,8 +390,8 @@ public class HomeFragment extends Fragment {
                     nextTime24 = nextTime24.substring(0, 5);
             }
 
-            Date prayerDate    = sdf24.parse(nextTime24);
-            String displayTime = sdf12.format(prayerDate);
+            Date   prayerDate   = sdf24.parse(nextTime24);
+            String displayTime  = sdf12.format(prayerDate);
 
             String[] parts   = nextTime24.split(":");
             int prayerHour   = Integer.parseInt(parts[0]);
@@ -395,7 +402,6 @@ public class HomeFragment extends Fragment {
             prayerCal.set(Calendar.MINUTE,      prayerMinute);
             prayerCal.set(Calendar.SECOND,      0);
             prayerCal.set(Calendar.MILLISECOND, 0);
-
             if (prayerCal.before(now)) prayerCal.add(Calendar.DAY_OF_MONTH, 1);
 
             long diffMillis  = prayerCal.getTimeInMillis() - now.getTimeInMillis();
@@ -426,12 +432,12 @@ public class HomeFragment extends Fragment {
 
     public void setEventListeners() {
         cardPrayerGatherings.setOnClickListener(
-                view -> ((HomeScreen) requireActivity()).navigateToTab(1));
+                v -> ((HomeScreen) requireActivity()).navigateToTab(1));
         ivProfilePic.setOnClickListener(
-                view -> ((HomeScreen) requireActivity()).navigateToTab(4));
+                v -> ((HomeScreen) requireActivity()).navigateToTab(4));
         tvSeeAll.setOnClickListener(
-                view -> ((HomeScreen) requireActivity()).navigateToTab(1));
+                v -> ((HomeScreen) requireActivity()).navigateToTab(1));
         cardVolunteerEvents.setOnClickListener(
-                view -> ((HomeScreen) requireActivity()).navigateToTab(2));
+                v -> ((HomeScreen) requireActivity()).navigateToTab(2));
     }
 }
