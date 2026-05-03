@@ -5,10 +5,13 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -47,28 +50,30 @@ public class EventsFragment extends Fragment {
     ProgressBar          progressBar;
     LinearLayout         layoutEmpty;
     TextView             tvSectionLabel;
+    EditText             etSearch;
+    TextView             chipNearMe;
 
     Button btnAllEvents, btnMyEvents, btnJoinedEvents;
 
     TextView chipAll, chipFoodDrive, chipStreetCleaning, chipClothingDrive,
             chipBloodDonation, chipTreePlanting, chipMosqueCleaning, chipFundraising;
 
-    LinearLayout layoutLocationChips;
-    TextView     chipNearMe, chipYourCity;
-
     String  activeTab    = "all";
     String  activeFilter = null;
-    boolean isNearMe     = true;
+    boolean isNearMe     = false;
 
     double  userLat          = 0, userLng = 0;
     String  userCity         = "";
     boolean locationResolved = false;
 
-    ArrayList<Event>            eventsList = new ArrayList<>();
+    ArrayList<Event> allEventsList      = new ArrayList<>();
+    ArrayList<Event> filteredEventsList = new ArrayList<>();
+
     EventsAdapter               adapter;
     FusedLocationProviderClient fusedClient;
 
     private ListenerRegistration activeListener;
+    private String               currentSearchQuery = "";
 
     private final ActivityResultLauncher<String> locationPermissionLauncher =
             registerForActivityResult(
@@ -81,7 +86,6 @@ public class EventsFragment extends Fragment {
                             fetchEvents(0, 0);
                         }
                     });
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -124,11 +128,13 @@ public class EventsFragment extends Fragment {
     }
 
     public void init(View view) {
-        btnCreateEvent  = view.findViewById(R.id.btnCreateEvent);
-        rvEvents        = view.findViewById(R.id.rvEvents);
-        progressBar     = view.findViewById(R.id.progressBar);
-        layoutEmpty     = view.findViewById(R.id.layoutEmpty);
-        tvSectionLabel  = view.findViewById(R.id.tvSectionLabel);
+        btnCreateEvent = view.findViewById(R.id.btnCreateEvent);
+        rvEvents       = view.findViewById(R.id.rvEvents);
+        progressBar    = view.findViewById(R.id.progressBar);
+        layoutEmpty    = view.findViewById(R.id.layoutEmpty);
+        tvSectionLabel = view.findViewById(R.id.tvSectionLabel);
+        etSearch       = view.findViewById(R.id.etSearch);
+        chipNearMe     = view.findViewById(R.id.chipNearMe);
 
         btnAllEvents    = view.findViewById(R.id.btnAllEvents);
         btnMyEvents     = view.findViewById(R.id.btnMyEvents);
@@ -143,22 +149,16 @@ public class EventsFragment extends Fragment {
         chipMosqueCleaning = view.findViewById(R.id.chipMosqueCleaning);
         chipFundraising    = view.findViewById(R.id.Fundraising);
 
-        layoutLocationChips = view.findViewById(R.id.layoutLocationChips);
-        chipNearMe          = view.findViewById(R.id.chipNearMe);
-        chipYourCity        = view.findViewById(R.id.chipSearchCity);
-
         fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
         rvEvents.setHasFixedSize(true);
         rvEvents.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new EventsAdapter(getContext(), eventsList);
+        adapter = new EventsAdapter(getContext(), filteredEventsList);
         rvEvents.setAdapter(adapter);
 
         setActiveTab(btnAllEvents);
-        updateLocationChipStyles(chipNearMe);
-        updateLocationChipsVisibility();
+        updateNearMeChipStyle();
     }
-
 
     public void setListeners() {
 
@@ -168,21 +168,21 @@ public class EventsFragment extends Fragment {
         btnAllEvents.setOnClickListener(v -> {
             activeTab = "all";
             setActiveTab(btnAllEvents);
-            updateLocationChipsVisibility();
+            chipNearMe.setVisibility(View.VISIBLE);
             reload();
         });
 
         btnMyEvents.setOnClickListener(v -> {
             activeTab = "my";
             setActiveTab(btnMyEvents);
-            updateLocationChipsVisibility();
+            chipNearMe.setVisibility(View.GONE);
             reload();
         });
 
         btnJoinedEvents.setOnClickListener(v -> {
             activeTab = "joined";
             setActiveTab(btnJoinedEvents);
-            updateLocationChipsVisibility();
+            chipNearMe.setVisibility(View.GONE);
             reload();
         });
 
@@ -195,24 +195,26 @@ public class EventsFragment extends Fragment {
         chipMosqueCleaning.setOnClickListener(v -> selectTypeFilter("Mosque Cleaning",     chipMosqueCleaning));
         chipFundraising.setOnClickListener(v    -> selectTypeFilter("Fundraising",         chipFundraising));
 
+        // Near Me toggle
         chipNearMe.setOnClickListener(v -> {
-            isNearMe = true;
-            updateLocationChipStyles(chipNearMe);
-            if (locationResolved) {
-                reload();
-            } else {
+            isNearMe = !isNearMe;
+            updateNearMeChipStyle();
+            if (!locationResolved) {
                 checkPermissionAndLoad();
+            } else {
+                applyFiltersAndSearch();
             }
         });
 
-        chipYourCity.setOnClickListener(v -> {
-            isNearMe = false;
-            updateLocationChipStyles(chipYourCity);
-            if (userCity.isEmpty()) {
-                Toast.makeText(getContext(),
-                        "Detecting your city...", Toast.LENGTH_SHORT).show();
+        // Client-side search
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                currentSearchQuery = s.toString().trim().toLowerCase();
+                applyFiltersAndSearch();
             }
-            reload();
         });
     }
 
@@ -336,32 +338,50 @@ public class EventsFragment extends Fragment {
                 return;
             }
 
-            eventsList.clear();
+            allEventsList.clear();
             for (QueryDocumentSnapshot doc : querySnapshot) {
                 Event event = doc.toObject(Event.class);
                 event.setEventId(doc.getId());
 
-                if (event.getEventEndTimeMillis() > 0 && System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
+                if (event.getEventEndTimeMillis() > 0 &&
+                        System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
 
                 if ("all".equals(activeTab)) {
-                    if (isNearMe) {
-                        if (lat != 0 && lng != 0) {
-                            float dist = distanceBetween(
-                                    lat, lng, event.getLat(), event.getLng());
-                            if (dist > NEARBY_RADIUS_KM) continue;
-                        }
-                    } else {
-                        if (userCity.isEmpty()) continue;
+                    if (!userCity.isEmpty()) {
                         String loc = event.getLocation() != null
                                 ? event.getLocation().toLowerCase() : "";
                         if (!loc.contains(userCity)) continue;
                     }
                 }
 
-                eventsList.add(event);
+                allEventsList.add(event);
             }
-            updateUI();
+
+            applyFiltersAndSearch();
         });
+    }
+
+    private void applyFiltersAndSearch() {
+        filteredEventsList.clear();
+
+        for (Event event : allEventsList) {
+            if ("all".equals(activeTab) && isNearMe) {
+                if (userLat != 0 && userLng != 0) {
+                    float dist = distanceBetween(userLat, userLng, event.getLat(), event.getLng());
+                    if (dist > NEARBY_RADIUS_KM) continue;
+                }
+            }
+
+            if (!currentSearchQuery.isEmpty()) {
+                String title = event.getTitle() != null ? event.getTitle().toLowerCase() : "";
+                String type  = event.getEventType() != null ? event.getEventType().toLowerCase() : "";
+                if (!title.contains(currentSearchQuery) && !type.contains(currentSearchQuery)) continue;
+            }
+
+            filteredEventsList.add(event);
+        }
+
+        updateUI();
     }
 
     private void fetchJoinedEvents(String currentUid, double lat, double lng) {
@@ -372,7 +392,8 @@ public class EventsFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(snapshots -> {
                     if (snapshots.isEmpty()) {
-                        eventsList.clear();
+                        allEventsList.clear();
+                        filteredEventsList.clear();
                         updateUI();
                         return;
                     }
@@ -392,14 +413,15 @@ public class EventsFragment extends Fragment {
                             .whereIn("eventId", batch)
                             .get()
                             .addOnSuccessListener(eventSnapshots -> {
-                                eventsList.clear();
+                                allEventsList.clear();
                                 for (QueryDocumentSnapshot doc : eventSnapshots) {
                                     Event event = doc.toObject(Event.class);
                                     event.setEventId(doc.getId());
-                                    if (event.getEventEndTimeMillis() > 0 && System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
-                                    eventsList.add(event);
+                                    if (event.getEventEndTimeMillis() > 0 &&
+                                            System.currentTimeMillis() > event.getEventEndTimeMillis()) continue;
+                                    allEventsList.add(event);
                                 }
-                                updateUI();
+                                applyFiltersAndSearch();
                             })
                             .addOnFailureListener(e -> {
                                 if (progressBar != null) progressBar.setVisibility(View.GONE);
@@ -419,22 +441,12 @@ public class EventsFragment extends Fragment {
     private void updateUI() {
         if (progressBar != null) progressBar.setVisibility(View.GONE);
         adapter.notifyDataSetChanged();
-        if (eventsList.isEmpty()) {
+        if (filteredEventsList.isEmpty()) {
             layoutEmpty.setVisibility(View.VISIBLE);
             rvEvents.setVisibility(View.GONE);
         } else {
             layoutEmpty.setVisibility(View.GONE);
             rvEvents.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void updateLocationChipsVisibility() {
-        if (layoutLocationChips == null) return;
-        boolean isAllTab = "all".equals(activeTab);
-        layoutLocationChips.setVisibility(isAllTab ? View.VISIBLE : View.GONE);
-        if (!isAllTab) {
-            isNearMe = true;
-            updateLocationChipStyles(chipNearMe);
         }
     }
 
@@ -463,16 +475,14 @@ public class EventsFragment extends Fragment {
         }
     }
 
-    private void updateLocationChipStyles(TextView activeChip) {
-        TextView[] chips = {chipNearMe, chipYourCity};
-        for (TextView chip : chips) {
-            if (chip == activeChip) {
-                chip.setBackgroundResource(R.drawable.prayer_chip_active);
-                chip.setTextColor(requireContext().getColor(android.R.color.white));
-            } else {
-                chip.setBackgroundResource(R.drawable.prayer_chip_inactive);
-                chip.setTextColor(android.graphics.Color.parseColor("#80E5C76B"));
-            }
+    private void updateNearMeChipStyle() {
+        if (chipNearMe == null) return;
+        if (isNearMe) {
+            chipNearMe.setBackgroundResource(R.drawable.prayer_chip_active);
+            chipNearMe.setTextColor(requireContext().getColor(android.R.color.white));
+        } else {
+            chipNearMe.setBackgroundResource(R.drawable.prayer_chip_inactive);
+            chipNearMe.setTextColor(android.graphics.Color.parseColor("#80E5C76B"));
         }
     }
 
@@ -500,9 +510,8 @@ public class EventsFragment extends Fragment {
                 tvSectionLabel.setText("JOINED " + typeLabel + "EVENTS");
                 break;
             default:
-                String locLabel = isNearMe
-                        ? "NEARBY "
-                        : (userCity.isEmpty() ? "" : userCity.toUpperCase() + " ");
+                String locLabel = isNearMe ? "NEARBY " :
+                        (userCity.isEmpty() ? "" : userCity.toUpperCase() + " ");
                 tvSectionLabel.setText(locLabel + typeLabel + "EVENTS");
                 break;
         }
