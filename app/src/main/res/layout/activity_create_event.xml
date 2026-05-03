@@ -132,7 +132,8 @@
                         android:layout_marginTop="8dp"
                         android:background="@drawable/register_bg_input_field"
                         android:paddingHorizontal="16dp"
-                        android:spinnerMode="dropdown" />
+                        android:spinnerMode="dropdown"
+                        />
 
                 </LinearLayout>
 
@@ -142,7 +143,6 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- ── Event Title ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -183,14 +183,12 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- ── Volunteers Needed + Open To ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
-                    <!-- Volunteers Required -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -228,7 +226,6 @@
 
                     </LinearLayout>
 
-                    <!-- Open To -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -267,7 +264,6 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- ── Date ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -321,7 +317,6 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- ── Time ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -377,7 +372,6 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- ── Location ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -439,7 +433,6 @@
 
                     </LinearLayout>
 
-                    <!-- Map preview frame -->
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="110dp"
@@ -490,7 +483,6 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- ── Description ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -535,7 +527,6 @@
                     android:layout_marginVertical="20dp"
                     android:background="#1AFFFFFF" />
 
-                <!-- ── Requirements (optional) ── -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -592,7 +583,6 @@
 
                 </LinearLayout>
 
-                <!-- ── Create Event button ── -->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnCreateEvent"
                     android:layout_width="match_parent"

@@ -188,12 +188,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="20dp"
+                android:baselineAligned="false"
                 android:weightSum="2">
 
                 <!-- Date & Time -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginEnd="6dp"
                     android:background="@drawable/home_bg_next_prayer_card"
@@ -240,7 +241,7 @@
                 <!-- Slots -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
                     android:background="@drawable/home_bg_next_prayer_card"
