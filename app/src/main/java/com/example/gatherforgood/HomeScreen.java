@@ -1,5 +1,6 @@
 package com.example.gatherforgood;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Objects;
 
@@ -29,6 +31,8 @@ public class HomeScreen extends AppCompatActivity {
     int[] no_fill_icons;
     String[] titles;
 
+    private FirebaseAuth.AuthStateListener authStateListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,28 @@ public class HomeScreen extends AppCompatActivity {
         init();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        authStateListener = firebaseAuth -> {
+            if (firebaseAuth.getCurrentUser() == null) {
+                Intent intent = new Intent(this, LoginScreen.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        };
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
+        }
+    }
+
     public void init() {
         initData();
         initViews();
@@ -53,7 +79,7 @@ public class HomeScreen extends AppCompatActivity {
 
     public void initData() {
         titles = new String[]{"Home", "Prayers", "Events", "Profile"};
-        fill_icons   = new int[]{R.drawable.ic_home_nofill, R.drawable.ic_mosque_nofill, R.drawable.ic_event_nofill, R.drawable.ic_person_nofill};
+        fill_icons    = new int[]{R.drawable.ic_home_nofill, R.drawable.ic_mosque_nofill, R.drawable.ic_event_nofill, R.drawable.ic_person_nofill};
         no_fill_icons = new int[]{R.drawable.ic_home_fill,   R.drawable.ic_mosque_fill,   R.drawable.ic_event_fill,   R.drawable.ic_person_fill};
     }
 
@@ -79,8 +105,8 @@ public class HomeScreen extends AppCompatActivity {
     public void setupTabCustomViews() {
         for (int i = 0; i < homeTL.getTabCount(); i++) {
             View tabView = LayoutInflater.from(this).inflate(R.layout.home_custom_tab, null);
-            TextView text = tabView.findViewById(R.id.tabText);
-            ImageView icon = tabView.findViewById(R.id.tabIcon);
+            TextView text   = tabView.findViewById(R.id.tabText);
+            ImageView icon  = tabView.findViewById(R.id.tabIcon);
             icon.setImageResource(fill_icons[i]);
             text.setText(titles[i]);
             Objects.requireNonNull(homeTL.getTabAt(i)).setCustomView(tabView);
@@ -94,11 +120,8 @@ public class HomeScreen extends AppCompatActivity {
                 homeViewPager.setCurrentItem(tab.getPosition(), false);
             }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
+            @Override public void onTabUnselected(TabLayout.Tab tab) {}
+            @Override public void onTabReselected(TabLayout.Tab tab) {}
         });
 
         homeViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {

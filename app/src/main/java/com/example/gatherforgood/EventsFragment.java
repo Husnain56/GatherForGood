@@ -66,8 +66,7 @@ public class EventsFragment extends Fragment {
     String  userCity         = "";
     boolean locationResolved = false;
 
-    // ── gender filter ──
-    String  currentUserGender = ""; // "Male" or "Female"
+    String  currentUserGender = "";
     boolean genderResolved    = false;
 
     ArrayList<Event> allEventsList      = new ArrayList<>();
@@ -131,9 +130,6 @@ public class EventsFragment extends Fragment {
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  FETCH CURRENT USER GENDER FIRST
-    // ─────────────────────────────────────────────
     private void fetchCurrentUserGender() {
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid == null) {
@@ -160,9 +156,6 @@ public class EventsFragment extends Fragment {
                 });
     }
 
-    // ─────────────────────────────────────────────
-    //  GENDER FILTER HELPER
-    // ─────────────────────────────────────────────
     private boolean isEventAllowedForCurrentUser(Event event) {
         String setting = event.getGenderSetting();
         if (setting == null || setting.isEmpty()) return true;
@@ -171,15 +164,12 @@ public class EventsFragment extends Fragment {
             case "brothersonly":
             case "brothers only":
             case "male":
-                // only males can see this
                 return "Male".equalsIgnoreCase(currentUserGender);
             case "sistersonly":
             case "sisters only":
             case "female":
-                // only females can see this
                 return "Female".equalsIgnoreCase(currentUserGender);
             default:
-                // "both", "everyone", or anything else — show to all
                 return true;
         }
     }

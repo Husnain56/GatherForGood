@@ -26,7 +26,7 @@ public class UserProfileFragment extends Fragment {
 
     TextView tvUserName, tvInitialsAvatar, tvEmail, tvGender, tvCity;
     LinearLayout layoutVerified;
-    AppCompatButton btnLogout, btnDeleteAccount;
+    AppCompatButton btnLogout;
     ImageButton btnEdit;
     TextView tvPrayersJoined, tvPrayersHosted, tvEventsJoined, tvEventsHosted;
 
@@ -54,7 +54,6 @@ public class UserProfileFragment extends Fragment {
         tvEventsJoined   = view.findViewById(R.id.tvEventsJoined);
         tvEventsHosted   = view.findViewById(R.id.tvEventsHosted);
         btnLogout        = view.findViewById(R.id.btnLogout);
-        btnDeleteAccount = view.findViewById(R.id.btnDeleteAccount);
         btnEdit          = view.findViewById(R.id.btnEdit);
     }
 

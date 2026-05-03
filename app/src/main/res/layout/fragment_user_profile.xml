@@ -443,21 +443,6 @@
                 android:textStyle="bold"
                 android:letterSpacing="0.15" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnDeleteAccount"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="32dp"
-                android:background="@drawable/register_bg_input_field"
-                android:text="Delete Account"
-                android:textAllCaps="false"
-                android:textColor="#CC4444"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.15" />
-
         </LinearLayout>
     </ScrollView>
 

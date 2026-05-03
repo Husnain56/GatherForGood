@@ -14,12 +14,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class SplashScreen extends AppCompatActivity {
 
-    Animation blink;
-    View statusDot;
+    Animation     blink;
+    View          statusDot;
     SharedPreferences sPref;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +33,14 @@ public class SplashScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         init();
-        ApplyAnimation();
+        applyAnimation();
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         Intent intent;
-        if (checkAlreadyLoggedIn()) {
+        if (currentUser != null) {
             intent = new Intent(SplashScreen.this, HomeScreen.class);
         } else if (!hasSeenOnboarding()) {
             intent = new Intent(SplashScreen.this, OnboardingScreen.class);
@@ -43,35 +48,23 @@ public class SplashScreen extends AppCompatActivity {
             intent = new Intent(SplashScreen.this, LoginScreen.class);
         }
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(intent);
-                finish();
-            }
-        },3000);
+        new Handler().postDelayed(() -> {
+            startActivity(intent);
+            finish();
+        }, 3000);
     }
 
-    public void init(){
+    private void init() {
         statusDot = findViewById(R.id.statusDot);
-        sPref = getSharedPreferences("user", MODE_PRIVATE);
+        sPref     = getSharedPreferences("user", MODE_PRIVATE);
     }
 
-    public boolean hasSeenOnboarding() {
+    private boolean hasSeenOnboarding() {
         return sPref.getBoolean("hasSeenOnboarding", false);
     }
-    
-    public boolean checkAlreadyLoggedIn(){
 
-        if(!sPref.getBoolean("isLoggedIn",false)){
-            return false;
-        }
-        return true;
-    }
-
-    public void ApplyAnimation(){
-        blink = AnimationUtils.loadAnimation(this,R.anim.anim_blink);
+    private void applyAnimation() {
+        blink = AnimationUtils.loadAnimation(this, R.anim.anim_blink);
         statusDot.setAnimation(blink);
     }
-
 }

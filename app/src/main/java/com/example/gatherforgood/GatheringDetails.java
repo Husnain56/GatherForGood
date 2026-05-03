@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -263,7 +264,7 @@ public class GatheringDetails extends AppCompatActivity {
 
         RadioGroup rgReasons = view.findViewById(R.id.rgReasons);
         Button btnGoBack     = view.findViewById(R.id.btnDialogGoBack);
-        Button btnConfirm    = view.findViewById(R.id.btnDialogConfirm);
+        AppCompatButton btnConfirm    = view.findViewById(R.id.btnDialogConfirm);
 
         btnGoBack.setOnClickListener(v -> sheet.dismiss());
         btnConfirm.setOnClickListener(v -> {
