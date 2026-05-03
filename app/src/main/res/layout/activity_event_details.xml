@@ -15,7 +15,6 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_star_pattern" />
 
-    <!-- ─── Toolbar ─── -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -51,7 +50,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- ─── Scrollable Content ─── -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -65,54 +63,10 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- ─── Map Placeholder ─── -->
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:background="@drawable/bg_details_image_frame">
 
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:alpha="0.4"
-                    android:src="@drawable/ic_camera"
-                    app:tint="#D4AF37" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/bg_location_pill"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="8dp">
-
-                    <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:src="@drawable/ic_location"
-                        app:tint="#D4AF37" />
-
-                    <TextView
-                        android:id="@+id/tvEventLocation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:textColor="#F9F1D7"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        tools:text="Grand Islamic Center, Lahore" />
-
-                </LinearLayout>
-
-            </FrameLayout>
-
-            <!-- Status + Type badges -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -144,25 +98,23 @@
 
             </LinearLayout>
 
-            <!-- Title -->
             <TextView
                 android:id="@+id/tvEventTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/playfair_display_bold"
                 android:textColor="#F9F1D7"
                 android:textSize="26sp"
                 android:lineSpacingExtra="4dp"
                 tools:text="Ramadan Food Distribution Drive" />
 
-            <!-- Organizer subtitle -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="6dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -182,7 +134,30 @@
 
             </LinearLayout>
 
-            <!-- ─── Info Cards Row ─── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="10dp">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_location"
+                    app:tint="#80E5C76B" />
+
+                <TextView
+                    android:id="@+id/tvEventLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:textColor="#CCF9F1D7"
+                    android:textSize="13sp"
+                    tools:text="Grand Islamic Center, Lahore" />
+
+            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -191,7 +166,6 @@
                 android:baselineAligned="false"
                 android:weightSum="2">
 
-                <!-- Date & Time -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -238,7 +212,6 @@
 
                 </LinearLayout>
 
-                <!-- Slots -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -280,7 +253,6 @@
 
             </LinearLayout>
 
-            <!-- ─── About Section ─── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -314,14 +286,82 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <!-- ─── Divider ─── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="REQUIREMENTS"
+                android:textColor="#80E5C76B"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/home_bg_next_prayer_card"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_person_fill"
+                        app:tint="#80E5C76B"
+                        android:layout_marginEnd="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FOR"
+                        android:textColor="#80FFFFFF"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvRequirementGender"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#F9F1D7"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        tools:text="Brothers Only" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginVertical="10dp"
+                    android:background="#1AFFFFFF" />
+
+                <TextView
+                    android:id="@+id/tvRequirements"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.8"
+                    android:lineSpacingExtra="6dp"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:text="No Requirements" />
+
+            </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:layout_marginTop="24dp"
                 android:background="#1AFFFFFF" />
 
-            <!-- ─── Organizer Detail Row ─── -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -396,13 +436,12 @@
 
             </RelativeLayout>
 
-            <!-- ─── Divider ─── -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:background="#1AFFFFFF" />
 
-            <!-- ─── Progress Bar ─── -->
+
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
@@ -412,76 +451,74 @@
                 android:indeterminateTint="@color/gold_accent"
                 android:visibility="gone" />
 
-            <!-- ─── Join Button ─── -->
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnJoin"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:layout_marginTop="32dp"
                 android:background="@drawable/register_bg_gender_active"
-                android:text="Request to Join"
+                android:text="Join"
                 android:textAllCaps="false"
                 android:textColor="#042F24"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- ─── Open in Maps Button ─── -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnOpenMaps"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="56dp"
                 android:layout_marginTop="12dp"
-                android:backgroundTint="@android:color/transparent"
+                android:backgroundTint="#1AD4AF37"
                 android:text="Open in Maps"
                 android:textAllCaps="false"
-                android:textColor="#B89548"
-                android:textSize="18sp"
+                android:textColor="#F9F1D7"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                app:strokeColor="#4DB89548"
-                app:strokeWidth="1.5dp"
-                app:cornerRadius="20dp"
+                app:strokeColor="#80D4AF37"
+                app:strokeWidth="1dp"
+                app:cornerRadius="16dp"
                 app:icon="@drawable/ic_map"
-                app:iconTint="#B89548"
+                app:iconTint="#D4AF37"
                 app:iconGravity="textStart"
                 app:iconPadding="12dp"
-                app:rippleColor="#22B89548" />
-
-            <!-- ─── Chat Section — visible only to joined users / host ─── -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="12dp"
-                android:text="CHAT"
-                android:textColor="#80E5C76B"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.2" />
+                app:rippleColor="#22D4AF37" />
 
             <LinearLayout
                 android:id="@+id/layoutChatButtons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="40dp"
+                android:background="@drawable/home_bg_next_prayer_card"
+                android:padding="16dp"
                 android:visibility="gone">
 
-                <!-- Group Chat -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="CHAT"
+                    android:textColor="#80E5C76B"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.2" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnGroupChat"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:backgroundTint="@android:color/transparent"
+                    android:layout_height="56dp"
+                    android:backgroundTint="#1AD4AF37"
                     android:text="Group Chat"
                     android:textAllCaps="false"
-                    android:textColor="#B89548"
-                    android:textSize="16sp"
+                    android:textColor="#F9F1D7"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     app:strokeColor="#4DB89548"
-                    app:strokeWidth="1.5dp"
-                    app:cornerRadius="20dp"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="16dp"
                     app:icon="@drawable/ic_chat"
-                    app:iconTint="#B89548"
+                    app:iconTint="#D4AF37"
                     app:iconGravity="textStart"
                     app:iconPadding="12dp"
                     app:rippleColor="#22B89548" />
@@ -489,19 +526,19 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnMessageHost"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="56dp"
                     android:layout_marginTop="10dp"
-                    android:backgroundTint="@android:color/transparent"
+                    android:backgroundTint="#1AD4AF37"
                     android:text="Message Host"
                     android:textAllCaps="false"
-                    android:textColor="#B89548"
-                    android:textSize="16sp"
+                    android:textColor="#F9F1D7"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     app:strokeColor="#4DB89548"
-                    app:strokeWidth="1.5dp"
-                    app:cornerRadius="20dp"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="16dp"
                     app:icon="@drawable/ic_person_fill"
-                    app:iconTint="#B89548"
+                    app:iconTint="#D4AF37"
                     app:iconGravity="textStart"
                     app:iconPadding="12dp"
                     app:rippleColor="#22B89548" />

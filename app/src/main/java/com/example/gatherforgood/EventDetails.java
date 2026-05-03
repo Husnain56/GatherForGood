@@ -34,7 +34,7 @@ public class EventDetails extends AppCompatActivity {
     TextView tvEventTitle, tvOrganizerName, tvOrganizerNameDetail,
             tvEventDate, tvEventTime, tvEventLocation,
             tvSlots, tvParticipantCount, tvDescription,
-            tvReadMore, tvEventType, tvStatus;
+            tvReadMore, tvEventType, tvStatus, tvRequirementGender, tvRequirements;
 
     Button         btnJoin;
     MaterialButton btnOpenMaps, btnGroupChat, btnMessageHost;
@@ -90,6 +90,9 @@ public class EventDetails extends AppCompatActivity {
         btnGroupChat      = findViewById(R.id.btnGroupChat);
         btnMessageHost    = findViewById(R.id.btnMessageHost);
 
+        tvRequirementGender = findViewById(R.id.tvRequirementGender);
+        tvRequirements      = findViewById(R.id.tvRequirements);
+
         event = (Event) getIntent().getSerializableExtra("event");
     }
 
@@ -105,6 +108,14 @@ public class EventDetails extends AppCompatActivity {
         tvStatus.setText(event.getStatus().toUpperCase());
         tvSlots.setText(event.getVolunteersJoined() + "/" + event.getVolunteersRequired());
         tvParticipantCount.setText(event.getVolunteersJoined() + " Attending");
+        tvRequirementGender.setText(event.getGenderSetting());
+
+        if(event.getRequirements() == null){
+            tvRequirements.setText("No Requirements");
+        }
+        else {
+            tvRequirements.setText(event.getRequirements());
+        }
 
         isHost = event.getHostUid().equals(currentUid);
 
@@ -113,6 +124,11 @@ public class EventDetails extends AppCompatActivity {
             setupHostControls();
         } else {
             checkIfJoined();
+        }
+        if (!isHost && event.getVolunteersJoined() >= event.getVolunteersRequired()) {
+            btnJoin.setEnabled(false);
+            btnJoin.setText("Slots Full");
+            btnJoin.setAlpha(0.5f);
         }
     }
 
@@ -222,6 +238,7 @@ public class EventDetails extends AppCompatActivity {
                     Toast.makeText(this,
                             "Status updated to " + newStatus,
                             Toast.LENGTH_SHORT).show();
+                    tvStatus.setText(newStatus);
                 })
                 .addOnFailureListener(e -> {
                     progressBar.setVisibility(View.GONE);
@@ -299,11 +316,22 @@ public class EventDetails extends AppCompatActivity {
                     if (doc.exists()) {
                         isAlreadyJoined = true;
                         btnJoin.setText("Leave Event");
+                        btnJoin.setEnabled(true);
+                        btnJoin.setAlpha(1f);
                         layoutChatButtons.setVisibility(View.VISIBLE);
                         setMessageHostListener();
-                    } else {
+                    }else if (event.getVolunteersJoined() >= event.getVolunteersRequired()) {
+                        btnJoin.setText("Event Full");
+                        btnJoin.setEnabled(false);
+                        btnJoin.setAlpha(0.5f);
+                        layoutChatButtons.setVisibility(View.GONE);
+                        return;
+                    }
+                    else {
                         isAlreadyJoined = false;
-                        btnJoin.setText("Request to Join");
+                        btnJoin.setText("Join");
+                        btnJoin.setEnabled(true);
+                        btnJoin.setAlpha(1f);
                         layoutChatButtons.setVisibility(View.GONE);
                     }
 
@@ -333,6 +361,10 @@ public class EventDetails extends AppCompatActivity {
     }
 
     private void joinEvent() {
+        if (event.getVolunteersJoined() >= event.getVolunteersRequired()) {
+            Toast.makeText(this, "Sorry, this event is full.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         btnJoin.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
 
@@ -409,7 +441,7 @@ public class EventDetails extends AppCompatActivity {
                                 progressBar.setVisibility(View.GONE);
                                 btnJoin.setEnabled(true);
                                 isAlreadyJoined = false;
-                                btnJoin.setText("Request to Join");
+                                btnJoin.setText("Join");
                                 layoutChatButtons.setVisibility(View.GONE);
 
                                 int newCount = Math.max(0, event.getVolunteersJoined() - 1);
