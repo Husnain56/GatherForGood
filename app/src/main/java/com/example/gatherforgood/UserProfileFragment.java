@@ -62,6 +62,20 @@ public class UserProfileFragment extends Fragment {
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid == null) return;
 
+        SharedPreferences prefs = requireContext()
+                .getSharedPreferences("user", android.content.Context.MODE_PRIVATE);
+        String city    = prefs.getString("user_city",    null);
+        String country = prefs.getString("user_country", null);
+
+        if (city != null && !city.isEmpty()) {
+            String cityDisplay = (country != null && !country.isEmpty())
+                    ? city + ", " + country
+                    : city;
+            tvCity.setText(cityDisplay);
+        } else {
+            tvCity.setText("City not set");
+        }
+
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(uid)
@@ -71,13 +85,11 @@ public class UserProfileFragment extends Fragment {
                         String name      = doc.getString("name");
                         String email     = doc.getString("email");
                         String gender    = doc.getString("gender");
-                        String city      = doc.getString("city");
                         Boolean verified = doc.getBoolean("isVerified");
 
                         tvUserName.setText(name);
                         tvEmail.setText(email);
                         tvGender.setText(gender);
-                        tvCity.setText(city != null ? city : "City not set");
                         setInitials(name);
 
                         if (Boolean.TRUE.equals(verified)) {
@@ -178,6 +190,13 @@ public class UserProfileFragment extends Fragment {
                 .addOnSuccessListener(unused -> {
                     tvUserName.setText(newName);
                     setInitials(newName);
+
+                    requireContext()
+                            .getSharedPreferences("user", android.content.Context.MODE_PRIVATE)
+                            .edit()
+                            .putString("user_name", newName)
+                            .apply();
+
                     dialog.dismiss();
                     Toast.makeText(getContext(),
                             "Name updated successfully",

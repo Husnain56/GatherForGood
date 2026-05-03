@@ -1,6 +1,8 @@
 package com.example.gatherforgood;
 
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 
@@ -40,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -175,6 +178,7 @@ public class HomeFragment extends Fragment {
                         if (location != null) {
                             userLat = location.getLatitude();
                             userLng = location.getLongitude();
+                            reverseGeocodeAndCache(userLat, userLng);
                             fetchGatherings(userLat, userLng);
                         } else {
                             fetchGatherings(0, 0);
@@ -184,6 +188,37 @@ public class HomeFragment extends Fragment {
         } catch (SecurityException e) {
             fetchGatherings(0, 0);
         }
+    }
+
+    private void reverseGeocodeAndCache(double lat, double lng) {
+        new Thread(() -> {
+            try {
+                Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+                List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address address = addresses.get(0);
+
+                    String city = address.getLocality();
+                    if (city == null) city = address.getSubAdminArea();
+                    if (city == null) city = address.getAdminArea();
+
+                    String country = address.getCountryName();
+
+                    String finalCity    = city    != null ? city    : "";
+                    String finalCountry = country != null ? country : "";
+
+                    requireActivity().runOnUiThread(() ->
+                            sPref.edit()
+                                    .putString("user_city",    finalCity)
+                                    .putString("user_country", finalCountry)
+                                    .apply()
+                    );
+                }
+            } catch (Exception ignored) {
+                // Geocoder failure is silent — profile will show "City not set"
+            }
+        }).start();
     }
 
     private void fetchGatherings(double lat, double lng) {
@@ -260,7 +295,8 @@ public class HomeFragment extends Fragment {
             fusedClient.getLastLocation()
                     .addOnSuccessListener(location -> {
                         if (location != null) {
-                            fetchPrayerTimesForLocation(location.getLatitude(), location.getLongitude());
+                            fetchPrayerTimesForLocation(
+                                    location.getLatitude(), location.getLongitude());
                         } else {
                             fetchPrayerTimesFallback();
                         }
@@ -318,10 +354,10 @@ public class HomeFragment extends Fragment {
 
     private void showNextPrayer(Map<String, String> prayers) {
         try {
-            Calendar now = Calendar.getInstance();
+            Calendar now           = Calendar.getInstance();
             SimpleDateFormat sdf24 = new SimpleDateFormat("HH:mm", Locale.getDefault());
             SimpleDateFormat sdf12 = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-            String currentTime = sdf24.format(now.getTime());
+            String currentTime     = sdf24.format(now.getTime());
 
             String nextName   = null;
             String nextTime24 = null;
@@ -353,8 +389,8 @@ public class HomeFragment extends Fragment {
 
             Calendar prayerCal = Calendar.getInstance();
             prayerCal.set(Calendar.HOUR_OF_DAY, prayerHour);
-            prayerCal.set(Calendar.MINUTE, prayerMinute);
-            prayerCal.set(Calendar.SECOND, 0);
+            prayerCal.set(Calendar.MINUTE,      prayerMinute);
+            prayerCal.set(Calendar.SECOND,      0);
             prayerCal.set(Calendar.MILLISECOND, 0);
 
             if (prayerCal.before(now)) prayerCal.add(Calendar.DAY_OF_MONTH, 1);
@@ -394,6 +430,5 @@ public class HomeFragment extends Fragment {
                 view -> ((HomeScreen) requireActivity()).navigateToTab(1));
         cardVolunteerEvents.setOnClickListener(
                 view -> ((HomeScreen) requireActivity()).navigateToTab(2));
-
     }
 }
